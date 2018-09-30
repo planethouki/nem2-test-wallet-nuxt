@@ -1,6 +1,8 @@
 <template>
   <section class="container">
     <div>
+      <head-menu/>
+      <app-logo/>
       <h1 class="title">
         {{ name }}
       </h1>
@@ -9,10 +11,11 @@
       </h2>
       <div class="links">
         <a
-          href="/wallet"
-          class="button--green">Wallet</a>
+          href="https://nuxtjs.org/"
+          target="_blank"
+          class="button--green">Documentation</a>
         <a
-          href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt"
+          href="https://github.com/nuxt/nuxt.js"
           target="_blank"
           class="button--grey">GitHub</a>
       </div>
@@ -21,27 +24,14 @@
 </template>
 
 <script>
+  import AppLogo from '~/components/AppLogo.vue'
   import HeadMenu from '~/components/HeadMenu.vue'
-
-export default {
-  asyncData (context) {
-    return {
-      name: 'unsafe wallet',
-      description: "Do NOT use on main net",
+  export default {
+    components: {
+      AppLogo,
+      HeadMenu
     }
-  },
-  head () {
-    return {
-      title: this.name,
-      meta: [
-        { hid: 'top', name: 'top', content: 'top' }
-      ]
-    }
-  },
-  components: {
-
-  },
-}
+  }
 </script>
 
 <style>

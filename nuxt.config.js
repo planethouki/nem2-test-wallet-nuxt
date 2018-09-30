@@ -14,6 +14,12 @@ module.exports = {
     ]
   },
   /*
+  ** CSS of the page
+  */
+  css: [
+
+  ],
+  /*
   ** Customize the progress bar color
   */
   loading: { color: '#3B8070' },
@@ -24,16 +30,22 @@ module.exports = {
     /*
     ** Run ESLint on save
     */
-    extend (config, { isDev, isClient }) {
-      if (isDev && isClient) {
+    extend(config) {
+      if (process.server && process.browser) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules)/
-        })
+        });
+      }
+      config.node = {
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty'
       }
     }
-  }
+  },
+  mode: 'spa'
 }
 

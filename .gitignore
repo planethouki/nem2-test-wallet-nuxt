@@ -11,3 +11,7 @@ npm-debug.log
 dist
 
 starter-template-master.zip
+beauter-master.zip
+
+/.idea
+/.vscode
