@@ -1,99 +1,103 @@
 <template>
-  <section class="container">
+  <div>
     <head-menu/>
-    <div>
-      <h1 class="title">
-        {{ name }}
-      </h1>
-      <h2 class="subtitle">
-        {{ description }}
-      </h2>
-    </div>
-    <div>
-      <label>
-        <span>Endpoint</span>
-        <input v-model="endpoint">
-      </label>
-    </div>
-    <div>
-      <label>
-        <span>PrivateKey</span>
-        <input v-model="privateKey">
-      </label>
-      <input type="button" value="generate" v-on:click="generateButtonHandler">
-    </div>
-    <div>
-      <label>
-        wallet name
-        <input v-model="walletName">
-      </label>
-    </div>
-    <div>
-      <label>
-        wallet password
-        <input v-model="walletPassword">
-      </label>
-    </div>
-    <div>
-      <input type="button" value="create wallet" v-on:click="createWalletHandler">
-    </div>
-    <div v-show="isPrivateKeyExists">
-      <div>
-        <span>Mosaics: </span>
-        <input type="button" value="reload" v-on:click="mosaicReloadHandler">
-        <ul>
-          <li v-for="mosaic in mosaics" v-bind:key="mosaic.id.toHex()">
-            {{ mosaic.id.toHex()}} {{mosaic.amount.compact()}}
-          </li>
-        </ul>
-      </div>
-      <div>
-        <span>Wallet: </span>
-        <ul>
-          <li>name: {{ walletName }}</li>
-          <li>network type: {{ walletNetwork }}</li>
-          <li>
-            <span>address: </span>
-            <span ref="address">{{ walletAddress }}</span>
-            <input type="button" value="copy" v-on:click="copyWalletAddressHandler">
-          </li>
-          <li>creation date: {{ walletCreationDate }}</li>
-          <li>encrypted private key: </li>
-          <ul>
-            <li>data: {{ walletEncryptedPrivateKey }}</li>
-            <li>initial vector: {{ walletEncryptedPrivateKeyIV }}</li>
-          </ul>
-        </ul>
-      </div>
-      <div>
-        <span>Get XEM: </span>
-        <a v-bind:href="faucetUrl" target="_blank">faucet</a>
-      </div>
-      <div>
-        <span>Transfer Transaction: </span>
-        <div class="_offset50">
+    <section class="section">
+      <div class="container">
+        <div>
+          <h1 class="title">
+            {{ name }}
+          </h1>
+          <h2 class="subtitle">
+            {{ description }}
+          </h2>
+        </div>
+        <div>
           <label>
-            Recepient:
-            <input v-model="t_recepient">
+            <span>Endpoint</span>
+            <input v-model="endpoint">
           </label>
+        </div>
+        <div>
           <label>
-            Mosaic:
-            <input v-model="t_mosaic">
+            <span>PrivateKey</span>
+            <input v-model="privateKey">
           </label>
+          <input type="button" value="generate" v-on:click="generatePrivateKeyHandler">
+        </div>
+        <div>
           <label>
-            Message:
-            <input v-model="t_message">
+            wallet name
+            <input v-model="walletName">
           </label>
-          <input type="button" value="send" v-on:click="t_sendHandler">
-          <ul>
-            <li v-for="tx in t_sendHistory" v-bind:key="tx.hash">
-              <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-            </li>
-          </ul>
+        </div>
+        <div>
+          <label>
+            wallet password
+            <input v-model="walletPassword">
+          </label>
+        </div>
+        <div>
+          <input type="button" value="create wallet" v-on:click="createWalletHandler">
+        </div>
+        <div v-show="isPrivateKeyExists">
+          <div>
+            <span>Mosaics: </span>
+            <input type="button" value="reload" v-on:click="mosaicReloadHandler">
+            <ul>
+              <li v-for="mosaic in mosaics" v-bind:key="mosaic.id.toHex()">
+                {{ mosaic.id.toHex()}} {{mosaic.amount.compact()}}
+              </li>
+            </ul>
+          </div>
+          <div>
+            <span>Wallet: </span>
+            <ul>
+              <li>name: {{ walletName }}</li>
+              <li>network type: {{ walletNetwork }}</li>
+              <li>
+                <span>address: </span>
+                <span ref="address">{{ walletAddress }}</span>
+                <input type="button" value="copy" v-on:click="copyWalletAddressHandler">
+              </li>
+              <li>creation date: {{ walletCreationDate }}</li>
+              <li>encrypted private key: </li>
+              <ul>
+                <li>data: {{ walletEncryptedPrivateKey }}</li>
+                <li>initial vector: {{ walletEncryptedPrivateKeyIV }}</li>
+              </ul>
+            </ul>
+          </div>
+          <div>
+            <span>Get XEM: </span>
+            <a v-bind:href="faucetUrl" target="_blank">faucet</a>
+          </div>
+          <div>
+            <span>Transfer Transaction: </span>
+            <div class="_offset50">
+              <label>
+                Recepient:
+                <input v-model="t_recepient">
+              </label>
+              <label>
+                Mosaic:
+                <input v-model="t_mosaic">
+              </label>
+              <label>
+                Message:
+                <input v-model="t_message">
+              </label>
+              <input type="button" value="send" v-on:click="t_sendHandler">
+              <ul>
+                <li v-for="tx in t_sendHistory" v-bind:key="tx.hash">
+                  <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -129,7 +133,7 @@
       HeadMenu
     },
     methods: {
-      generateButtonHandler: function(event) {
+      generatePrivateKeyHandler: function(event) {
         let account = nem2Sdk.Account.generateNewAccount(nem2Sdk.NetworkType.MIJIN_TEST);
         this.privateKey = account.privateKey;
       },
