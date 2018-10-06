@@ -1,6 +1,5 @@
 <template>
   <div>
-    <head-menu/>
     <section class="section">
       <div class="container">
         <div>
@@ -101,10 +100,10 @@
 </template>
 
 <script>
-  import HeadMenu from '~/components/HeadMenu.vue'
   const nem2Sdk = require("nem2-sdk");
 
   export default {
+    layout: 'baseline',
     asyncData (context) {
       return {
         name: "Simple Wallet",
@@ -130,7 +129,7 @@
       }
     },
     components: {
-      HeadMenu
+
     },
     methods: {
       generatePrivateKeyHandler: function(event) {

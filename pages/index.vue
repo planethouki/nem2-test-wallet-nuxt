@@ -2,15 +2,13 @@
   <section class="container">
     <div>
       <h1 class="title">
-        {{ name }}
+        unsafe wallet
       </h1>
       <h2 class="subtitle">
-        {{ description }}
+        do NOT use on main net
       </h2>
       <div class="links">
-        <a
-          href="/wallet"
-          class="button--green">Wallet</a>
+        <router-link to="/wallet" class="button--green">Wallet</router-link>
         <a
           href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt"
           target="_blank"
@@ -24,6 +22,8 @@
   import HeadMenu from '~/components/HeadMenu.vue'
 
 export default {
+  layout: "baseline",
+  source: "https://www.google.co.jp",
   asyncData (context) {
     return {
       name: 'unsafe wallet',
