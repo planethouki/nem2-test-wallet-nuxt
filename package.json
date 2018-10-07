@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@nuxtjs/vuetify": "^0.4.3",
+    "generate-password": "^1.4.0",
     "nem2-sdk": "^0.10.1",
     "nuxt": "^2.0.0",
     "rxjs": "^6.3.3"

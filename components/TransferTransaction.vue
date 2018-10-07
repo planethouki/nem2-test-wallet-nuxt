@@ -32,7 +32,7 @@
     data() {
       return {
         t_recepient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
-        t_mosaic: "nem:xem::1000000",
+        t_mosaics: "nem:xem::1000000",
         t_message: "Hello Nem2!",
         t_sendHistory: [],
       }
@@ -42,7 +42,7 @@
     },
     methods: {
       t_sendHandler: function(event) {
-        let mosaics = this.t_mosaic.split(",").map((mosaicRawStr) => {
+        let mosaics = this.t_mosaics.split(",").map((mosaicRawStr) => {
           let nameAndAmount = mosaicRawStr.split("::");
           return new nem2Sdk.Mosaic(
             new nem2Sdk.MosaicId(nameAndAmount[0]),

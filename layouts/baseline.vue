@@ -14,35 +14,41 @@
             <v-list-tile-title>Home</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click="walletHandler">
-          <v-list-tile-action>
-            <v-icon>lock</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Wallet</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click="">
-          <v-list-tile-action>
-            <v-icon>contact_mail</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Contact</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+        <!--<v-list-tile @click="walletHandler">-->
+          <!--<v-list-tile-action>-->
+            <!--<v-icon>lock</v-icon>-->
+          <!--</v-list-tile-action>-->
+          <!--<v-list-tile-content>-->
+            <!--<v-list-tile-title>Wallet</v-list-tile-title>-->
+          <!--</v-list-tile-content>-->
+        <!--</v-list-tile>-->
+        <!--<v-list-tile href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt" target="_blank">-->
+          <!--<v-list-tile-action>-->
+            <!--<v-icon>contact_mail</v-icon>-->
+          <!--</v-list-tile-action>-->
+          <!--<v-list-tile-content>-->
+            <!--<v-list-tile-title>Github</v-list-tile-title>-->
+          <!--</v-list-tile-content>-->
+        <!--</v-list-tile>-->
+        <!--<v-list-tile href="https://twitter.com/planethouki" target="_blank">-->
+          <!--<v-list-tile-action>-->
+            <!--<v-icon>contact_mail</v-icon>-->
+          <!--</v-list-tile-action>-->
+          <!--<v-list-tile-content>-->
+            <!--<v-list-tile-title>Twitter</v-list-tile-title>-->
+          <!--</v-list-tile-content>-->
+        <!--</v-list-tile>-->
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="indigo" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>Unsafe Wallet</v-toolbar-title>
+      <v-toolbar-title>Catapult Unsafe Wallet</v-toolbar-title>
     </v-toolbar>
     <v-content>
-      <v-container fluid fill-height>
-        <nuxt/>
-      </v-container>
+      <nuxt/>
     </v-content>
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2017</span>
+      <span class="white--text">&copy;</span>
     </v-footer>
   </v-app>
 </template>
