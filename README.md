@@ -1,6 +1,6 @@
-# {{ name }}
+# nem2-unsafe-wallet-nuxt
 
-> {{ description }}
+> Do NOT use on main net
 
 ## Build Setup
 
@@ -21,3 +21,6 @@ $ npm run generate
 
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
+## Demo
+
+http://wallet48gh23s.z31.web.core.windows.net/

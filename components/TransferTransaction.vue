@@ -31,7 +31,7 @@
     name: "TransferTransaction",
     data() {
       return {
-        t_recepient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
+        t_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
         t_mosaics: "nem:xem::1000000",
         t_message: "Hello Nem2!",
         t_sendHistory: [],
@@ -51,7 +51,7 @@
         });
         let tx = nem2Sdk.TransferTransaction.create(
           nem2Sdk.Deadline.create(23),
-          nem2Sdk.Address.createFromRawAddress(this.t_recepient),
+          nem2Sdk.Address.createFromRawAddress(this.t_recipient),
           mosaics,
           nem2Sdk.PlainMessage.create(this.t_message),
           nem2Sdk.NetworkType.MIJIN_TEST
