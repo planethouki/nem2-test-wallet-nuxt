@@ -1,20 +1,34 @@
 export const state = () => ({
-  wallet: {},
-  password: {},
-  endpoint: "",
+  list: [],
+  selectedCreationDate: ""
 })
 
+export const getters = {
+  getSelectedWallet (state) {
+    let availables = state.list.filter((elm) => { return elm.creationDate === state.selectedCreationDate });
+    return availables.length > 0 ? availables[0] : {};
+  },
+}
+
 export const mutations = {
-  addWallet (state, wallet, password) {
-    state.wallet = wallet;
-    state.password = password;
+  addWallet (state, wallet) {
+    state.list.push({
+      name: wallet.name,
+      address: wallet.address.plain(),
+      creationDate: wallet.creationDate,
+      encryptedPrivateKey: {
+        encryptedKey: wallet.encryptedPrivateKey.encryptedKey,
+        iv: wallet.encryptedPrivateKey.iv
+      },
+    })
   },
-  addEndPoint (state, endpoint) {
-    state.endpoint = endpoint;
+  setSelectedCreationDate (state, creationDate) {
+    state.selectedCreationDate = creationDate;
   },
-  remove (state) {
-    state.wallet = null;
-    state.password = null;
-    state.endpoint = "";
+  removeWalletByPlainAddress (state, address) {
+    state.list = state.list.filter((elm) => { return elm.address !== address })
+  },
+  removeWalletByCreationDate (state, creationDate) {
+    state.list = state.list.filter((elm) => { return elm.creationDate !== creationDate })
   },
 }

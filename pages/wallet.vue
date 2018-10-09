@@ -19,7 +19,7 @@
         <div>
           <label>
             <span>PrivateKey</span>
-            <input v-model="privateKey">
+            <input v-model="walletPrivateKey">
           </label>
           <input type="button" value="generate" v-on:click="generatePrivateKeyHandler">
         </div>
@@ -38,6 +38,7 @@
         <div>
           <input type="button" value="create wallet" v-on:click="createWalletHandler">
         </div>
+
         <div v-show="isPrivateKeyExists">
           <div>
             <span>Mosaics: </span>
@@ -70,6 +71,7 @@
             <span>Get XEM: </span>
             <a v-bind:href="faucetUrl" target="_blank">faucet</a>
           </div>
+
           <div>
             <span>Transfer Transaction: </span>
             <div class="_offset50">
@@ -93,13 +95,26 @@
               </ul>
             </div>
           </div>
+
         </div>
+
+        <div>
+          <h3>stored wallet</h3>
+          <li v-for="w in wallets">
+            <input type="button" v-bind:value="w.name" v-on:click="loadWalletHandler">
+          </li>
+        </div>
+
       </div>
     </section>
   </div>
 </template>
 
 <script>
+  // import {LocalDateTime} from 'js-joda/src/LocalDateTime.js'
+  import {LocalDateTime} from 'js-joda'
+  // import {DateTimeFormatter} from 'js-joda/src/format/DateTimeFormatter.js'
+  // const LocalDateTime = require('js-joda').LocalDateTime;
   const nem2Sdk = require("nem2-sdk");
 
   export default {
@@ -109,7 +124,7 @@
         name: "Simple Wallet",
         description: "",
         endpoint: "http://catapult48gh23s.xyz:3000",
-        privateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
+        walletPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         isPrivateKeyExists: false,
         prettyAddress: "",
         mosaics: [],
@@ -131,17 +146,20 @@
     components: {
 
     },
+    computed: {
+      wallets () { return this.$store.state.wallets.list }
+    },
     methods: {
       generatePrivateKeyHandler: function(event) {
         let account = nem2Sdk.Account.generateNewAccount(nem2Sdk.NetworkType.MIJIN_TEST);
-        this.privateKey = account.privateKey;
+        this.privateKey = account.walletPrivateKey;
       },
       createWalletHandler: function(event) {
         this.isPrivateKeyExists = true;
         let wallet = nem2Sdk.SimpleWallet.createFromPrivateKey(
           this.walletName,
           new nem2Sdk.Password(this.walletPassword),
-          this.privateKey,
+          this.walletPrivateKey,
           nem2Sdk.NetworkType.MIJIN_TEST
         );
         this.wallet = wallet;
@@ -168,6 +186,7 @@
         }).catch((error) => {
 
         });
+        this.$store.commit('wallets/addWallet', wallet)
       },
       mosaicReloadHandler: function(event) {
         let ac = new nem2Sdk.AccountHttp(this.endpoint, nem2Sdk.NetworkType.MIJIN_TEST);
@@ -214,13 +233,56 @@
           apiStatusUrl: `${this.endpoint}/transaction/${signedTx.hash}/status`
         };
         this.t_sendHistory.push(historyData);
+      },
+      loadWalletHandler: function(event) {
+        let walletDataArr = this.$store.state.wallets.list.filter((elm) => {
+          if (elm.name === event.target.value) {
+            return true
+          } else {
+            return false
+          }
+        });
+        let walletData = walletDataArr[0]
+        let name = walletData.name
+        let address = nem2Sdk.Address.createFromRawAddress(walletData.address)
+        let encryptedPrivateKey = new nem2Sdk.EncryptedPrivateKey(
+          walletData.encryptedPrivateKey.encryptedKey, walletData.encryptedPrivateKey.iv)
+        let creationDate = LocalDateTime.parse(walletData.creationDate);
+        let recoveredWallet = new nem2Sdk.SimpleWallet(name, nem2Sdk.NetworkType.MIJIN_TEST, address, creationDate, encryptedPrivateKey)
+
+        this.wallet = recoveredWallet;
+        this.walletName = recoveredWallet.name;
+        this.walletNetwork = recoveredWallet.network;
+        this.walletAddress = recoveredWallet.address.pretty();
+        this.walletCreationDate = recoveredWallet.creationDate;
+        this.walletEncryptedPrivateKey = recoveredWallet.encryptedPrivateKey.encryptedKey;
+        this.walletEncryptedPrivateKeyIV = recoveredWallet.encryptedPrivateKey.iv;
+        if (this.endpoint.includes("44uk")) {
+          this.faucetUrl = `http://test-nem2-faucet.44uk.net/?address=${this.walletAddress}`;
+        } else if (this.endpoint.includes("daoka")) {
+          this.faucetUrl = `http://catapult-test.daoka.ml:4567/?address=${this.walletAddress}`;
+        } else if (this.endpoint.includes("soralis")) {
+          this.faucetUrl = `http://catapult-test.soralis.org:4567/?address=${this.walletAddress}`;
+        } else if (this.endpoint.includes("48gh23s")) {
+          this.faucetUrl = `https://faucet48gh23s.azurewebsites.net/?address=${this.walletAddress}`;
+        }
+        let ac = new nem2Sdk.AccountHttp(this.endpoint, nem2Sdk.NetworkType.MIJIN_TEST);
+        ac.getAccountInfo(recoveredWallet.address).toPromise().then((result) => {
+          this.importance = result.importance.compact();
+          this.publicKey = result.publicKey;
+          this.mosaics = result.mosaics;
+        }).catch((error) => {
+
+        });
+
+        this.isPrivateKeyExists = true;
       }
     },
     head () {
       return {
         title: this.name,
         meta: [
-          { hid: 'wallet', name: 'wallet', content: 'wallet' }
+          { hid: 'recoveredWallet', name: 'recoveredWallet', content: 'recoveredWallet' }
         ]
       }
     },

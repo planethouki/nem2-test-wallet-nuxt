@@ -5,10 +5,11 @@
 
       <v-flex sm10 offset-sm1>
 
-        <v-flex xs12 v-show="!wallet.address">
+
+        <v-flex xs12>
           <v-card>
             <v-card-title>
-              <div class="title font-weight-bold">Create Wallet</div>
+              <div class="title font-weight-bold">Endpoint</div>
             </v-card-title>
             <v-card-text>
               <v-text-field
@@ -17,11 +18,61 @@
                 required
                 placeholder="ex). http://catapult48gh23s.xyz:3000"
               ></v-text-field>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 v-show="!wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Load Wallet</div>
+            </v-card-title>
+            <v-card-title>
+              <v-select
+                :items="listWallet"
+                v-model="selectedCreationDate"
+                menu-props="auto"
+                label="Select"
+                hide-details
+                single-line
+              ></v-select>
+            </v-card-title>
+            <v-card-title>
+              <v-text-field
+                v-model="password"
+                :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                :rules="[passwordRules.required, passwordRules.min]"
+                :type="passwordShow ? 'text' : 'password'"
+                name="input-10-1"
+                label="Password"
+                hint="At least 8 characters"
+                counter
+                required
+                @click:append="passwordShow = !passwordShow"
+              ></v-text-field>
+            </v-card-title>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="loadWallet"
+                :loading="isLoading"
+                :disabled="isLoading">load</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 v-show="!wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Create Wallet</div>
+            </v-card-title>
+            <v-card-text>
               <v-layout>
                 <v-flex>
                   <v-text-field
                     label="Private Key"
-                    v-model="privateKey"
+                    v-model="walletPrivateKey"
                     :counter="64"
                     required
                     placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E"
@@ -47,7 +98,9 @@
                   <v-text-field
                     label="Wallet Password"
                     v-model="walletPassword"
+                    :rules="[passwordRules.required, passwordRules.min]"
                     required
+                    counter
                     placeholder="ex). cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ"
                   ></v-text-field>
                 </v-flex>
@@ -134,6 +187,20 @@
                 </v-list-tile>
               </v-list>
             </v-responsive>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="logoutWallet"
+                :loading="isLoading"
+                :disabled="isLoading">logout</v-btn>
+              <!--<v-btn-->
+                <!--color="blue"-->
+                <!--class="white&#45;&#45;text"-->
+                <!--@click="viewPrivateKey"-->
+                <!--:loading="isLoading"-->
+                <!--:disabled="isLoading">view privatekey</v-btn>-->
+            </v-card-actions>
           </v-card>
         </v-flex>
 
@@ -405,283 +472,111 @@
 </template>
 
 <script>
-import {
-  Account, AccountHttp, Address, Deadline, UInt64, NetworkType, PlainMessage, TransferTransaction, Mosaic, MosaicId,
-  Password, SimpleWallet, TransactionHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService, MosaicAmountView, MosaicInfo,
-  MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
-  RegisterNamespaceTransaction, AggregateTransaction, SecretLockTransaction, SecretProofTransaction,
-  HashType
-} from 'nem2-sdk';
-import { catchError, defaultIfEmpty, flatMap } from 'rxjs/operators';
-import { sha3_512 } from 'js-sha3';
-const generator = require('generate-password');
+  import {
+    Account, AccountHttp, Address, Deadline, UInt64, NetworkType, PlainMessage, TransferTransaction, Mosaic, MosaicId,
+    Password, SimpleWallet, TransactionHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService, MosaicAmountView, MosaicInfo,
+    MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
+    RegisterNamespaceTransaction, AggregateTransaction, SecretLockTransaction, SecretProofTransaction,
+    HashType, EncryptedPrivateKey
+  } from 'nem2-sdk';
+  import { of } from 'rxjs';
+  import { catchError, defaultIfEmpty, flatMap } from 'rxjs/operators';
+  import { LocalDateTime } from 'js-joda';
+  import { sha3_512 } from 'js-sha3';
+  const generator = require('generate-password');
 
-export default {
-  layout: "baseline",
-  source: "https://www.google.co.jp",
-  asyncData (context) {
-    return {
-      name: 'Catapult Unsafe Wallet',
-      description: "Do NOT use on main net",
-      endpoint: "http://catapult48gh23s.xyz:3000",
-      privateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
-      walletName: "myWallet",
-      walletPassword: "cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt",
-      wallet: {},
-      mosaicAmountViews: [],
-      isLoading: false,
-      t_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
-      t_mosaics: "nem:xem::1000000",
-      t_message: "Hello Nem2!",
-      t_sendHistory: [],
-      n_name: "foo",
-      n_duration: 60,
-      n_history: [],
-      m_name: "bar",
-      m_namespace: "foo",
-      m_supplyMutable: true,
-      m_transferable: true,
-      m_levyMutable: false,
-      m_divisibility: 0,
-      m_duration: 10,
-      m_delta: 100,
-      m_history: [],
-      l_proof: "095B4FCD1F88F1785E59",
-      l_mosaic: "nem:xem::1000000",
-      l_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
-      l_duration: 240,
-      l_history: [],
-      p_proof: "095B4FCD1F88F1785E59",
-      p_history: [],
-    }
-  },
-  methods: {
-    regenPrivateKey: function(event) {
-      this.isLoading = true
-      this.privateKey = Account.generateNewAccount(NetworkType.MIJIN_TEST).privateKey
-      this.isLoading = false
-    },
-    regenWalletPassword: function(event) {
-      this.isLoading = true
-      this.walletPassword = generator.generate({
-        length: 50,
-        numbers: true,
-        symbols: true,
-      });
-      this.isLoading = false
-    },
-    reloadMosaics: function(event) {
-      this.isLoading = true
-      if (this.wallet.address) {
-        this.mosaicAmountViews = [];
-        let endpoint = this.endpoint;
-        let address = this.wallet.address;
-        let accountHttp = new AccountHttp(endpoint);
-        let mosaicHttp = new MosaicHttp(endpoint);
-        let nameSpaceHttp = new NamespaceHttp(endpoint);
-        let mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
-        accountHttp.getAccountInfo(address).subscribe(
-          accountInfo => {
-            let mosaics;
-            if (accountInfo.mosaics.length !== 0) {
-              mosaics = accountInfo.mosaics
-            } else {
-              mosaics = [XEM.createAbsolute(0)]
-            }
-            mosaicService.mosaicsAmountView(mosaics)
-              .pipe(
-                flatMap((_) => _)
-              )
-              .subscribe(
-              mosaicAmountView => {
-                this.mosaicAmountViews.push(mosaicAmountView)
-              }
-            )
-          },
-          error => {
-            console.error(error)
-          }
-        );
+  export default {
+    layout: "baseline",
+    source: "https://www.google.co.jp",
+    asyncData (context) {
+      return {
+        name: 'Catapult Unsafe Wallet',
+        description: "Do NOT use on main net",
+        endpoint: "http://catapult48gh23s.xyz:3000",
+        walletPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
+        walletName: "myWallet",
+        walletPassword: "cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt",
+        password: "cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt",
+        selectedCreationDate: "",
+        passwordRules: {
+          required: value => !!value || 'Required.',
+          min: v => v.length >= 8 || 'Min 8 characters'
+        },
+        passwordShow: false,
+        wallet: {},
+        mosaicAmountViews: [],
+        isLoading: false,
+        t_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
+        t_mosaics: "nem:xem::1000000",
+        t_message: "Hello Nem2!",
+        t_sendHistory: [],
+        n_name: "foo",
+        n_duration: 60,
+        n_history: [],
+        m_name: "bar",
+        m_namespace: "foo",
+        m_supplyMutable: true,
+        m_transferable: true,
+        m_levyMutable: false,
+        m_divisibility: 0,
+        m_duration: 10,
+        m_delta: 100,
+        m_history: [],
+        l_proof: "095B4FCD1F88F1785E59",
+        l_mosaic: "nem:xem::1000000",
+        l_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
+        l_duration: 240,
+        l_history: [],
+        p_proof: "095B4FCD1F88F1785E59",
+        p_history: [],
       }
-      this.isLoading = false
     },
-    createWallet: function(event) {
-      this.wallet = SimpleWallet.createFromPrivateKey(
-        this.walletName,
-        new Password(this.walletPassword),
-        this.privateKey,
-        NetworkType.MIJIN_TEST
-      );
-    },
-    copyWalletAddressHandler: function(event) {
-      let target = this.$refs.address;
-      let range = document.createRange();
-      range.selectNode(target);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand('copy');
-      window.getSelection().removeAllRanges();
-    },
-    t_announceHandler: function(event) {
-      this.isLoading = true
-      const account = this.wallet.open(new Password(this.walletPassword));
-      const recipient = this.t_recipient
-      const message = this.t_message
-      const endpoint = this.endpoint
-      const mosaics = this.t_mosaics.split(",").map((mosaicRawStr) => {
-        let nameAndAmount = mosaicRawStr.split("::");
-        return new Mosaic(
-          new MosaicId(nameAndAmount[0]),
-          UInt64.fromUint(nameAndAmount[1])
+    methods: {
+      regenPrivateKey: function(event) {
+        this.isLoading = true
+        this.privateKey = Account.generateNewAccount(NetworkType.MIJIN_TEST).walletPrivateKey
+        this.isLoading = false
+      },
+      regenWalletPassword: function(event) {
+        this.isLoading = true
+        this.walletPassword = generator.generate({
+          length: 50,
+          numbers: true,
+          symbols: true,
+        });
+        this.isLoading = false
+      },
+      createWallet: function(event) {
+        this.wallet = SimpleWallet.createFromPrivateKey(
+          this.walletName,
+          new Password(this.walletPassword),
+          this.walletPrivateKey,
+          NetworkType.MIJIN_TEST
         );
-      });
-      let tx = TransferTransaction.create(
-        Deadline.create(23),
-        Address.createFromRawAddress(recipient),
-        mosaics,
-        PlainMessage.create(message),
-        NetworkType.MIJIN_TEST
-      );
-      let signedTx = account.sign(tx);
-      let txHttp = new TransactionHttp(endpoint);
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-
-      });
-      let historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-      };
-      this.t_sendHistory.push(historyData);
-      this.isLoading = false
-    },
-    n_announceHandler: function(event) {
-      this.isLoading = true
-      const namespace = this.n_name
-      const duration = this.n_duration
-      const account = this.wallet.open(new Password(this.walletPassword))
-      const endpoint = this.endpoint
-      let registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
-        Deadline.create(),
-        namespace,
-        UInt64.fromUint(duration),
-        NetworkType.MIJIN_TEST,
-      );
-      let signedTx = account.sign(registerNamespaceTransaction)
-      let txHttp = new TransactionHttp(endpoint);
-      txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
-      let historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-      };
-      this.n_history.push(historyData);
-      this.isLoading = false
-    },
-    m_announceHandler: function(event) {
-      this.isLoading = true
-      const namespace = this.m_namespace
-      const mosaic = this.m_name
-      const duration = this.m_duration
-      const divisibility = this.m_divisibility
-      const supplyMutable = this.m_supplyMutable
-      const transferable = this.m_transferable
-      const levyMutable = this.levyMutable
-      const delta = this.m_delta
-      const account = this.wallet.open(new Password(this.walletPassword))
-      const endpoint = this.endpoint
-      let mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
-        Deadline.create(),
-        mosaic,
-        namespace,
-        MosaicProperties.create({
-          supplyMutable: supplyMutable,
-          transferable: transferable,
-          levyMutable: levyMutable,
-          divisibility: divisibility,
-          duration: UInt64.fromUint(duration),
-        }),
-        NetworkType.MIJIN_TEST,
-      );
-      let mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
-        Deadline.create(),
-        mosaicDefinitionTransaction.mosaicId,
-        MosaicSupplyType.Increase,
-        UInt64.fromUint(delta),
-        NetworkType.MIJIN_TEST,
-      );
-      let aggregateTransaction = AggregateTransaction.createComplete(
-        Deadline.create(),
-        [
-          mosaicDefinitionTransaction.toAggregate(account.publicAccount),
-          mosaicSupplyChangeTransaction.toAggregate(account.publicAccount),
-        ],
-        NetworkType.MIJIN_TEST,
-        []
-      );
-      let signedTx = account.sign(aggregateTransaction)
-      let txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
-      let historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-      };
-      this.m_history.push(historyData);
-      this.isLoading = false
-    },
-    l_announceHandler: function(event) {
-      this.isLoading = true
-      const account = this.wallet.open(new Password(this.walletPassword))
-      const endpoint = this.endpoint
-      const duration = this.l_duration
-      const secret = this.l_secret
-      const recipient = this.l_recipient
-      const nameAndAmount = this.l_mosaic.split("::");
-      const mosaic =  new Mosaic(new MosaicId(nameAndAmount[0]), UInt64.fromUint(nameAndAmount[1]));
-      let secretLockTransaction = SecretLockTransaction.create(
-        Deadline.create(),
-        mosaic,
-        UInt64.fromUint(duration),
-        HashType.SHA3_512,
-        secret,
-        Address.createFromRawAddress(recipient),
-        NetworkType.MIJIN_TEST
-      );
-      let signedTx = account.sign(secretLockTransaction)
-      let txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
-      let historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-      };
-      this.l_history.push(historyData);
-      this.isLoading = false
-    },
-    p_announceHandler: function(event) {
-      this.isLoading = true
-      const account = this.wallet.open(new Password(this.walletPassword))
-      const endpoint = this.endpoint
-      const secret = this.p_secret
-      const proof = this.p_proof
-      let secretProofTransaction = SecretProofTransaction.create(
-        Deadline.create(),
-        HashType.SHA3_512,
-        secret,
-        proof,
-        NetworkType.MIJIN_TEST
-      );
-      let signedTx = account.sign(secretProofTransaction)
-      let txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
-      let historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-      };
-      this.p_history.push(historyData);
-      this.isLoading = false
-    },
-  },
-  watch: {
-    wallet: {
-      handler: function(newVal, oldVal) {
+        this.$store.commit('wallets/addWallet', this.wallet)
+      },
+      loadWallet: function(event) {
+        let targetCreationDate = this.selectedCreationDate;
+        let password = this.password;
+        if (targetCreationDate !== "") {
+          this.$store.commit('wallets/setSelectedCreationDate', targetCreationDate);
+          let walletData = this.$store.getters['wallets/getSelectedWallet'];
+          let name = walletData.name;
+          let address = Address.createFromRawAddress(walletData.address);
+          let encryptedPrivateKey = new EncryptedPrivateKey(
+            walletData.encryptedPrivateKey.encryptedKey, walletData.encryptedPrivateKey.iv);
+          let creationDate = LocalDateTime.parse(walletData.creationDate);
+          let wallet = new SimpleWallet(name, NetworkType.MIJIN_TEST, address, creationDate, encryptedPrivateKey);
+          try {
+            wallet.open(new Password(password));
+            this.wallet = wallet;
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      },
+      reloadMosaics: function(event) {
+        this.isLoading = true
         if (this.wallet.address) {
           this.mosaicAmountViews = [];
           let endpoint = this.endpoint;
@@ -692,70 +587,288 @@ export default {
           let mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
           accountHttp.getAccountInfo(address).subscribe(
             accountInfo => {
-              let mosaics;
-              if (accountInfo.mosaics.length !== 0) {
-                mosaics = accountInfo.mosaics
-              } else {
-                mosaics = [XEM.createAbsolute(0)]
-              }
+              let mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
               mosaicService.mosaicsAmountView(mosaics)
-                .pipe(
-                  flatMap((_) => _)
-                )
-                .subscribe(
-                mosaicAmountView => {
-                  this.mosaicAmountViews.push(mosaicAmountView)
-                }
-              )
+                .pipe(flatMap((_) => _))
+                .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
             },
             error => {
               console.error(error)
+              mosaicService.mosaicsAmountView([XEM.createAbsolute(0)])
+                .pipe(flatMap((_) => _))
+                .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
             }
           );
-          const random =
-            Math.floor(Math.random() * Math.floor(2**32)).toString(16)
-            + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
-            + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
-          this.l_proof = random.toUpperCase()
-          this.p_proof = random.toUpperCase()
-
         }
+        this.isLoading = false
+      },
+      logoutWallet: function(event) {
+        this.wallet = {}
+      },
+      viewPrivateKey: function() {
+        // todo
+      },
+      copyWalletAddressHandler: function(event) {
+        let target = this.$refs.address;
+        let range = document.createRange();
+        range.selectNode(target);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+      },
+      t_announceHandler: function(event) {
+        this.isLoading = true
+        const account = this.wallet.open(new Password(this.walletPassword));
+        const recipient = this.t_recipient
+        const message = this.t_message
+        const endpoint = this.endpoint
+        const mosaics = this.t_mosaics.split(",").map((mosaicRawStr) => {
+          let nameAndAmount = mosaicRawStr.split("::");
+          return new Mosaic(
+            new MosaicId(nameAndAmount[0]),
+            UInt64.fromUint(nameAndAmount[1])
+          );
+        });
+        let tx = TransferTransaction.create(
+          Deadline.create(23),
+          Address.createFromRawAddress(recipient),
+          mosaics,
+          PlainMessage.create(message),
+          NetworkType.MIJIN_TEST
+        );
+        let signedTx = account.sign(tx);
+        let txHttp = new TransactionHttp(endpoint);
+        txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
+        });
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.t_sendHistory.push(historyData);
+        this.isLoading = false
+      },
+      n_announceHandler: function(event) {
+        this.isLoading = true
+        const namespace = this.n_name
+        const duration = this.n_duration
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const endpoint = this.endpoint
+        let registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
+          Deadline.create(),
+          namespace,
+          UInt64.fromUint(duration),
+          NetworkType.MIJIN_TEST,
+        );
+        let signedTx = account.sign(registerNamespaceTransaction)
+        let txHttp = new TransactionHttp(endpoint);
+        txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.n_history.push(historyData);
+        this.isLoading = false
+      },
+      m_announceHandler: function(event) {
+        this.isLoading = true
+        const namespace = this.m_namespace
+        const mosaic = this.m_name
+        const duration = this.m_duration
+        const divisibility = this.m_divisibility
+        const supplyMutable = this.m_supplyMutable
+        const transferable = this.m_transferable
+        const levyMutable = this.levyMutable
+        const delta = this.m_delta
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const endpoint = this.endpoint
+        let mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
+          Deadline.create(),
+          mosaic,
+          namespace,
+          MosaicProperties.create({
+            supplyMutable: supplyMutable,
+            transferable: transferable,
+            levyMutable: levyMutable,
+            divisibility: divisibility,
+            duration: UInt64.fromUint(duration),
+          }),
+          NetworkType.MIJIN_TEST,
+        );
+        let mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
+          Deadline.create(),
+          mosaicDefinitionTransaction.mosaicId,
+          MosaicSupplyType.Increase,
+          UInt64.fromUint(delta),
+          NetworkType.MIJIN_TEST,
+        );
+        let aggregateTransaction = AggregateTransaction.createComplete(
+          Deadline.create(),
+          [
+            mosaicDefinitionTransaction.toAggregate(account.publicAccount),
+            mosaicSupplyChangeTransaction.toAggregate(account.publicAccount),
+          ],
+          NetworkType.MIJIN_TEST,
+          []
+        );
+        let signedTx = account.sign(aggregateTransaction)
+        let txHttp = new TransactionHttp(endpoint)
+        txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.m_history.push(historyData);
+        this.isLoading = false
+      },
+      l_announceHandler: function(event) {
+        this.isLoading = true
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const endpoint = this.endpoint
+        const duration = this.l_duration
+        const secret = this.l_secret
+        const recipient = this.l_recipient
+        const nameAndAmount = this.l_mosaic.split("::");
+        const mosaic =  new Mosaic(new MosaicId(nameAndAmount[0]), UInt64.fromUint(nameAndAmount[1]));
+        let secretLockTransaction = SecretLockTransaction.create(
+          Deadline.create(),
+          mosaic,
+          UInt64.fromUint(duration),
+          HashType.SHA3_512,
+          secret,
+          Address.createFromRawAddress(recipient),
+          NetworkType.MIJIN_TEST
+        );
+        let signedTx = account.sign(secretLockTransaction)
+        let txHttp = new TransactionHttp(endpoint)
+        txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.l_history.push(historyData);
+        this.isLoading = false
+      },
+      p_announceHandler: function(event) {
+        this.isLoading = true
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const endpoint = this.endpoint
+        const secret = this.p_secret
+        const proof = this.p_proof
+        let secretProofTransaction = SecretProofTransaction.create(
+          Deadline.create(),
+          HashType.SHA3_512,
+          secret,
+          proof,
+          NetworkType.MIJIN_TEST
+        );
+        let signedTx = account.sign(secretProofTransaction)
+        let txHttp = new TransactionHttp(endpoint)
+        txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.p_history.push(historyData);
+        this.isLoading = false
+      },
+    },
+    watch: {
+      endpoint: {
+        handler: function(newVal, oldVal) {
+          if (this.wallet.address) {
+            this.mosaicAmountViews = [];
+            let endpoint = this.endpoint;
+            let address = this.wallet.address;
+            let accountHttp = new AccountHttp(endpoint);
+            let mosaicHttp = new MosaicHttp(endpoint);
+            let nameSpaceHttp = new NamespaceHttp(endpoint);
+            let mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
+            accountHttp.getAccountInfo(address).subscribe(
+              accountInfo => {
+                let mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
+                mosaicService.mosaicsAmountView(mosaics)
+                  .pipe(flatMap((_) => _))
+                  .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
+              },
+              error => {
+                console.error(error)
+                mosaicService.mosaicsAmountView([XEM.createAbsolute(0)])
+                  .pipe(flatMap((_) => _))
+                  .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
+              }
+            );
+          }
+        }
+      },
+      wallet: {
+        handler: function(newVal, oldVal) {
+          if (this.wallet.address) {
+            this.mosaicAmountViews = [];
+            let endpoint = this.endpoint;
+            let address = this.wallet.address;
+            let accountHttp = new AccountHttp(endpoint);
+            let mosaicHttp = new MosaicHttp(endpoint);
+            let nameSpaceHttp = new NamespaceHttp(endpoint);
+            let mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
+            accountHttp.getAccountInfo(address).subscribe(
+              accountInfo => {
+                let mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
+                mosaicService.mosaicsAmountView(mosaics)
+                  .pipe(flatMap((_) => _))
+                  .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
+              },
+              error => {
+                console.error(error)
+                mosaicService.mosaicsAmountView([XEM.createAbsolute(0)])
+                  .pipe(flatMap((_) => _))
+                  .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
+              }
+            );
+            const random =
+              Math.floor(Math.random() * Math.floor(2**32)).toString(16)
+              + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
+              + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
+            this.l_proof = random.toUpperCase()
+            this.p_proof = random.toUpperCase()
+          }
+        }
+      },
+    },
+    computed: {
+      l_secret: function() {
+        const proof = this.l_proof
+        const hash = sha3_512.create();
+        try {
+          return hash.update(Buffer.from(proof, 'hex')).hex().toUpperCase();
+        } catch(e) {
+          return e.message
+        }
+      },
+      p_secret: function() {
+        const proof = this.p_proof
+        const hash = sha3_512.create();
+        try {
+          return hash.update(Buffer.from(proof, 'hex')).hex().toUpperCase();
+        } catch(e) {
+          return e.message
+        }
+      },
+      listWallet: function() {
+        return this.$store.state.wallets.list.map((item) => item.creationDate)
+      },
+    },
+    head () {
+      return {
+        title: this.name,
+        meta: [
+          { hid: 'top', name: 'top', content: 'top' }
+        ]
       }
     },
-  },
-  computed: {
-    l_secret: function() {
-      const proof = this.l_proof
-      const hash = sha3_512.create();
-      try {
-        return hash.update(Buffer.from(proof, 'hex')).hex().toUpperCase();
-      } catch(e) {
-        return e.message
-      }
+    components: {
     },
-    p_secret: function() {
-      const proof = this.p_proof
-      const hash = sha3_512.create();
-      try {
-        return hash.update(Buffer.from(proof, 'hex')).hex().toUpperCase();
-      } catch(e) {
-        return e.message
-      }
-    }
-  },
-  head () {
-    return {
-      title: this.name,
-      meta: [
-        { hid: 'top', name: 'top', content: 'top' }
-      ]
-    }
-  },
-  components: {
-
-  },
-}
-
+  }
 </script>
 
 <style>

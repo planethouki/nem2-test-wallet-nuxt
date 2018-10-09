@@ -18,7 +18,7 @@
     <div>
       <label>
         <span>PrivateKey</span>
-        <input v-model="privateKey">
+        <input v-model="walletPrivateKey">
       </label>
       <input type="button" value="generate" v-on:click="generatePrivateKeyHandler">
     </div>
@@ -58,7 +58,7 @@
         name: "Simple Wallet",
         description: "",
         endpoint: "http://catapult48gh23s.xyz:3000",
-        privateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
+        walletPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletName: "myWallet",
         walletPassword: "cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ",
         isWalletExists: false
@@ -68,7 +68,7 @@
     methods: {
       generatePrivateKeyHandler: function(event) {
         let account = nem2Sdk.Account.generateNewAccount(nem2Sdk.NetworkType.MIJIN_TEST);
-        this.privateKey = account.privateKey;
+        this.privateKey = account.walletPrivateKey;
       },
       generateWalletPasswordHandler(event) {
         let seed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&=~/*-+";
@@ -83,7 +83,7 @@
         let wallet = nem2Sdk.SimpleWallet.createFromPrivateKey(
           this.walletName,
           password,
-          this.privateKey,
+          this.walletPrivateKey,
           nem2Sdk.NetworkType.MIJIN_TEST
         );
         this.$store.commit('wallets/addWallet', wallet, password);

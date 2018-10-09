@@ -72,7 +72,7 @@
       mosaicReloadHandler: function(event) {
         let endpoint = this.$store.state.enpoint;
         let ac = new nem2Sdk.AccountHttp(endpoint, nem2Sdk.NetworkType.MIJIN_TEST);
-        ac.getAccountInfo(this.wallet.address).toPromise().then((result) => {
+        ac.getAccountInfo(this.recoveredWallet.address).toPromise().then((result) => {
           // this.importance = result.importance.compact();
           // this.publicKey = result.publicKey;
           this.mosaics = result.mosaics;

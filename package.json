@@ -18,7 +18,8 @@
     "generate-password": "^1.4.0",
     "nem2-sdk": "^0.10.1",
     "nuxt": "^2.0.0",
-    "rxjs": "^6.3.3"
+    "rxjs": "^6.3.3",
+    "vuex-persistedstate": "^2.5.4"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
