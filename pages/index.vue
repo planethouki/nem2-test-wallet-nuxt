@@ -22,7 +22,7 @@
           </v-card>
         </v-flex>
 
-        <v-flex xs12 v-show="!wallet.address">
+        <v-flex xs12 v-if="false">
           <v-card>
             <v-card-title>
               <div class="title font-weight-bold">Load Wallet</div>
@@ -188,12 +188,12 @@
               </v-list>
             </v-responsive>
             <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="logoutWallet"
-                :loading="isLoading"
-                :disabled="isLoading">logout</v-btn>
+              <!--<v-btn-->
+                <!--color="blue"-->
+                <!--class="white&#45;&#45;text"-->
+                <!--@click="logoutWallet"-->
+                <!--:loading="isLoading"-->
+                <!--:disabled="isLoading">logout</v-btn>-->
               <!--<v-btn-->
                 <!--color="blue"-->
                 <!--class="white&#45;&#45;text"-->
@@ -287,6 +287,49 @@
               <v-list subheader>
                 <v-subheader>History</v-subheader>
                 <v-list-tile v-for="tx in n_history" :key="tx.hash">
+                  <v-list-tile-avatar>
+                    <!--<v-icon>update</v-icon>-->
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 v-if="wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Register Sub Namespace</div>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                label="Name"
+                v-model="s_name"
+                required
+                placeholder="ex). sub"
+              ></v-text-field>
+              <v-text-field
+                label="Parent Namespace"
+                v-model="s_parentNamespace"
+                required
+                placeholder="ex). foo"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="s_announceHandler"
+                :loading="isLoading"
+                :disabled="isLoading">announce</v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <v-list subheader>
+                <v-subheader>History</v-subheader>
+                <v-list-tile v-for="tx in s_history" :key="tx.hash">
                   <v-list-tile-avatar>
                     <!--<v-icon>update</v-icon>-->
                   </v-list-tile-avatar>
@@ -522,6 +565,9 @@
         m_duration: 10,
         m_delta: 100,
         m_history: [],
+        s_name: "sub",
+        s_parentNamespace: "foo",
+        s_history: [],
         l_proof: "095B4FCD1F88F1785E59",
         l_mosaic: "nem:xem::1000000",
         l_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
@@ -559,15 +605,15 @@
         let targetCreationDate = this.selectedCreationDate;
         let password = this.password;
         if (targetCreationDate !== "") {
-          this.$store.commit('wallets/setSelectedCreationDate', targetCreationDate);
-          let walletData = this.$store.getters['wallets/getSelectedWallet'];
-          let name = walletData.name;
-          let address = Address.createFromRawAddress(walletData.address);
-          let encryptedPrivateKey = new EncryptedPrivateKey(
-            walletData.encryptedPrivateKey.encryptedKey, walletData.encryptedPrivateKey.iv);
-          let creationDate = LocalDateTime.parse(walletData.creationDate);
-          let wallet = new SimpleWallet(name, NetworkType.MIJIN_TEST, address, creationDate, encryptedPrivateKey);
           try {
+            this.$store.commit('wallets/setSelectedCreationDate', targetCreationDate);
+            let walletData = this.$store.getters['wallets/getSelectedWallet'];
+            let name = walletData.name;
+            let address = Address.createFromRawAddress(walletData.address);
+            let encryptedPrivateKey = new EncryptedPrivateKey(
+              walletData.encryptedPrivateKey.encryptedKey, walletData.encryptedPrivateKey.iv);
+            let creationDate = LocalDateTime.parse(walletData.creationDate);
+            let wallet = new SimpleWallet(name, NetworkType.MIJIN_TEST, address, creationDate, encryptedPrivateKey);
             wallet.open(new Password(password));
             this.wallet = wallet;
           } catch (e) {
@@ -668,6 +714,28 @@
           apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
         };
         this.n_history.push(historyData);
+        this.isLoading = false
+      },
+      s_announceHandler: function(event) {
+        this.isLoading = true
+        const namespaceName = this.s_name
+        const parentNamespace = this.s_parentNamespace
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const endpoint = this.endpoint
+        let registerNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
+          Deadline.create(),
+          namespaceName,
+          parentNamespace,
+          NetworkType.MIJIN_TEST,
+        );
+        let signedTx = account.sign(registerNamespaceTransaction)
+        let txHttp = new TransactionHttp(endpoint);
+        txHttp.announce(signedTx).subscribe(x => {}, err => console.error)
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.s_history.push(historyData);
         this.isLoading = false
       },
       m_announceHandler: function(event) {
