@@ -242,7 +242,7 @@
             <v-card-text>
               <v-list subheader>
                 <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in t_sendHistory" :key="tx.hash">
+                <v-list-tile v-for="tx in t_history" :key="tx.hash">
                   <v-list-tile-avatar>
                     <!--<v-icon>update</v-icon>-->
                   </v-list-tile-avatar>
@@ -509,6 +509,83 @@
           </v-card>
         </v-flex>
 
+        <v-flex xs12 v-if="wallet.address">
+          <v-card>
+            <!--<div v-for="(item, index) in validation" :key="index" class="errorLabel">-->
+            <!--<div v-if="item!==true">{{ item }}</div>-->
+            <!--</div>-->
+            <v-card-title>
+              <div class="title font-weight-bold">Convert to Multisig</div>
+            </v-card-title>
+            <v-card-title>
+              <v-flex>
+                <v-layout v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap>
+                  <v-flex>
+                    <v-layout align-baseline>
+                      <v-flex>
+                        <v-text-field
+                          v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
+                          v-bind:value="u_cosignatory"
+                          required
+                          v-bind:placeholder="'ex). ' + u_cosignatory"
+                          disabled
+                        ></v-text-field>
+                      </v-flex>
+                      <v-btn
+                        fab
+                        small
+                        flat
+                        v-on:click="u_delete(index)"
+                        v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-card-title>
+            <v-card-title>
+              <v-flex>
+                <v-layout align-baseline>
+                  <v-flex>
+                    <v-text-field
+                      label="Add Cosignatory"
+                      v-model="u_addedCosignatory"
+                      placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-btn
+                    fab
+                    small
+                    flat
+                    @click="u_addCosignatory"
+                    :loading="isLoading"
+                    :disabled="isLoading"><v-icon>add_box</v-icon></v-btn>
+                </v-layout>
+              </v-flex>
+            </v-card-title>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="u_announceHandler"
+                :loading="isLoading"
+                :disabled="isLoading">announce</v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <v-list subheader>
+                <v-subheader>History</v-subheader>
+                <v-list-tile v-for="tx in u_history" :key="tx.hash">
+                  <v-list-tile-avatar>
+                    <!--<v-icon>update</v-icon>-->
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
       </v-flex>
     </v-layout>
   </v-container>
@@ -552,7 +629,7 @@
         t_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
         t_mosaics: "nem:xem::1000000",
         t_message: "Hello Nem2!",
-        t_sendHistory: [],
+        t_history: [],
         n_name: "foo",
         n_duration: 60,
         n_history: [],
@@ -575,6 +652,12 @@
         l_history: [],
         p_proof: "095B4FCD1F88F1785E59",
         p_history: [],
+        u_cosignatories: [
+          "5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C",
+          "3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57"
+        ],
+        u_addedCosignatory: "C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0",
+        u_history: [],
       }
     },
     methods: {
@@ -691,7 +774,7 @@
           hash: signedTx.hash,
           apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
         };
-        this.t_sendHistory.push(historyData);
+        this.t_history.push(historyData);
         this.isLoading = false
       },
       n_announceHandler: function(event) {
@@ -839,6 +922,16 @@
         };
         this.p_history.push(historyData);
         this.isLoading = false
+      },
+      u_delete: function(args) {
+        console.log(args)
+        console.log(this.u_cosignatories[args])
+      },
+      u_announceHandler: function(event) {
+
+      },
+      u_addCosignatory: function(event) {
+
       },
     },
     watch: {
