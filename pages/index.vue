@@ -1151,13 +1151,13 @@
             UInt64.fromUint(nameAndAmount[1])
           )
         })
-        const lockFundsMosaic = this.e_mosaic3.split(",").map((mosaicRawStr) => {
-          let nameAndAmount = mosaicRawStr.split("::")
+        const lockFundsMosaic = (() => {
+          let nameAndAmount = this.e_mosaic3.split("::")
           return new Mosaic(
             new MosaicId(nameAndAmount[0]),
             UInt64.fromUint(nameAndAmount[1])
           )
-        })
+        })()
         let paymentTx = TransferTransaction.create(
           Deadline.create(23),
           payRecipient,
