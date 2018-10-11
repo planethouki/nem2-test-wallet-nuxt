@@ -511,13 +511,26 @@
 
         <v-flex xs12 v-if="wallet.address">
           <v-card>
-            <!--<div v-for="(item, index) in validation" :key="index" class="errorLabel">-->
-            <!--<div v-if="item!==true">{{ item }}</div>-->
-            <!--</div>-->
             <v-card-title>
               <div class="title font-weight-bold">Convert to Multisig</div>
             </v-card-title>
-            <v-card-title>
+            <v-card-text>
+              <v-text-field
+                label="Min Approval"
+                v-model="u_minApprovalDelta"
+                required
+                type="number"
+                placeholder="ex). 2"
+              ></v-text-field>
+              <v-text-field
+                label="Min Removal"
+                v-model="u_minRemovalDelta"
+                required
+                type="number"
+                placeholder="ex). 2"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-text>
               <v-flex>
                 <v-layout v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap>
                   <v-flex>
@@ -540,7 +553,7 @@
                   </v-flex>
                 </v-layout>
               </v-flex>
-            </v-card-title>
+            </v-card-text>
             <v-card-title>
               <v-flex>
                 <v-layout align-baseline>
@@ -587,6 +600,144 @@
           </v-card>
         </v-flex>
 
+        <v-flex xs12 v-if="wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Escrow with Aggregate Transaction</div>
+            </v-card-title>
+            <v-card-text>
+              <v-card>
+                <v-card-title>
+                  <div class="title">Payment</div>
+                </v-card-title>
+                <v-card-text>
+                  <v-text-field
+                    label="To Address"
+                    v-model="e_recipient1"
+                    required
+                    placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                    v-model="e_mosaics1"
+                    required
+                    placeholder="ex). nem:xem::1000000"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Message"
+                    v-model="e_message1"
+                    :counter="1024"
+                    placeholder="ex). escrow payment"
+                  ></v-text-field>
+                </v-card-text>
+              </v-card>
+            </v-card-text>
+            <v-card-text>
+              <v-card>
+                <v-card-title>
+                  <div class="title">Invoice</div>
+                </v-card-title>
+                <v-card-text>
+                  <v-text-field
+                    label="Partner PublicKey"
+                    v-model="e_pubkey2"
+                    required
+                    placeholder="ex). 5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                    v-model="e_mosaics2"
+                    required
+                    placeholder="ex). foo:bar::1"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Message"
+                    v-model="e_message2"
+                    :counter="1024"
+                    placeholder="ex). escrow invoice"
+                  ></v-text-field>
+                </v-card-text>
+              </v-card>
+            </v-card-text>
+            <v-card-text>
+              <v-text-field
+                label="Lock Funds Mosaic"
+                v-model="e_mosaic3"
+                placeholder="ex). nem:xem::10000000"
+              ></v-text-field>
+              <v-text-field
+                label="Lock Funds Duration In Blocks"
+                v-model="e_duration3"
+                type="number"
+                placeholder="ex). 480"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="e_announceHandler"
+                :loading="isLoading"
+                :disabled="isLoading">announce</v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <v-list subheader>
+                <v-subheader>History</v-subheader>
+                <v-list-tile v-for="tx in e_history" :key="tx.hash">
+                  <v-list-tile-avatar>
+                    <!--<v-icon>update</v-icon>-->
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      <a v-bind:href="tx.agApiStatusUrl" target="_blank">{{ tx.agHash }}</a>
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>
+                      <a v-bind:href="tx.lfApiStatusUrl" target="_blank">{{ tx.lfHash }}</a>
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 v-if="wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Cosignature Transaction</div>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                label="Aggregate Bonded Transaction Hash"
+                v-model="c_hash"
+                required
+                placeholder="ex). B63B28DE8EEF279CCAF8E0E6275E429F77C392C0FF52A0868D242F780D7E5CC8"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="c_announceHandler"
+                :loading="isLoading"
+                :disabled="isLoading">announce</v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <v-list subheader>
+                <v-subheader>History</v-subheader>
+                <v-list-tile v-for="tx in c_history" :key="tx.hash">
+                  <v-list-tile-avatar>
+                    <!--<v-icon>update</v-icon>-->
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
       </v-flex>
     </v-layout>
   </v-container>
@@ -599,10 +750,9 @@
     MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
     RegisterNamespaceTransaction, AggregateTransaction, SecretLockTransaction, SecretProofTransaction,
     HashType, EncryptedPrivateKey, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-    MultisigCosignatoryModificationType, PublicAccount
+    MultisigCosignatoryModificationType, PublicAccount, CosignatureTransaction, LockFundsTransaction, Listener
   } from 'nem2-sdk';
-  import { of } from 'rxjs';
-  import { catchError, defaultIfEmpty, flatMap } from 'rxjs/operators';
+  import { throwIfEmpty, flatMap, filter, mergeMap } from 'rxjs/operators';
   import { LocalDateTime } from 'js-joda';
   import { sha3_512 } from 'js-sha3';
   const generator = require('generate-password');
@@ -648,7 +798,7 @@
         s_parentNamespace: "foo",
         s_history: [],
         l_proof: "095B4FCD1F88F1785E59",
-        l_mosaic: "nem:xem::1000000",
+        l_mosaic: "nem:xem::10000000",
         l_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
         l_duration: 240,
         l_history: [],
@@ -663,6 +813,17 @@
         u_minApprovalDelta: 2,
         u_minRemovalDelta: 2,
         u_history: [],
+        e_recipient1: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
+        e_mosaics1: "nem:xem::10000000",
+        e_message1: "escrow payment",
+        e_pubkey2: "5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C",
+        e_mosaics2: "foo:bar::1",
+        e_message2: "escrow invoice",
+        e_mosaic3: "nem:xem::10000000",
+        e_duration3: 480,
+        e_history: [],
+        c_hash: "B63B28DE8EEF279CCAF8E0E6275E429F77C392C0FF52A0868D242F780D7E5CC8",
+        c_history: [],
       }
     },
     methods: {
@@ -964,6 +1125,125 @@
         this.u_cosignatories.push(this.u_addedCosignatory);
         this.u_addedCosignatory = "";
       },
+      e_announceHandler: function(event) {
+        this.isLoading = true
+        const endpoint = this.endpoint
+        const listener = new Listener(endpoint)
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const payRecipient = Address.createFromRawAddress(this.e_recipient1)
+        const paySender = account.publicAccount
+        const payMessage = this.e_message1
+        const invRecipient = account.address
+        const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2)
+        const invMessage = this.e_message2
+        const lockFundsDuration = this.e_duration3
+        const payMosaics = this.e_mosaics1.split(",").map((mosaicRawStr) => {
+          let nameAndAmount = mosaicRawStr.split("::")
+          return new Mosaic(
+            new MosaicId(nameAndAmount[0]),
+            UInt64.fromUint(nameAndAmount[1])
+          )
+        })
+        const invMosaics = this.e_mosaics2.split(",").map((mosaicRawStr) => {
+          let nameAndAmount = mosaicRawStr.split("::")
+          return new Mosaic(
+            new MosaicId(nameAndAmount[0]),
+            UInt64.fromUint(nameAndAmount[1])
+          )
+        })
+        const lockFundsMosaic = this.e_mosaic3.split(",").map((mosaicRawStr) => {
+          let nameAndAmount = mosaicRawStr.split("::")
+          return new Mosaic(
+            new MosaicId(nameAndAmount[0]),
+            UInt64.fromUint(nameAndAmount[1])
+          )
+        })
+        let paymentTx = TransferTransaction.create(
+          Deadline.create(23),
+          payRecipient,
+          payMosaics,
+          PlainMessage.create(payMessage),
+          NetworkType.MIJIN_TEST
+        )
+        let invoiceTx = TransferTransaction.create(
+          Deadline.create(23),
+          invRecipient,
+          invMosaics,
+          PlainMessage.create(invMessage),
+          NetworkType.MIJIN_TEST
+        )
+        let aggregateTx = AggregateTransaction.createBonded(
+          Deadline.create(23),
+          [
+            paymentTx.toAggregate(paySender),
+            invoiceTx.toAggregate(invSender),
+          ],
+          NetworkType.MIJIN_TEST
+        )
+        let signedAggregateTx = account.sign(aggregateTx)
+        let lockFundsTx = LockFundsTransaction.create(
+          Deadline.create(23),
+          lockFundsMosaic,
+          UInt64.fromUint(lockFundsDuration),
+          signedAggregateTx,
+          NetworkType.MIJIN_TEST
+        )
+        let signedLockFundsTx = account.sign(lockFundsTx)
+        let txHttp = new TransactionHttp(endpoint);
+        listener.open().then(() => {
+          return txHttp.announce(signedLockFundsTx).toPromise()
+        }).then(() => {
+          return listener.confirmed(account.address).pipe(
+            filter((transaction) => transaction.transactionInfo !== undefined
+              && transaction.transactionInfo.hash === signedLockFundsTx.hash),
+          ).toPromise()
+        }).then(() => {
+          txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
+        }).then((result) => {
+
+        }).catch((error) => {
+          console.error(error)
+        }).finally(() => {
+
+        })
+        let historyData = {
+          agHash: signedAggregateTx.hash,
+          agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+          lfHash: signedLockFundsTx.hash,
+          lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`,
+        };
+        this.t_history.push(historyData);
+        this.isLoading = false
+      },
+      c_announceHandler: function(event) {
+        this.isLoading = true
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const hash = this.c_hash
+        const endpoint = this.endpoint
+        const txHttp = new TransactionHttp(endpoint)
+        const accountHttp = new AccountHttp(endpoint)
+        accountHttp.aggregateBondedTransactions(account.publicAccount).pipe(
+            mergeMap((_) => _),
+            filter((_) => !_.signedByAccount(account.publicAccount)),
+            throwIfEmpty(() => new Error('can not find that transaction hash')),
+        ).toPromise().then((aggregateTx) => {
+          let cosigTx = CosignatureTransaction.cerate(aggregateTx)
+          let signedTx = account.signCosignatureTransaction(cosigTx)
+          return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
+        }).then(() => {
+
+        }).catch((error) => {
+          console.error(error)
+        }).finally(() => {
+
+        })
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.c_history.push(historyData);
+        this.isLoading = false
+      },
     },
     watch: {
       endpoint: {
@@ -1036,7 +1316,7 @@
             this.l_proof = random.toUpperCase()
             this.p_proof = random.toUpperCase()
 
-            // assumption judge of convert to multisig tx
+            // for convert to multisig tx
             accountHttp.getMultisigAccountInfo(address).subscribe(
                 result => { this.u_isMultisig = result.isMultisig() },
                 error => { this.u_isMultisig = false }
