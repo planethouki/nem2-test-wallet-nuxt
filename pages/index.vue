@@ -1198,7 +1198,7 @@
               && transaction.transactionInfo.hash === signedLockFundsTx.hash),
           ).toPromise()
         }).then(() => {
-          txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
+          return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
         }).then((result) => {
 
         }).catch((error) => {
