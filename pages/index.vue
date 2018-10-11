@@ -527,7 +527,6 @@
                           v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
                           v-bind:value="u_cosignatory"
                           required
-                          v-bind:placeholder="'ex). ' + u_cosignatory"
                           disabled
                         ></v-text-field>
                       </v-flex>
@@ -556,9 +555,8 @@
                     fab
                     small
                     flat
-                    @click="u_addCosignatory"
-                    :loading="isLoading"
-                    :disabled="isLoading"><v-icon>add_box</v-icon></v-btn>
+                    v-on:click="u_addCosignatory"
+                    v-bind:loading="isLoading"><v-icon>add_box</v-icon></v-btn>
                 </v-layout>
               </v-flex>
             </v-card-title>
@@ -568,7 +566,10 @@
                 class="white--text"
                 @click="u_announceHandler"
                 :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
+                :disabled="u_isMultisig">announce</v-btn>
+              <v-flex>
+                <div v-if="u_isMultisig">This account is already converted to multisig.</div>
+              </v-flex>
             </v-card-actions>
             <v-card-text>
               <v-list subheader>
@@ -597,7 +598,8 @@
     Password, SimpleWallet, TransactionHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService, MosaicAmountView, MosaicInfo,
     MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
     RegisterNamespaceTransaction, AggregateTransaction, SecretLockTransaction, SecretProofTransaction,
-    HashType, EncryptedPrivateKey
+    HashType, EncryptedPrivateKey, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
+    MultisigCosignatoryModificationType, PublicAccount
   } from 'nem2-sdk';
   import { of } from 'rxjs';
   import { catchError, defaultIfEmpty, flatMap } from 'rxjs/operators';
@@ -652,11 +654,14 @@
         l_history: [],
         p_proof: "095B4FCD1F88F1785E59",
         p_history: [],
+        u_isMultisig: false,
         u_cosignatories: [
           "5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C",
           "3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57"
         ],
         u_addedCosignatory: "C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0",
+        u_minApprovalDelta: 2,
+        u_minRemovalDelta: 2,
         u_history: [],
       }
     },
@@ -923,15 +928,41 @@
         this.p_history.push(historyData);
         this.isLoading = false
       },
-      u_delete: function(args) {
-        console.log(args)
-        console.log(this.u_cosignatories[args])
+      u_delete: function(index) {
+        this.u_cosignatories.splice(index, 1);
       },
       u_announceHandler: function(event) {
-
+        this.isLoading = true;
+        const account = this.wallet.open(new Password(this.walletPassword));
+        const endpoint = this.endpoint;
+        const minApprovalDelta = this.u_minApprovalDelta;
+        const minRemovalDelta = this.u_minRemovalDelta;
+        const cosignatories = this.u_cosignatories;
+        let tx = ModifyMultisigAccountTransaction.create(
+          Deadline.create(),
+          minApprovalDelta,
+          minRemovalDelta,
+          cosignatories.map((co) => {
+            return new MultisigCosignatoryModification(
+              MultisigCosignatoryModificationType.Add,
+              PublicAccount.createFromPublicKey(co, NetworkType.MIJIN_TEST)
+            );
+          }),
+          NetworkType.MIJIN_TEST
+        );
+        let signedTx = account.sign(tx);
+        let txHttp = new TransactionHttp(endpoint);
+        txHttp.announce(signedTx).subscribe(x => {}, err => console.error);
+        let historyData = {
+          hash: signedTx.hash,
+          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        };
+        this.u_history.push(historyData);
+        this.isLoading = false;
       },
       u_addCosignatory: function(event) {
-
+        this.u_cosignatories.push(this.u_addedCosignatory);
+        this.u_addedCosignatory = "";
       },
     },
     watch: {
@@ -939,12 +970,14 @@
         handler: function(newVal, oldVal) {
           if (this.wallet.address) {
             this.mosaicAmountViews = [];
-            let endpoint = this.endpoint;
-            let address = this.wallet.address;
-            let accountHttp = new AccountHttp(endpoint);
-            let mosaicHttp = new MosaicHttp(endpoint);
-            let nameSpaceHttp = new NamespaceHttp(endpoint);
-            let mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
+            const endpoint = this.endpoint;
+            const address = this.wallet.address;
+            const accountHttp = new AccountHttp(endpoint);
+            const mosaicHttp = new MosaicHttp(endpoint);
+            const nameSpaceHttp = new NamespaceHttp(endpoint);
+            const mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
+
+            // reload mosaics
             accountHttp.getAccountInfo(address).subscribe(
               accountInfo => {
                 let mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
@@ -959,6 +992,12 @@
                   .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
               }
             );
+
+            // assumption judge of convert to multisig tx
+            accountHttp.getMultisigAccountInfo(address).subscribe(
+              result => { this.u_isMultisig = result.isMultisig() },
+              error => { this.u_isMultisig = false }
+            )
           }
         }
       },
@@ -966,12 +1005,14 @@
         handler: function(newVal, oldVal) {
           if (this.wallet.address) {
             this.mosaicAmountViews = [];
-            let endpoint = this.endpoint;
-            let address = this.wallet.address;
-            let accountHttp = new AccountHttp(endpoint);
-            let mosaicHttp = new MosaicHttp(endpoint);
-            let nameSpaceHttp = new NamespaceHttp(endpoint);
-            let mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
+            const endpoint = this.endpoint;
+            const address = this.wallet.address;
+            const accountHttp = new AccountHttp(endpoint);
+            const mosaicHttp = new MosaicHttp(endpoint);
+            const nameSpaceHttp = new NamespaceHttp(endpoint);
+            const mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
+
+            // reload mosaics
             accountHttp.getAccountInfo(address).subscribe(
               accountInfo => {
                 let mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
@@ -986,12 +1027,20 @@
                   .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
               }
             );
+
+            // proof randomize of secret proof / lock tx
             const random =
               Math.floor(Math.random() * Math.floor(2**32)).toString(16)
               + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
               + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
             this.l_proof = random.toUpperCase()
             this.p_proof = random.toUpperCase()
+
+            // assumption judge of convert to multisig tx
+            accountHttp.getMultisigAccountInfo(address).subscribe(
+                result => { this.u_isMultisig = result.isMultisig() },
+                error => { this.u_isMultisig = false }
+              )
           }
         }
       },
