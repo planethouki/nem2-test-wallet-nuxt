@@ -168,7 +168,7 @@
             </v-card-title>
             <v-card-text>
               <v-text-field
-                label="To"
+                label="To Address"
                 v-model="t_recipient"
                 required
                 placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
@@ -216,7 +216,7 @@
             </v-card-title>
             <v-card-text>
               <v-text-field
-                label="Name"
+                label="Namespace Name"
                 v-model="n_name"
                 required
                 placeholder="ex). foo"
@@ -260,7 +260,7 @@
             </v-card-title>
             <v-card-text>
               <v-text-field
-                label="Name"
+                label="Sub Namespace Name"
                 v-model="s_name"
                 required
                 placeholder="ex). sub"
@@ -309,7 +309,7 @@
                 placeholder="ex). foo"
               ></v-text-field>
               <v-text-field
-                label="Name"
+                label="Mosaic Name"
                 v-model="m_name"
                 required
                 placeholder="ex). bar"
@@ -384,7 +384,7 @@
                 placeholder="ex). 100"
               ></v-text-field>
               <v-text-field
-                label="To"
+                label="To Address"
                 v-model="l_recipient"
                 required
                 placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
@@ -494,6 +494,7 @@
                           v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
                           v-bind:value="u_cosignatory"
                           required
+                          :counter="64"
                           disabled
                         ></v-text-field>
                       </v-flex>
@@ -515,6 +516,7 @@
                     <v-text-field
                       label="Add Cosignatory"
                       v-model="u_addedCosignatory"
+                      :counter="64"
                       placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
                     ></v-text-field>
                   </v-flex>
@@ -569,7 +571,7 @@
                     label="To Address"
                     v-model="e_recipient1"
                     required
-                    placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
+                    placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ"
                   ></v-text-field>
                   <v-text-field
                     label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
@@ -596,7 +598,8 @@
                     label="Partner PublicKey"
                     v-model="e_pubkey2"
                     required
-                    placeholder="ex). 5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C"
+                    :counter="64"
+                    placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993"
                   ></v-text-field>
                   <v-text-field
                     label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
@@ -664,7 +667,8 @@
                 label="Aggregate Bonded Transaction Hash"
                 v-model="c_hash"
                 required
-                placeholder="ex). B63B28DE8EEF279CCAF8E0E6275E429F77C392C0FF52A0868D242F780D7E5CC8"
+                :counter="64"
+                placeholder="ex). 19DFEF268B382252CCAA9FAF282EDDEF846BA57232AAF9875C2209103E51799E"
               ></v-text-field>
             </v-card-text>
             <v-card-actions>
@@ -764,16 +768,16 @@
         u_minApprovalDelta: 2,
         u_minRemovalDelta: 2,
         u_history: [],
-        e_recipient1: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
+        e_recipient1: "SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ",
         e_mosaics1: "nem:xem::10000000",
         e_message1: "escrow payment",
-        e_pubkey2: "5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C",
+        e_pubkey2: "CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993",
         e_mosaics2: "foo:bar::1",
         e_message2: "escrow invoice",
         e_mosaic3: "nem:xem::10000000",
         e_duration3: 480,
         e_history: [],
-        c_hash: "B63B28DE8EEF279CCAF8E0E6275E429F77C392C0FF52A0868D242F780D7E5CC8",
+        c_hash: "",
         c_history: [],
       }
     },
