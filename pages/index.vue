@@ -1113,26 +1113,32 @@
           signedAggregateTx,
           NetworkType.MIJIN_TEST
         )
+        let signedLockFundsTx = account.sign(lockFundsTx)
         let txHttp = new TransactionHttp(endpoint);
         listener.open().then(() => {
           return txHttp.announce(signedLockFundsTx).toPromise()
         }).then(() => {
-          return listener.confirmed(account.address).pipe(
-            timeout(61000),
-            filter((transaction) => transaction.transactionInfo !== undefined
-              && transaction.transactionInfo.hash === signedLockFundsTx.hash),
-          ).toPromise()
+          return new Promise((resolve, reject) => {
+            listener.confirmed(account.address).pipe(
+              timeout(90000),
+              filter((transaction) => {
+                return transaction.transactionInfo !== undefined
+                  && transaction.transactionInfo.hash === signedLockFundsTx.hash
+              }),
+            ).subscribe(
+              result => resolve(result),
+              error => reject(error)
+            )
+          })
         }).then(() => {
-
           return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
         }).then((result) => {
-
+          console.log(result)
         }).catch((error) => {
           console.error(error)
         }).finally(() => {
           listener.close()
         })
-        let signedLockFundsTx = account.sign(lockFundsTx)
         let historyData = {
           agHash: signedAggregateTx.hash,
           agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
@@ -1154,21 +1160,21 @@
             filter((_) => !_.signedByAccount(account.publicAccount)),
             throwIfEmpty(() => new Error('can not find that transaction hash')),
         ).toPromise().then((aggregateTx) => {
-          let cosigTx = CosignatureTransaction.cerate(aggregateTx)
+          let cosigTx = CosignatureTransaction.create(aggregateTx)
           let signedTx = account.signCosignatureTransaction(cosigTx)
+          let historyData = {
+            hash: hash,
+            apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+          };
+          this.c_history.push(historyData);
           return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
-        }).then(() => {
-
+        }).then((result) => {
+          console.log(result)
         }).catch((error) => {
           console.error(error)
         }).finally(() => {
 
         })
-        let historyData = {
-          hash: signedTx.hash,
-          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-        };
-        this.c_history.push(historyData);
         this.isLoading = false
       },
     },
