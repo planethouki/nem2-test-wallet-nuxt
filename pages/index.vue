@@ -5,11 +5,10 @@
 
       <v-flex sm10 offset-sm1>
 
-
-        <v-flex xs12>
+        <v-flex xs12 v-show="!wallet.address">
           <v-card>
             <v-card-title>
-              <div class="title font-weight-bold">Endpoint</div>
+              <div class="title font-weight-bold">Load PrivateKey</div>
             </v-card-title>
             <v-card-text>
               <v-text-field
@@ -19,54 +18,6 @@
                 placeholder="ex). http://catapult48gh23s.xyz:3000"
               ></v-text-field>
             </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="false">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Load Wallet</div>
-            </v-card-title>
-            <v-card-title>
-              <v-select
-                :items="listWallet"
-                v-model="selectedCreationDate"
-                menu-props="auto"
-                label="Select"
-                hide-details
-                single-line
-              ></v-select>
-            </v-card-title>
-            <v-card-title>
-              <v-text-field
-                v-model="password"
-                :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
-                :rules="[passwordRules.required, passwordRules.min]"
-                :type="passwordShow ? 'text' : 'password'"
-                name="input-10-1"
-                label="Password"
-                hint="At least 8 characters"
-                counter
-                required
-                @click:append="passwordShow = !passwordShow"
-              ></v-text-field>
-            </v-card-title>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="loadWallet"
-                :loading="isLoading"
-                :disabled="isLoading">load</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-show="!wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Create Wallet</div>
-            </v-card-title>
             <v-card-text>
               <v-layout>
                 <v-flex>
@@ -88,12 +39,13 @@
                 </v-flex>
               </v-layout>
               <v-text-field
+                v-if="false"
                 label="Wallet Name"
                 v-model="walletName"
                 required
                 placeholder="ex). myWallet"
               ></v-text-field>
-              <v-layout>
+              <v-layout v-if="false">
                 <v-flex>
                   <v-text-field
                     label="Wallet Password"
@@ -138,9 +90,11 @@
                 :loading="isLoading"><v-icon>filter_none</v-icon></v-btn>
             </v-card-title>
             <v-responsive><span ref="address">{{ wallet.address.pretty() }}</span></v-responsive>
-            <!--<v-card flat><qriously v-model="qrJson" :size="qrSize" ></qriously></v-card>-->
             <v-card-title>
-              <div class="title font-weight-bold">Mosaics</div>
+              <div>
+                <span class="title font-weight-bold">Mosaics</span>
+                <span class="caption"><a v-bind:href="faucetUrl" target="_blank">Get XEM</a></span>
+              </div>
               <v-spacer/>
               <v-btn
                 fab
@@ -156,10 +110,10 @@
                 </v-list-tile-content>
               </v-list-tile>
             </v-responsive>
-            <v-card-title>
+            <v-card-title v-if="false">
               <div class="title font-weight-bold">Wallet Info</div>
             </v-card-title>
-            <v-responsive>
+            <v-responsive v-if="false">
               <v-list>
                 <v-list-tile>
                   <v-list-tile-content>
@@ -685,14 +639,13 @@
                 <v-subheader>History</v-subheader>
                 <v-list-tile v-for="tx in e_history" :key="tx.hash">
                   <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <v-list-tile-title>
-                      <a v-bind:href="tx.agApiStatusUrl" target="_blank">{{ tx.agHash }}</a>
+                      Aggregate: <a v-bind:href="tx.agApiStatusUrl" target="_blank">{{ tx.agHash }}</a>
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
-                      <a v-bind:href="tx.lfApiStatusUrl" target="_blank">{{ tx.lfHash }}</a>
+                      LockFunds: <a v-bind:href="tx.lfApiStatusUrl" target="_blank">{{ tx.lfHash }}</a>
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
@@ -752,7 +705,7 @@
     HashType, EncryptedPrivateKey, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
     MultisigCosignatoryModificationType, PublicAccount, CosignatureTransaction, LockFundsTransaction, Listener
   } from 'nem2-sdk';
-  import { throwIfEmpty, flatMap, filter, mergeMap } from 'rxjs/operators';
+  import { throwIfEmpty, flatMap, filter, mergeMap, timeout } from 'rxjs/operators';
   import { LocalDateTime } from 'js-joda';
   import { sha3_512 } from 'js-sha3';
   const generator = require('generate-password');
@@ -768,13 +721,11 @@
         walletPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletName: "myWallet",
         walletPassword: "cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt",
-        password: "cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt",
-        selectedCreationDate: "",
         passwordRules: {
           required: value => !!value || 'Required.',
-          min: v => v.length >= 8 || 'Min 8 characters'
+          min: v => v.length >= 40 || 'Min 40 characters'
         },
-        passwordShow: false,
+        faucetUrl: "",
         wallet: {},
         mosaicAmountViews: [],
         isLoading: false,
@@ -829,7 +780,7 @@
     methods: {
       regenPrivateKey: function(event) {
         this.isLoading = true
-        this.privateKey = Account.generateNewAccount(NetworkType.MIJIN_TEST).walletPrivateKey
+        this.walletPrivateKey = Account.generateNewAccount(NetworkType.MIJIN_TEST).privateKey
         this.isLoading = false
       },
       regenWalletPassword: function(event) {
@@ -848,27 +799,6 @@
           this.walletPrivateKey,
           NetworkType.MIJIN_TEST
         );
-        this.$store.commit('wallets/addWallet', this.wallet)
-      },
-      loadWallet: function(event) {
-        let targetCreationDate = this.selectedCreationDate;
-        let password = this.password;
-        if (targetCreationDate !== "") {
-          try {
-            this.$store.commit('wallets/setSelectedCreationDate', targetCreationDate);
-            let walletData = this.$store.getters['wallets/getSelectedWallet'];
-            let name = walletData.name;
-            let address = Address.createFromRawAddress(walletData.address);
-            let encryptedPrivateKey = new EncryptedPrivateKey(
-              walletData.encryptedPrivateKey.encryptedKey, walletData.encryptedPrivateKey.iv);
-            let creationDate = LocalDateTime.parse(walletData.creationDate);
-            let wallet = new SimpleWallet(name, NetworkType.MIJIN_TEST, address, creationDate, encryptedPrivateKey);
-            wallet.open(new Password(password));
-            this.wallet = wallet;
-          } catch (e) {
-            console.error(e);
-          }
-        }
       },
       reloadMosaics: function(event) {
         this.isLoading = true
@@ -896,12 +826,6 @@
           );
         }
         this.isLoading = false
-      },
-      logoutWallet: function(event) {
-        this.wallet = {}
-      },
-      viewPrivateKey: function() {
-        // todo
       },
       copyWalletAddressHandler: function(event) {
         let target = this.$refs.address;
@@ -1128,7 +1052,8 @@
       e_announceHandler: function(event) {
         this.isLoading = true
         const endpoint = this.endpoint
-        const listener = new Listener(endpoint)
+        const wsEndpoint = endpoint.replace("http", "ws")
+        const listener = new Listener(wsEndpoint, WebSocket)
         const account = this.wallet.open(new Password(this.walletPassword))
         const payRecipient = Address.createFromRawAddress(this.e_recipient1)
         const paySender = account.publicAccount
@@ -1188,31 +1113,33 @@
           signedAggregateTx,
           NetworkType.MIJIN_TEST
         )
-        let signedLockFundsTx = account.sign(lockFundsTx)
         let txHttp = new TransactionHttp(endpoint);
         listener.open().then(() => {
           return txHttp.announce(signedLockFundsTx).toPromise()
         }).then(() => {
           return listener.confirmed(account.address).pipe(
+            timeout(61000),
             filter((transaction) => transaction.transactionInfo !== undefined
               && transaction.transactionInfo.hash === signedLockFundsTx.hash),
           ).toPromise()
         }).then(() => {
+
           return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
         }).then((result) => {
 
         }).catch((error) => {
           console.error(error)
         }).finally(() => {
-
+          listener.close()
         })
+        let signedLockFundsTx = account.sign(lockFundsTx)
         let historyData = {
           agHash: signedAggregateTx.hash,
           agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
           lfHash: signedLockFundsTx.hash,
           lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`,
         };
-        this.t_history.push(historyData);
+        this.e_history.push(historyData);
         this.isLoading = false
       },
       c_announceHandler: function(event) {
@@ -1246,41 +1173,6 @@
       },
     },
     watch: {
-      endpoint: {
-        handler: function(newVal, oldVal) {
-          if (this.wallet.address) {
-            this.mosaicAmountViews = [];
-            const endpoint = this.endpoint;
-            const address = this.wallet.address;
-            const accountHttp = new AccountHttp(endpoint);
-            const mosaicHttp = new MosaicHttp(endpoint);
-            const nameSpaceHttp = new NamespaceHttp(endpoint);
-            const mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp);
-
-            // reload mosaics
-            accountHttp.getAccountInfo(address).subscribe(
-              accountInfo => {
-                let mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
-                mosaicService.mosaicsAmountView(mosaics)
-                  .pipe(flatMap((_) => _))
-                  .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
-              },
-              error => {
-                console.error(error)
-                mosaicService.mosaicsAmountView([XEM.createAbsolute(0)])
-                  .pipe(flatMap((_) => _))
-                  .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
-              }
-            );
-
-            // assumption judge of convert to multisig tx
-            accountHttp.getMultisigAccountInfo(address).subscribe(
-              result => { this.u_isMultisig = result.isMultisig() },
-              error => { this.u_isMultisig = false }
-            )
-          }
-        }
-      },
       wallet: {
         handler: function(newVal, oldVal) {
           if (this.wallet.address) {
@@ -1320,7 +1212,19 @@
             accountHttp.getMultisigAccountInfo(address).subscribe(
                 result => { this.u_isMultisig = result.isMultisig() },
                 error => { this.u_isMultisig = false }
-              )
+            )
+
+            // fauceUrl
+            if (this.endpoint.includes("44uk")) {
+              this.faucetUrl = `http://test-nem2-faucet.44uk.net/?address=${this.wallet.address.plain()}`;
+            } else if (this.endpoint.includes("daoka")) {
+              this.faucetUrl = `http://catapult-test.daoka.ml:4567/?address=${this.wallet.address.plain()}`;
+            } else if (this.endpoint.includes("soralis")) {
+              this.faucetUrl = `http://catapult-test.soralis.org:4567/?address=${this.wallet.address.plain()}`;
+            } else if (this.endpoint.includes("48gh23s")) {
+              this.faucetUrl = `https://faucet48gh23s.azurewebsites.net/?address=${this.wallet.address.plain()}`;
+            }
+
           }
         }
       },
@@ -1343,9 +1247,6 @@
         } catch(e) {
           return e.message
         }
-      },
-      listWallet: function() {
-        return this.$store.state.wallets.list.map((item) => item.creationDate)
       },
     },
     head () {
