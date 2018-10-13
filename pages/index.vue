@@ -810,7 +810,9 @@
     </v-container>
     </v-content>
     <v-footer color="indigo" app>
-      <span class="white--text"></span>
+      <span class="white--text">
+        <a class="white--text px-2" href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt" target="_blank">Github</a>
+      </span>
     </v-footer>
   </v-app>
 </template>
