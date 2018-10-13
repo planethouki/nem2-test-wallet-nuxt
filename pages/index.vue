@@ -7,9 +7,6 @@
 
         <v-flex xs12 v-show="!wallet.address">
           <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Load PrivateKey</div>
-            </v-card-title>
             <v-card-text>
               <v-text-field
                 label="Endpoint"
@@ -72,7 +69,7 @@
                 class="white--text"
                 @click="createWallet"
                 :loading="isLoading"
-                :disabled="isLoading">create</v-btn>
+                :disabled="isLoading">login</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -142,18 +139,30 @@
               </v-list>
             </v-responsive>
             <v-card-actions>
-              <!--<v-btn-->
-                <!--color="blue"-->
-                <!--class="white&#45;&#45;text"-->
-                <!--@click="logoutWallet"-->
-                <!--:loading="isLoading"-->
-                <!--:disabled="isLoading">logout</v-btn>-->
-              <!--<v-btn-->
-                <!--color="blue"-->
-                <!--class="white&#45;&#45;text"-->
-                <!--@click="viewPrivateKey"-->
-                <!--:loading="isLoading"-->
-                <!--:disabled="isLoading">view privatekey</v-btn>-->
+              <v-dialog v-model="dialog" width="700px">
+                <v-btn
+                  slot="activator"
+                  color="red lighten-2"
+                  dark>view privatekey</v-btn>
+                <v-card>
+                  <v-card-text>
+                    {{ walletPrivateKey }}
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-btn
+                      color="primary"
+                      flat
+                      @click="dialog = false"
+                    >Close</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="logoutWallet">logout</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -589,15 +598,9 @@
                 <v-layout v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap>
                   <v-flex>
                     <v-layout align-baseline>
-                      <v-flex xs1>
-                        <v-checkbox
-                          hide-details
-                          height="1em"
-                          off-icon="remove_circle"
-                          on-icon="add_circle"
-                          disabled
-                          v-bind:value="d_cosignatory.isAdd"></v-checkbox>
-                      </v-flex>
+                      <span class="grey--text">
+                        {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
+                      </span>
                       <v-flex>
                         <v-text-field
                           v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
@@ -621,13 +624,14 @@
             <v-card-title>
               <v-flex>
                 <v-layout align-baseline>
-                  <v-flex xs1>
+                  <span>
                     <v-checkbox
+                      v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
                       hide-details
                       off-icon="remove_circle"
                       on-icon="add_circle"
                       v-model="d_additionalModificationType"></v-checkbox>
-                  </v-flex>
+                  </span>
                   <v-flex>
                     <v-text-field
                       v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
@@ -679,7 +683,7 @@
         <v-flex xs12 v-if="wallet.address">
           <v-card>
             <v-card-title>
-              <div class="title font-weight-bold">Escrow with Aggregate Transaction</div>
+              <div class="title font-weight-bold">Escrow with Aggregate Bonded Transaction</div>
             </v-card-title>
             <v-card-text>
               <v-card>
@@ -898,6 +902,7 @@
         faucetUrl: "",
         wallet: {},
         mosaicAmountViews: [],
+        dialog: false,
         isLoading: false,
         t_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
         t_mosaics: "nem:xem::1000000",
@@ -1017,6 +1022,9 @@
         window.getSelection().addRange(range);
         document.execCommand('copy');
         window.getSelection().removeAllRanges();
+      },
+      logoutWallet: function(event) {
+        this.wallet = {};
       },
       t_announceHandler: function(event) {
         this.isLoading = true
