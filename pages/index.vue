@@ -713,6 +713,7 @@
   import { LocalDateTime } from 'js-joda';
   import { sha3_512 } from 'js-sha3';
   const generator = require('generate-password');
+  const secureRandom = require('secure-random');
 
   export default {
     layout: "baseline",
@@ -1211,12 +1212,9 @@
             );
 
             // proof randomize of secret proof / lock tx
-            const random =
-              Math.floor(Math.random() * Math.floor(2**32)).toString(16)
-              + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
-              + Math.floor(Math.random() * Math.floor(2**32)).toString(16)
-            this.l_proof = random.toUpperCase()
-            this.p_proof = random.toUpperCase()
+            const random = secureRandom(10)
+            this.l_proof = random.map(x => x.toString(16)).join("").toUpperCase()
+            this.p_proof = this.l_proof
 
             // for convert to multisig tx
             accountHttp.getMultisigAccountInfo(address).subscribe(
