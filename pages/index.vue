@@ -1,754 +1,818 @@
 <template>
-  <v-container grid-list-xl>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" fixed app>
+      <v-list dense>
+        <v-list-tile v-show="!wallet.address">
+          <v-list-tile-action>
+            <v-icon>info</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Please Login</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+          v-show="wallet.address"
+          v-for="n in nav"
+          v-bind:key="n.title"
+          v-on:click="$vuetify.goTo(n.target, {offset: n.offset})">
+          <v-list-tile-action>
+            <v-icon>{{ n.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ n.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar color="indigo" dark fixed app>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title>Catapult Account Interface</v-toolbar-title>
+    </v-toolbar>
+    <v-content>
+    <v-container>
+      <v-layout>
+        <v-flex offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12>
 
-    <v-layout>
-
-      <v-flex sm10 offset-sm1>
-
-        <v-flex xs12 v-show="!wallet.address">
-          <v-card>
-            <v-card-text>
-              <v-text-field
-                label="Endpoint"
-                v-model="endpoint"
-                required
-                placeholder="ex). http://catapult48gh23s.xyz:3000"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-text>
-              <v-layout>
-                <v-flex>
-                  <v-text-field
-                    label="Private Key"
-                    v-model="walletPrivateKey"
-                    :counter="64"
-                    required
-                    placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs2>
-                  <v-btn
-                    fab
-                    small
-                    flat
-                    @click="regenPrivateKey"
-                    :loading="isLoading"><v-icon>cached</v-icon></v-btn>
-                </v-flex>
-              </v-layout>
-              <v-text-field
-                v-if="false"
-                label="Wallet Name"
-                v-model="walletName"
-                required
-                placeholder="ex). myWallet"
-              ></v-text-field>
-              <v-layout v-if="false">
-                <v-flex>
-                  <v-text-field
-                    label="Wallet Password"
-                    v-model="walletPassword"
-                    :rules="[passwordRules.required, passwordRules.min]"
-                    required
-                    counter
-                    placeholder="ex). cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs2>
-                  <v-btn
-                    fab
-                    small
-                    flat
-                    @click="regenWalletPassword"
-                    :loading="isLoading"><v-icon>cached</v-icon></v-btn>
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="createWallet"
-                :loading="isLoading"
-                :disabled="isLoading">login</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Address</div>
-              <v-spacer/>
-              <v-btn
-                fab
-                small
-                flat
-                @click="copyWalletAddressHandler"
-                :loading="isLoading"><v-icon>filter_none</v-icon></v-btn>
-            </v-card-title>
-            <v-responsive><span ref="address">{{ wallet.address.pretty() }}</span></v-responsive>
-            <v-card-title>
-              <div>
-                <span class="title font-weight-bold">Mosaics</span>
-                <span class="caption"><a v-bind:href="faucetUrl" target="_blank">Get XEM</a></span>
-              </div>
-              <v-spacer/>
-              <v-btn
-                fab
-                small
-                flat
-                @click="reloadMosaics"
-                :loading="isLoading"><v-icon>cached</v-icon></v-btn>
-            </v-card-title>
-            <v-responsive>
-              <v-list-tile v-for="mosaicAmountView in mosaicAmountViews" v-bind:key="mosaicAmountView.mosaicInfo.mosaicId.toHex()">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ mosaicAmountView.namespaceName }}:{{ mosaicAmountView.mosaicName }}::{{ mosaicAmountView.amount.compact() }} (divisibility={{ mosaicAmountView.mosaicInfo.divisibility }})</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-responsive>
-            <v-card-title v-if="false">
-              <div class="title font-weight-bold">Wallet Info</div>
-            </v-card-title>
-            <v-responsive v-if="false">
-              <v-list>
-                <v-list-tile>
-                  <v-list-tile-content>
-                    <v-list-tile-title>name</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ wallet.name }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile>
-                  <v-list-tile-content>
-                    <v-list-tile-title>creationDate</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ wallet.creationDate }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile>
-                  <v-list-tile-content>
-                    <v-list-tile-title>encryptedPrivateKey encrypted key</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ wallet.encryptedPrivateKey.encryptedKey }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile>
-                  <v-list-tile-content>
-                    <v-list-tile-title>encryptedPrivateKey initial vector</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ wallet.encryptedPrivateKey.iv }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
-            </v-responsive>
-            <v-card-actions>
-              <v-dialog v-model="dialog" width="700px">
-                <v-btn
-                  slot="activator"
-                  color="red lighten-2"
-                  dark>view privatekey</v-btn>
-                <v-card>
-                  <v-card-text>
-                    {{ walletPrivateKey }}
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-actions>
+          <v-flex v-show="!wallet.address">
+            <v-card>
+              <v-card-text>
+                <v-text-field
+                  label="Endpoint"
+                  v-model="endpoint"
+                  required
+                  placeholder="ex). http://catapult48gh23s.xyz:3000"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text>
+                <v-layout>
+                  <v-flex>
+                    <v-text-field
+                      label="Private Key"
+                      v-model="walletPrivateKey"
+                      :counter="64"
+                      required
+                      placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs2>
                     <v-btn
-                      color="primary"
+                      fab
+                      small
                       flat
-                      @click="dialog = false"
-                    >Close</v-btn>
-                  </v-card-actions>
+                      @click="regenPrivateKey"
+                      :loading="isLoading"><v-icon>cached</v-icon></v-btn>
+                  </v-flex>
+                </v-layout>
+                <v-text-field
+                  v-if="false"
+                  label="Wallet Name"
+                  v-model="walletName"
+                  required
+                  placeholder="ex). myWallet"
+                ></v-text-field>
+                <v-layout v-if="false">
+                  <v-flex>
+                    <v-text-field
+                      label="Wallet Password"
+                      v-model="walletPassword"
+                      :rules="[passwordRules.required, passwordRules.min]"
+                      required
+                      counter
+                      placeholder="ex). cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-btn
+                      fab
+                      small
+                      flat
+                      @click="regenWalletPassword"
+                      :loading="isLoading"><v-icon>cached</v-icon></v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="createWallet"
+                  :loading="isLoading"
+                  :disabled="isLoading">login</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="wallet" mb-5 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <v-flex>
+                  <v-layout align-baseline>
+                    <span class="title">Address</span>
+                    <v-spacer/>
+                    <v-btn
+                      fab
+                      small
+                      flat
+                      @click="copyWalletAddressHandler"
+                      :loading="isLoading"><v-icon>filter_none</v-icon></v-btn>
+                  </v-layout>
+                  <v-layout overflow-hidden>
+                    <v-list-tile>
+                      <v-list-tile-content>
+                        <v-list-tile-title>
+                          <span ref="address">{{ wallet.address.pretty() }}</span>
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </v-layout>
+                </v-flex>
+              </v-card-title>
+              <v-card-title>
+                <v-flex>
+                  <v-layout align-baseline>
+                    <div>
+                      <span class="title">Mosaics</span>
+                      <span class="caption"><a v-bind:href="faucetUrl" target="_blank">Get XEM</a></span>
+                    </div>
+                    <v-spacer/>
+                    <v-btn
+                      fab
+                      small
+                      flat
+                      @click="reloadMosaics"
+                      :loading="isLoading"><v-icon>cached</v-icon></v-btn>
+                  </v-layout>
+                  <v-layout column>
+                    <v-list-tile v-for="m in mosaicAmountViews" v-bind:key="m.mosaicInfo.mosaicId.toHex()">
+                      <v-list-tile-content>
+                        <v-list-tile-title>
+                          <span>
+                            {{ m.namespaceName }}:{{ m.mosaicName }}::{{ m.amount.compact() }}
+                          </span>
+                          <span>&nbsp;</span>
+                          <span v-if="m.mosaicInfo.divisibility">
+                            ({{ m.amount.compact().toString().slice(0,-m.mosaicInfo.divisibility) + "." + m.amount.compact().toString().substr(-m.mosaicInfo.divisibility) + m.mosaicName }})
+                          </span>
+                          <span v-if="!m.mosaicInfo.divisibility">
+                            ({{ m.amount.compact() + m.mosaicName }})
+                          </span>
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </v-layout>
+                </v-flex>
+              </v-card-title>
+              <v-card-title v-if="false">
+                <v-flex>
+                  <v-layout>
+                    <div class="title">Wallet Info</div>
+                  </v-layout>
+                  <v-layout>
+                    <v-list>
+                      <v-list-tile>
+                        <v-list-tile-content>
+                          <v-list-tile-title>name</v-list-tile-title>
+                          <v-list-tile-sub-title>{{ wallet.name }}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                      <v-list-tile>
+                        <v-list-tile-content>
+                          <v-list-tile-title>creationDate</v-list-tile-title>
+                          <v-list-tile-sub-title>{{ wallet.creationDate }}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                      <v-list-tile>
+                        <v-list-tile-content>
+                          <v-list-tile-title>encryptedPrivateKey encrypted key</v-list-tile-title>
+                          <v-list-tile-sub-title>{{ wallet.encryptedPrivateKey.encryptedKey }}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                      <v-list-tile>
+                        <v-list-tile-content>
+                          <v-list-tile-title>encryptedPrivateKey initial vector</v-list-tile-title>
+                          <v-list-tile-sub-title>{{ wallet.encryptedPrivateKey.iv }}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                    </v-list>
+                  </v-layout>
+                </v-flex>
+              </v-card-title>
+              <v-card-actions>
+                <v-dialog v-model="dialog">
+                  <v-btn
+                    slot="activator"
+                    color="red lighten-2"
+                    dark>view privateKey</v-btn>
+                  <v-card>
+                    <v-card-text>
+                      {{ walletPrivateKey }}
+                    </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                      <v-btn
+                        color="primary"
+                        flat
+                        @click="dialog = false"
+                      >Close</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="logoutWallet">logout</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="transfer" mb-5 v-if="wallet.address">
+            <v-card>
+              <!--<div v-for="(item, index) in validation" :key="index" class="errorLabel">-->
+              <!--<div v-if="item!==true">{{ item }}</div>-->
+              <!--</div>-->
+              <v-card-title>
+                <div class="title">Transfer Transaction</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="To Address"
+                  v-model="t_recipient"
+                  required
+                  placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
+                ></v-text-field>
+                <v-text-field
+                  label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                  v-model="t_mosaics"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Message"
+                  v-model="t_message"
+                  :counter="1024"
+                  placeholder="ex) Thank you."
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="t_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="t_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="namespace" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Register Namespace</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Namespace Name"
+                  v-model="n_name"
+                  required
+                  placeholder="ex). foo"
+                ></v-text-field>
+                <v-text-field
+                  label="Duration In Blocks"
+                  v-model="n_duration"
+                  required
+                  type="number"
+                  placeholder="ex). 10"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="n_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="n_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="subnamespace" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Register Sub Namespace</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Sub Namespace Name"
+                  v-model="s_name"
+                  required
+                  placeholder="ex). sub"
+                ></v-text-field>
+                <v-text-field
+                  label="Parent Namespace"
+                  v-model="s_parentNamespace"
+                  required
+                  placeholder="ex). foo"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="s_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="s_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="mosaic" mb-5 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Create Mosaic</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Namespace"
+                  v-model="m_namespace"
+                  required
+                  placeholder="ex). foo"
+                ></v-text-field>
+                <v-text-field
+                  label="Mosaic Name"
+                  v-model="m_name"
+                  required
+                  placeholder="ex). bar"
+                ></v-text-field>
+                <v-text-field
+                  label="Supply Amount"
+                  v-model="m_delta"
+                  required
+                  type="number"
+                  placeholder="ex). 100"
+                ></v-text-field>
+                <v-text-field
+                  label="Divisibility"
+                  v-model="m_divisibility"
+                  required
+                  type="number"
+                  placeholder="ex). 0"
+                ></v-text-field>
+                <v-text-field
+                  label="Duration In Blocks"
+                  v-model="m_duration"
+                  required
+                  type="number"
+                  placeholder="ex). 10"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="m_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="m_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="secretlock" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Secret Lock Transaction</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Proof (Hex secret value for lock)"
+                  v-model="l_proof"
+                  required
+                  placeholder="ex). 095B4FCD1F88F1785E59"
+                ></v-text-field>
+                <v-text-field
+                  label="Secret (SHA3_512 for Proof)"
+                  v-model="l_secret"
+                  disabled
+                ></v-text-field>
+                <v-text-field
+                  label="Mosaic for Lock (namespace:mosaic::absoluteAmount) (Single Mosaic)"
+                  v-model="l_mosaic"
+                  required
+                  placeholder="ex). 100"
+                ></v-text-field>
+                <v-text-field
+                  label="To Address"
+                  v-model="l_recipient"
+                  required
+                  placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
+                ></v-text-field>
+                <v-text-field
+                  label="Duration In Blocks"
+                  v-model="l_duration"
+                  required
+                  type="number"
+                  placeholder="ex). 240"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="l_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="l_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="secretproof" mb-5 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Secret Proof Transaction</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Proof (Hex value for unlock)"
+                  v-model="p_proof"
+                  required
+                  placeholder="ex). 095B4FCD1F88F1785E59"
+                ></v-text-field>
+                <v-text-field
+                  label="Secret (SHA3_512 for Proof)"
+                  v-model="p_secret"
+                  disabled
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="p_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="p_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="multisig" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Convert to Multisig</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Min Approval"
+                  v-model="u_minApprovalDelta"
+                  required
+                  type="number"
+                  placeholder="ex). 2"
+                ></v-text-field>
+                <v-text-field
+                  label="Min Removal"
+                  v-model="u_minRemovalDelta"
+                  required
+                  type="number"
+                  placeholder="ex). 2"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text>
+                <v-flex>
+                  <v-layout v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap>
+                    <v-flex>
+                      <v-layout align-baseline>
+                        <v-flex>
+                          <v-text-field
+                            v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
+                            v-bind:value="u_cosignatory"
+                            required
+                            :counter="64"
+                            disabled
+                          ></v-text-field>
+                        </v-flex>
+                        <v-btn
+                          fab
+                          small
+                          flat
+                          v-on:click="u_deleteCosignatory(index)"
+                          v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
+                      </v-layout>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+              </v-card-text>
+              <v-card-title>
+                <v-flex>
+                  <v-layout align-baseline>
+                    <v-flex>
+                      <v-text-field
+                        label="Add Cosignatory"
+                        v-model="u_addedCosignatory"
+                        :counter="64"
+                        placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-btn
+                      fab
+                      small
+                      flat
+                      v-on:click="u_addCosignatory"
+                      v-bind:loading="isLoading"><v-icon>add_box</v-icon></v-btn>
+                  </v-layout>
+                </v-flex>
+              </v-card-title>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="u_announceHandler"
+                  :loading="isLoading"
+                  :disabled="u_isMultisig">announce</v-btn>
+                <v-flex>
+                  <div v-if="u_isMultisig">This account is already converted to multisig.</div>
+                </v-flex>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="u_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="modifymultisig" mb-5 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Modify Multisig</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Multisig Account PublicKey"
+                  v-model="d_multisigPublicKey"
+                  required
+                  :counter="64"
+                  placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26"
+                ></v-text-field>
+                <v-text-field
+                  label="Approval Change"
+                  v-model="d_minApprovalDelta"
+                  required
+                  type="number"
+                  placeholder="ex). 2"
+                ></v-text-field>
+                <v-text-field
+                  label="Removal Change"
+                  v-model="d_minRemovalDelta"
+                  required
+                  type="number"
+                  placeholder="ex). 2"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text>
+                <v-flex>
+                  <v-layout v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap>
+                    <v-flex>
+                      <v-layout align-baseline>
+                        <span class="grey--text mr-1 pr-1">
+                          {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
+                        </span>
+                        <v-flex>
+                          <v-text-field
+                            v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
+                            v-bind:value="d_cosignatory.pubKey"
+                            required
+                            :counter="64"
+                            disabled
+                          ></v-text-field>
+                        </v-flex>
+                        <v-btn
+                          fab
+                          small
+                          flat
+                          v-on:click="d_deleteModification(index)"
+                          v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
+                      </v-layout>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+              </v-card-text>
+              <v-card-title>
+                <v-flex>
+                  <v-layout align-baseline>
+                    <div class="mr-1 pr-1">
+                      <v-checkbox
+                        v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
+                        hide-details
+                        off-icon="remove_circle"
+                        on-icon="add_circle"
+                        v-model="d_additionalModificationType"></v-checkbox>
+                    </div>
+                    <v-flex>
+                      <v-text-field
+                        v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
+                        v-model="d_additionalModificationPubkey"
+                        :counter="64"
+                        placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-btn
+                      fab
+                      small
+                      flat
+                      v-on:click="d_addModification"
+                      v-bind:loading="isLoading"><v-icon>add_box</v-icon></v-btn>
+                  </v-layout>
+                </v-flex>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field label="Lock Funds Mosaic" value="nem:xem::10000000"  disabled></v-text-field>
+                <v-text-field label="Lock Funds Duration In Blocks" value="480" disabled></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="d_announceHandler"
+                  :loading="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <aggregatetx-history v-bind:history="d_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex id="escrow" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Escrow with Aggregate Bonded Transaction</div>
+              </v-card-title>
+              <v-card-text>
+                <v-card>
+                  <v-card-title>
+                    <div class="subheading">Payment</div>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-text-field
+                      label="To Address"
+                      v-model="e_recipient1"
+                      required
+                      placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ"
+                    ></v-text-field>
+                    <v-text-field
+                      label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                      v-model="e_mosaics1"
+                      required
+                      placeholder="ex). nem:xem::1000000"
+                    ></v-text-field>
+                    <v-text-field
+                      label="Message"
+                      v-model="e_message1"
+                      :counter="1024"
+                      placeholder="ex). escrow payment"
+                    ></v-text-field>
+                  </v-card-text>
                 </v-card>
-              </v-dialog>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="logoutWallet">logout</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <!--<div v-for="(item, index) in validation" :key="index" class="errorLabel">-->
-            <!--<div v-if="item!==true">{{ item }}</div>-->
-            <!--</div>-->
-            <v-card-title>
-              <div class="title font-weight-bold">Transfer Transaction</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="To Address"
-                v-model="t_recipient"
-                required
-                placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
-              ></v-text-field>
-              <v-text-field
-                label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
-                v-model="t_mosaics"
-                required
-              ></v-text-field>
-              <v-text-field
-                label="Message"
-                v-model="t_message"
-                :counter="1024"
-                placeholder="ex) Thank you."
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="t_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="t_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Register Namespace</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Namespace Name"
-                v-model="n_name"
-                required
-                placeholder="ex). foo"
-              ></v-text-field>
-              <v-text-field
-                label="Duration In Blocks"
-                v-model="n_duration"
-                required
-                type="number"
-                placeholder="ex). 10"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="n_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="n_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Register Sub Namespace</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Sub Namespace Name"
-                v-model="s_name"
-                required
-                placeholder="ex). sub"
-              ></v-text-field>
-              <v-text-field
-                label="Parent Namespace"
-                v-model="s_parentNamespace"
-                required
-                placeholder="ex). foo"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="s_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="s_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Create Mosaic</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Namespace"
-                v-model="m_namespace"
-                required
-                placeholder="ex). foo"
-              ></v-text-field>
-              <v-text-field
-                label="Mosaic Name"
-                v-model="m_name"
-                required
-                placeholder="ex). bar"
-              ></v-text-field>
-              <v-text-field
-                label="Supply Amount"
-                v-model="m_delta"
-                required
-                type="number"
-                placeholder="ex). 100"
-              ></v-text-field>
-              <v-text-field
-                label="Divisibility"
-                v-model="m_divisibility"
-                required
-                type="number"
-                placeholder="ex). 0"
-              ></v-text-field>
-              <v-text-field
-                label="Duration In Blocks"
-                v-model="m_duration"
-                required
-                type="number"
-                placeholder="ex). 10"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="m_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="m_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Secret Lock Transaction</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Proof (Hex secret value for lock)"
-                v-model="l_proof"
-                required
-                placeholder="ex). 095B4FCD1F88F1785E59"
-              ></v-text-field>
-              <v-text-field
-                label="Secret (SHA3_512 for Proof)"
-                v-model="l_secret"
-                disabled
-              ></v-text-field>
-              <v-text-field
-                label="Mosaic for Lock (namespace:mosaic::absoluteAmount) (Single Mosaic)"
-                v-model="l_mosaic"
-                required
-                placeholder="ex). 100"
-              ></v-text-field>
-              <v-text-field
-                label="To Address"
-                v-model="l_recipient"
-                required
-                placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE"
-              ></v-text-field>
-              <v-text-field
-                label="Duration In Blocks"
-                v-model="l_duration"
-                required
-                type="number"
-                placeholder="ex). 240"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="l_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="l_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Secret Proof Transaction</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Proof (Hex value for unlock)"
-                v-model="p_proof"
-                required
-                placeholder="ex). 095B4FCD1F88F1785E59"
-              ></v-text-field>
-              <v-text-field
-                label="Secret (SHA3_512 for Proof)"
-                v-model="p_secret"
-                disabled
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="p_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="p_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Convert to Multisig</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Min Approval"
-                v-model="u_minApprovalDelta"
-                required
-                type="number"
-                placeholder="ex). 2"
-              ></v-text-field>
-              <v-text-field
-                label="Min Removal"
-                v-model="u_minRemovalDelta"
-                required
-                type="number"
-                placeholder="ex). 2"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-text>
-              <v-flex>
-                <v-layout v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap>
-                  <v-flex>
-                    <v-layout align-baseline>
-                      <v-flex>
-                        <v-text-field
-                          v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
-                          v-bind:value="u_cosignatory"
-                          required
-                          :counter="64"
-                          disabled
-                        ></v-text-field>
-                      </v-flex>
-                      <v-btn
-                        fab
-                        small
-                        flat
-                        v-on:click="u_deleteCosignatory(index)"
-                        v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
-                    </v-layout>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-card-text>
-            <v-card-title>
-              <v-flex>
-                <v-layout align-baseline>
-                  <v-flex>
+              </v-card-text>
+              <v-card-text>
+                <v-card>
+                  <v-card-title>
+                    <div class="subheading">Invoice</div>
+                  </v-card-title>
+                  <v-card-text>
                     <v-text-field
-                      label="Add Cosignatory"
-                      v-model="u_addedCosignatory"
+                      label="Partner PublicKey"
+                      v-model="e_pubkey2"
+                      required
                       :counter="64"
-                      placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
+                      placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993"
                     ></v-text-field>
-                  </v-flex>
-                  <v-btn
-                    fab
-                    small
-                    flat
-                    v-on:click="u_addCosignatory"
-                    v-bind:loading="isLoading"><v-icon>add_box</v-icon></v-btn>
-                </v-layout>
-              </v-flex>
-            </v-card-title>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="u_announceHandler"
-                :loading="isLoading"
-                :disabled="u_isMultisig">announce</v-btn>
-              <v-flex>
-                <div v-if="u_isMultisig">This account is already converted to multisig.</div>
-              </v-flex>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="u_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Modify Multisig</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Multisig Account PublicKey"
-                v-model="d_multisigPublicKey"
-                required
-                :counter="64"
-                placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26"
-              ></v-text-field>
-              <v-text-field
-                label="Approval Change"
-                v-model="d_minApprovalDelta"
-                required
-                type="number"
-                placeholder="ex). 2"
-              ></v-text-field>
-              <v-text-field
-                label="Removal Change"
-                v-model="d_minRemovalDelta"
-                required
-                type="number"
-                placeholder="ex). 2"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-text>
-              <v-flex>
-                <v-layout v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap>
-                  <v-flex>
-                    <v-layout align-baseline>
-                      <span class="grey--text">
-                        {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
-                      </span>
-                      <v-flex>
-                        <v-text-field
-                          v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
-                          v-bind:value="d_cosignatory.pubKey"
-                          required
-                          :counter="64"
-                          disabled
-                        ></v-text-field>
-                      </v-flex>
-                      <v-btn
-                        fab
-                        small
-                        flat
-                        v-on:click="d_deleteModification(index)"
-                        v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
-                    </v-layout>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-card-text>
-            <v-card-title>
-              <v-flex>
-                <v-layout align-baseline>
-                  <span>
-                    <v-checkbox
-                      v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
-                      hide-details
-                      off-icon="remove_circle"
-                      on-icon="add_circle"
-                      v-model="d_additionalModificationType"></v-checkbox>
-                  </span>
-                  <v-flex>
                     <v-text-field
-                      v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
-                      v-model="d_additionalModificationPubkey"
-                      :counter="64"
-                      placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
+                      label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                      v-model="e_mosaics2"
+                      required
+                      placeholder="ex). foo:bar::1"
                     ></v-text-field>
-                  </v-flex>
-                  <v-btn
-                    fab
-                    small
-                    flat
-                    v-on:click="d_addModification"
-                    v-bind:loading="isLoading"><v-icon>add_box</v-icon></v-btn>
-                </v-layout>
-              </v-flex>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field label="Lock Funds Mosaic" value="nem:xem::10000000"  disabled></v-text-field>
-              <v-text-field label="Lock Funds Duration In Blocks" value="480" disabled></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="d_announceHandler"
-                :loading="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <aggregatetx-history v-bind:history="d_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
+                    <v-text-field
+                      label="Message"
+                      v-model="e_message2"
+                      :counter="1024"
+                      placeholder="ex). escrow invoice"
+                    ></v-text-field>
+                  </v-card-text>
+                </v-card>
+              </v-card-text>
+              <v-card-text>
+                <v-text-field
+                  label="Lock Funds Mosaic"
+                  v-model="e_mosaic3"
+                  placeholder="ex). nem:xem::10000000"
+                ></v-text-field>
+                <v-text-field
+                  label="Lock Funds Duration In Blocks"
+                  v-model="e_duration3"
+                  type="number"
+                  placeholder="ex). 480"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="e_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <aggregatetx-history v-bind:history="e_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
 
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Escrow with Aggregate Bonded Transaction</div>
-            </v-card-title>
-            <v-card-text>
-              <v-card>
-                <v-card-title>
-                  <div class="title">Payment</div>
-                </v-card-title>
-                <v-card-text>
-                  <v-text-field
-                    label="To Address"
-                    v-model="e_recipient1"
-                    required
-                    placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ"
-                  ></v-text-field>
-                  <v-text-field
-                    label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
-                    v-model="e_mosaics1"
-                    required
-                    placeholder="ex). nem:xem::1000000"
-                  ></v-text-field>
-                  <v-text-field
-                    label="Message"
-                    v-model="e_message1"
-                    :counter="1024"
-                    placeholder="ex). escrow payment"
-                  ></v-text-field>
-                </v-card-text>
-              </v-card>
-            </v-card-text>
-            <v-card-text>
-              <v-card>
-                <v-card-title>
-                  <div class="title">Invoice</div>
-                </v-card-title>
-                <v-card-text>
-                  <v-text-field
-                    label="Partner PublicKey"
-                    v-model="e_pubkey2"
-                    required
-                    :counter="64"
-                    placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993"
-                  ></v-text-field>
-                  <v-text-field
-                    label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
-                    v-model="e_mosaics2"
-                    required
-                    placeholder="ex). foo:bar::1"
-                  ></v-text-field>
-                  <v-text-field
-                    label="Message"
-                    v-model="e_message2"
-                    :counter="1024"
-                    placeholder="ex). escrow invoice"
-                  ></v-text-field>
-                </v-card-text>
-              </v-card>
-            </v-card-text>
-            <v-card-text>
-              <v-text-field
-                label="Lock Funds Mosaic"
-                v-model="e_mosaic3"
-                placeholder="ex). nem:xem::10000000"
-              ></v-text-field>
-              <v-text-field
-                label="Lock Funds Duration In Blocks"
-                v-model="e_duration3"
-                type="number"
-                placeholder="ex). 480"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="e_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <aggregatetx-history v-bind:history="e_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
+          <v-flex id="cosignature" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Cosignature Transaction</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Aggregate Bonded Transaction Hash"
+                  v-model="c_hash"
+                  required
+                  :counter="64"
+                  placeholder="ex). 19DFEF268B382252CCAA9FAF282EDDEF846BA57232AAF9875C2209103E51799E"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="c_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="c_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
 
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Cosignature Transaction</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Aggregate Bonded Transaction Hash"
-                v-model="c_hash"
-                required
-                :counter="64"
-                placeholder="ex). 19DFEF268B382252CCAA9FAF282EDDEF846BA57232AAF9875C2209103E51799E"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="c_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="c_history"/>
-            </v-card-text>
-          </v-card>
-        </v-flex>
+          <v-flex id="cosignaturemultisig" mb-2 v-if="wallet.address">
+            <v-card>
+              <v-card-title>
+                <div class="title">Cosignature Transaction of Multisig</div>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Multisig Account PublicKey"
+                  v-model="g_multisigPublicKey"
+                  required
+                  :counter="64"
+                  placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26"
+                ></v-text-field>
+                <v-text-field
+                  label="Aggregate Bonded Transaction Hash"
+                  v-model="g_hash"
+                  required
+                  :counter="64"
+                  placeholder="ex). 2EE75F50BCF5384738350AC19A562841450F0B5E2F58B79FF641D1DEAE6B13EB"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="blue"
+                  class="white--text"
+                  @click="g_announceHandler"
+                  :loading="isLoading"
+                  :disabled="isLoading">announce</v-btn>
+              </v-card-actions>
+              <v-card-text>
+                <tx-history v-bind:history="g_history"/>
+              </v-card-text>
+            </v-card>
+          </v-flex>
 
-        <v-flex xs12 v-if="wallet.address">
-          <v-card>
-            <v-card-title>
-              <div class="title font-weight-bold">Cosignature Transaction of Multisig</div>
-            </v-card-title>
-            <v-card-text>
-              <v-text-field
-                label="Multisig Account PublicKey"
-                v-model="g_multisigPublicKey"
-                required
-                :counter="64"
-                placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26"
-              ></v-text-field>
-              <v-text-field
-                label="Aggregate Bonded Transaction Hash"
-                v-model="g_hash"
-                required
-                :counter="64"
-                placeholder="ex). 2EE75F50BCF5384738350AC19A562841450F0B5E2F58B79FF641D1DEAE6B13EB"
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                class="white--text"
-                @click="g_announceHandler"
-                :loading="isLoading"
-                :disabled="isLoading">announce</v-btn>
-            </v-card-actions>
-            <v-card-text>
-              <tx-history v-bind:history="g_history"/>
-            </v-card-text>
-          </v-card>
         </v-flex>
-
-      </v-flex>
-    </v-layout>
-  </v-container>
+      </v-layout>
+    </v-container>
+    </v-content>
+    <v-footer color="indigo" app>
+      <span class="white--text"></span>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
@@ -770,15 +834,27 @@
   const secureRandom = require('secure-random');
 
   export default {
-    layout: "baseline",
-    source: "https://www.google.co.jp",
     components: {
       TxHistory, AggregatetxHistory
     },
     asyncData (context) {
       return {
-        name: 'Catapult Unsafe Wallet',
-        description: "Do NOT use on main net",
+        drawer: null,
+        nav: [
+          {icon:"home",title:"Home",target:0,offset:0},
+          {icon:"star",title:"Wallet",target:'#wallet',offset:-80},
+          {icon:"arrow_forward",title:"Transfer Tx",target:'#transfer',offset:-80},
+          {icon:"domain",title:"Namespace",target:'#namespace',offset:-80},
+          {icon:"domain",title:"SubNamespace",target:'#subnamespace',offset:-80},
+          {icon:"web_asset",title:"Mosaic",target:'#mosaic',offset:-80},
+          {icon:"lock",title:"Secret Lock Tx",target:'#secretlock',offset:-80},
+          {icon:"lock_open",title:"Secret proof Tx",target:'#secretproof',offset:-80},
+          {icon:"menu",title:"Multisig",target:'#multisig',offset:-80},
+          {icon:"menu",title:"Modify Multisig",target:'#modifymultisig',offset:-80},
+          {icon:"compare_arrows",title:"Escrow with Aggregate",target:'#escrow',offset:-80},
+          {icon:"edit",title:"Cosignature",target:'#cosignature',offset:-80},
+          {icon:"edit",title:"Cosignature Multisig",target:'#cosignaturemultisig',offset:-80},
+        ],
         endpoint: "http://catapult48gh23s.xyz:3000",
         walletPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletName: "myWallet",
@@ -1445,7 +1521,6 @@
     },
     head () {
       return {
-        title: this.name,
         meta: [
           { hid: 'top', name: 'top', content: 'top' }
         ]
@@ -1455,29 +1530,12 @@
 </script>
 
 <style>
-  .container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
   .title {
-    font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-    display: block;
-    font-weight: 300;
-    font-size: 100px;
     color: #35495e;
-    letter-spacing: 1px;
+    font-weight: bold;
   }
-  .subtitle {
-    font-weight: 300;
-    font-size: 42px;
-    color: #526488;
-    word-spacing: 5px;
-    padding-bottom: 15px;
-  }
-  .links {
-    padding-top: 15px;
+  .subheading {
+    color: #35495e;
+    font-weight: bold;
   }
 </style>
