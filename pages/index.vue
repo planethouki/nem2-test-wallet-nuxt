@@ -203,17 +203,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in t_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="t_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -247,17 +237,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in n_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="n_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -290,17 +270,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in s_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="s_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -354,17 +324,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in m_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="m_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -415,17 +375,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in l_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="l_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -457,17 +407,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in p_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="p_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -550,17 +490,7 @@
               </v-flex>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in u_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="u_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -661,21 +591,7 @@
                 :loading="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in d_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <v-list-tile-title>
-                      Aggregate: <a v-bind:href="tx.agApiStatusUrl" target="_blank">{{ tx.agHash }}</a>
-                    </v-list-tile-title>
-                    <v-list-tile-sub-title>
-                      LockFunds: <a v-bind:href="tx.lfApiStatusUrl" target="_blank">{{ tx.lfHash }}</a>
-                    </v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <aggregatetx-history v-bind:history="d_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -762,21 +678,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in e_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <v-list-tile-title>
-                      Aggregate: <a v-bind:href="tx.agApiStatusUrl" target="_blank">{{ tx.agHash }}</a>
-                    </v-list-tile-title>
-                    <v-list-tile-sub-title>
-                      LockFunds: <a v-bind:href="tx.lfApiStatusUrl" target="_blank">{{ tx.lfHash }}</a>
-                    </v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <aggregatetx-history v-bind:history="e_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -804,17 +706,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in c_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="c_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -849,17 +741,7 @@
                 :disabled="isLoading">announce</v-btn>
             </v-card-actions>
             <v-card-text>
-              <v-list subheader>
-                <v-subheader>History</v-subheader>
-                <v-list-tile v-for="tx in g_history" :key="tx.hash">
-                  <v-list-tile-avatar>
-                    <!--<v-icon>update</v-icon>-->
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+              <tx-history v-bind:history="g_history"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -870,6 +752,9 @@
 </template>
 
 <script>
+  import TxHistory from '~/components/TxHistory.vue'
+  import AggregatetxHistory from '~/components/AggregatetxHistory.vue'
+
   import {
     Account, AccountHttp, Address, Deadline, UInt64, NetworkType, PlainMessage, TransferTransaction, Mosaic, MosaicId,
     Password, SimpleWallet, TransactionHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService, MosaicAmountView, MosaicInfo,
@@ -887,6 +772,9 @@
   export default {
     layout: "baseline",
     source: "https://www.google.co.jp",
+    components: {
+      TxHistory, AggregatetxHistory
+    },
     asyncData (context) {
       return {
         name: 'Catapult Unsafe Wallet',
@@ -1562,8 +1450,6 @@
           { hid: 'top', name: 'top', content: 'top' }
         ]
       }
-    },
-    components: {
     },
   }
 </script>
