@@ -44,7 +44,13 @@ module.exports = {
         net: 'empty',
         tls: 'empty'
       }
-    }
+    },
+    vendor: [
+      'nem2-sdk',
+      'rxjs/operators',
+      'js-joda',
+      'js-sha3',
+    ],
   },
   mode: 'spa',
   modules: [
