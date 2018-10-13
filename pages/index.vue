@@ -502,7 +502,7 @@
                         fab
                         small
                         flat
-                        v-on:click="u_delete(index)"
+                        v-on:click="u_deleteCosignatory(index)"
                         v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
                     </v-layout>
                   </v-flex>
@@ -549,6 +549,126 @@
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 v-if="wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Modify Multisig</div>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                label="Multisig Account PublicKey"
+                v-model="d_multisigPublicKey"
+                required
+                :counter="64"
+                placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26"
+              ></v-text-field>
+              <v-text-field
+                label="Approval Change"
+                v-model="d_minApprovalDelta"
+                required
+                type="number"
+                placeholder="ex). 2"
+              ></v-text-field>
+              <v-text-field
+                label="Removal Change"
+                v-model="d_minRemovalDelta"
+                required
+                type="number"
+                placeholder="ex). 2"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-flex>
+                <v-layout v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap>
+                  <v-flex>
+                    <v-layout align-baseline>
+                      <v-flex xs1>
+                        <v-checkbox
+                          hide-details
+                          height="1em"
+                          off-icon="remove_circle"
+                          on-icon="add_circle"
+                          disabled
+                          v-bind:value="d_cosignatory.isAdd"></v-checkbox>
+                      </v-flex>
+                      <v-flex>
+                        <v-text-field
+                          v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
+                          v-bind:value="d_cosignatory.pubKey"
+                          required
+                          :counter="64"
+                          disabled
+                        ></v-text-field>
+                      </v-flex>
+                      <v-btn
+                        fab
+                        small
+                        flat
+                        v-on:click="d_deleteModification(index)"
+                        v-bind:loading="isLoading"><v-icon>delete_forever</v-icon></v-btn>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-card-text>
+            <v-card-title>
+              <v-flex>
+                <v-layout align-baseline>
+                  <v-flex xs1>
+                    <v-checkbox
+                      hide-details
+                      off-icon="remove_circle"
+                      on-icon="add_circle"
+                      v-model="d_additionalModificationType"></v-checkbox>
+                  </v-flex>
+                  <v-flex>
+                    <v-text-field
+                      v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
+                      v-model="d_additionalModificationPubkey"
+                      :counter="64"
+                      placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-btn
+                    fab
+                    small
+                    flat
+                    v-on:click="d_addModification"
+                    v-bind:loading="isLoading"><v-icon>add_box</v-icon></v-btn>
+                </v-layout>
+              </v-flex>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field label="Lock Funds Mosaic" value="nem:xem::10000000"  disabled></v-text-field>
+              <v-text-field label="Lock Funds Duration In Blocks" value="480" disabled></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="d_announceHandler"
+                :loading="isLoading">announce</v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <v-list subheader>
+                <v-subheader>History</v-subheader>
+                <v-list-tile v-for="tx in d_history" :key="tx.hash">
+                  <v-list-tile-avatar>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      Aggregate: <a v-bind:href="tx.agApiStatusUrl" target="_blank">{{ tx.agHash }}</a>
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>
+                      LockFunds: <a v-bind:href="tx.lfApiStatusUrl" target="_blank">{{ tx.lfHash }}</a>
+                    </v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
@@ -695,6 +815,51 @@
           </v-card>
         </v-flex>
 
+        <v-flex xs12 v-if="wallet.address">
+          <v-card>
+            <v-card-title>
+              <div class="title font-weight-bold">Cosignature Transaction of Multisig</div>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                label="Multisig Account PublicKey"
+                v-model="g_multisigPublicKey"
+                required
+                :counter="64"
+                placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26"
+              ></v-text-field>
+              <v-text-field
+                label="Aggregate Bonded Transaction Hash"
+                v-model="g_hash"
+                required
+                :counter="64"
+                placeholder="ex). 2EE75F50BCF5384738350AC19A562841450F0B5E2F58B79FF641D1DEAE6B13EB"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="blue"
+                class="white--text"
+                @click="g_announceHandler"
+                :loading="isLoading"
+                :disabled="isLoading">announce</v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <v-list subheader>
+                <v-subheader>History</v-subheader>
+                <v-list-tile v-for="tx in g_history" :key="tx.hash">
+                  <v-list-tile-avatar>
+                    <!--<v-icon>update</v-icon>-->
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <a v-bind:href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+
       </v-flex>
     </v-layout>
   </v-container>
@@ -769,6 +934,15 @@
         u_minApprovalDelta: 2,
         u_minRemovalDelta: 2,
         u_history: [],
+        d_multisigPublicKey: "AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26",
+        d_cosignatories: [
+          {pubKey: "5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C", isAdd: false},
+        ],
+        d_additionalModificationType: false,
+        d_additionalModificationPubkey: "3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57",
+        d_minApprovalDelta: -1,
+        d_minRemovalDelta: -1,
+        d_history: [],
         e_recipient1: "SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ",
         e_mosaics1: "nem:xem::10000000",
         e_message1: "escrow payment",
@@ -780,6 +954,9 @@
         e_history: [],
         c_hash: "",
         c_history: [],
+        g_multisigPublicKey: "AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26",
+        g_hash: "",
+        g_history: [],
       }
     },
     methods: {
@@ -1018,8 +1195,12 @@
         this.p_history.push(historyData);
         this.isLoading = false
       },
-      u_delete: function(index) {
+      u_deleteCosignatory: function(index) {
         this.u_cosignatories.splice(index, 1);
+      },
+      u_addCosignatory: function(event) {
+        this.u_cosignatories.push(this.u_addedCosignatory);
+        this.u_addedCosignatory = "";
       },
       u_announceHandler: function(event) {
         this.isLoading = true;
@@ -1050,9 +1231,88 @@
         this.u_history.push(historyData);
         this.isLoading = false;
       },
-      u_addCosignatory: function(event) {
-        this.u_cosignatories.push(this.u_addedCosignatory);
-        this.u_addedCosignatory = "";
+      d_deleteModification: function(index) {
+        this.d_cosignatories.splice(index, 1);
+      },
+      d_addModification: function(event) {
+        this.d_cosignatories.push({
+          pubKey: this.d_additionalModificationPubkey,
+          isAdd: this.d_additionalModificationType
+        });
+        this.d_additionalModificationPubkey = "";
+        this.d_additionalModificationType = false;
+      },
+      d_announceHandler: function (event) {
+        this.isLoading = true;
+        const multisigPublicaccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey);
+        const account = this.wallet.open(new Password(this.walletPassword));
+        const endpoint = this.endpoint;
+        const wsEndpoint = endpoint.replace("http", "ws");
+        const listener = new Listener(wsEndpoint, WebSocket);
+        const minApprovalDelta = this.d_minApprovalDelta;
+        const minRemovalDelta = this.d_minRemovalDelta;
+        const cosignatories = this.d_cosignatories;
+        let modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
+          Deadline.create(),
+          minApprovalDelta,
+          minRemovalDelta,
+          cosignatories.map((co) => {
+            return new MultisigCosignatoryModification(
+              co.isAdd ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
+              PublicAccount.createFromPublicKey(co.pubKey, NetworkType.MIJIN_TEST)
+            );
+          }),
+          NetworkType.MIJIN_TEST
+        );
+        let aggregateTx = AggregateTransaction.createBonded(
+          Deadline.create(23),
+          [
+            modifyMultisigAccountTx.toAggregate(multisigPublicaccount),
+          ],
+          NetworkType.MIJIN_TEST
+        );
+        let signedAggregateTx = account.sign(aggregateTx);
+        let lockFundsTx = LockFundsTransaction.create(
+          Deadline.create(23),
+          XEM.createRelative(10),
+          UInt64.fromUint(480),
+          signedAggregateTx,
+          NetworkType.MIJIN_TEST
+        );
+        let signedLockFundsTx = account.sign(lockFundsTx);
+        let txHttp = new TransactionHttp(endpoint);
+        listener.open().then(() => {
+          return txHttp.announce(signedLockFundsTx).toPromise();
+        }).then(() => {
+          return new Promise((resolve, reject) => {
+            listener.confirmed(account.address).pipe(
+              timeout(90000),
+              filter((transaction) => {
+                return transaction.transactionInfo !== undefined
+                  && transaction.transactionInfo.hash === signedLockFundsTx.hash
+              }),
+            ).subscribe(
+              result => resolve(result),
+              error => reject(error)
+            );
+          });
+        }).then(() => {
+          return txHttp.announceAggregateBonded(signedAggregateTx).toPromise();
+        }).then((result) => {
+          console.log(result);
+        }).catch((error) => {
+          console.error(error);
+        }).finally(() => {
+          listener.close()
+        });
+        let historyData = {
+          agHash: signedAggregateTx.hash,
+          agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+          lfHash: signedLockFundsTx.hash,
+          lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`,
+        };
+        this.d_history.push(historyData);
+        this.isLoading = false;
       },
       e_announceHandler: function(event) {
         this.isLoading = true
@@ -1167,11 +1427,6 @@
         ).toPromise().then((aggregateTx) => {
           let cosigTx = CosignatureTransaction.create(aggregateTx)
           let signedTx = account.signCosignatureTransaction(cosigTx)
-          let historyData = {
-            hash: hash,
-            apiStatusUrl: `${endpoint}/transaction/${hash}/status`
-          };
-          this.c_history.push(historyData);
           return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
         }).then((result) => {
           console.log(result)
@@ -1180,6 +1435,41 @@
         }).finally(() => {
 
         })
+        let historyData = {
+          hash: hash,
+          apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+        };
+        this.c_history.push(historyData);
+        this.isLoading = false
+      },
+      g_announceHandler: function(event) {
+        this.isLoading = true
+        const multisigPublicaccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey);
+        const account = this.wallet.open(new Password(this.walletPassword))
+        const hash = this.g_hash
+        const endpoint = this.endpoint
+        const txHttp = new TransactionHttp(endpoint)
+        const accountHttp = new AccountHttp(endpoint)
+        accountHttp.aggregateBondedTransactions(multisigPublicaccount).pipe(
+          mergeMap((_) => _),
+          filter((_) => !_.signedByAccount(account.publicAccount)),
+          throwIfEmpty(() => new Error('can not find that transaction hash')),
+        ).toPromise().then((aggregateTx) => {
+          let cosigTx = CosignatureTransaction.create(aggregateTx)
+          let signedTx = account.signCosignatureTransaction(cosigTx)
+          return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
+        }).then((result) => {
+          console.log(result)
+        }).catch((error) => {
+          console.error(error)
+        }).finally(() => {
+
+        })
+        let historyData = {
+          hash: hash,
+          apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+        };
+        this.g_history.push(historyData);
         this.isLoading = false
       },
     },
