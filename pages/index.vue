@@ -165,10 +165,15 @@
                           </span>
                           <span>&nbsp;</span>
                           <span v-if="m.mosaicInfo.divisibility">
+                            <span v-if="m.amount.compact()">
                             ({{ m.amount.compact().toString().slice(0,-m.mosaicInfo.divisibility) + "." + m.amount.compact().toString().substr(-m.mosaicInfo.divisibility) + m.mosaicName }})
+                            </span>
+                            <span v-if="!m.amount.compact()">
+                            ({{ m.amount.compact().toString() + m.mosaicName }})
+                            </span>
                           </span>
                           <span v-if="!m.mosaicInfo.divisibility">
-                            ({{ m.amount.compact() + m.mosaicName }})
+                            ({{ m.amount.compact().toString() + m.mosaicName }})
                           </span>
                         </v-list-tile-title>
                       </v-list-tile-content>
