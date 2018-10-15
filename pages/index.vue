@@ -35,70 +35,84 @@
 
           <v-flex v-show="!wallet.address">
             <v-card>
-              <v-card-text>
-                <v-text-field
-                  label="Endpoint"
-                  v-model="endpoint"
-                  required
-                  placeholder="ex). http://catapult48gh23s.xyz:3000"
-                ></v-text-field>
-              </v-card-text>
-              <v-card-text>
-                <v-layout>
-                  <v-flex>
-                    <v-text-field
-                      label="Private Key"
-                      v-model="walletPrivateKey"
-                      :counter="64"
-                      required
-                      placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs2>
-                    <v-btn
-                      fab
-                      small
-                      flat
-                      @click="regenPrivateKey"
-                      :loading="isLoading"><v-icon>cached</v-icon></v-btn>
-                  </v-flex>
-                </v-layout>
-                <v-text-field
-                  v-if="false"
-                  label="Wallet Name"
-                  v-model="walletName"
-                  required
-                  placeholder="ex). myWallet"
-                ></v-text-field>
-                <v-layout v-if="false">
-                  <v-flex>
-                    <v-text-field
-                      label="Wallet Password"
-                      v-model="walletPassword"
-                      :rules="[passwordRules.required, passwordRules.min]"
-                      required
-                      counter
-                      placeholder="ex). cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs2>
-                    <v-btn
-                      fab
-                      small
-                      flat
-                      @click="regenWalletPassword"
-                      :loading="isLoading"><v-icon>cached</v-icon></v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn
-                  color="blue"
-                  class="white--text"
-                  @click="createWallet"
-                  :loading="isLoading"
-                  :disabled="isLoading">login</v-btn>
-              </v-card-actions>
+              <v-form>
+                <v-card-text>
+                  <v-radio-group v-model="endpointSelection" label="Select Endpoint">
+                    <v-radio
+                      v-for="ep in endpoints"
+                      :key="ep.url"
+                      :label="ep.label"
+                      :value="ep.url"
+                    ></v-radio>
+                    <v-radio
+                      label="other"
+                      value=""
+                    ></v-radio>
+                  </v-radio-group>
+                  <v-text-field
+                    label="Endpoint"
+                    v-model="endpoint"
+                    name="Endpoint"
+                    required
+                    placeholder="ex). http://catapult48gh23s.xyz:3000"
+                  ></v-text-field>
+                  <v-layout>
+                    <v-flex>
+                      <v-text-field
+                        label="Private Key"
+                        v-model="walletPrivateKey"
+                        :counter="64"
+                        name="PrivateKey"
+                        required
+                        placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex xs2>
+                      <v-btn
+                        fab
+                        small
+                        flat
+                        @click="regenPrivateKey"
+                        :loading="isLoading"><v-icon>cached</v-icon></v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-text-field
+                    v-if="false"
+                    label="Wallet Name"
+                    v-model="walletName"
+                    required
+                    placeholder="ex). myWallet"
+                  ></v-text-field>
+                  <v-layout v-if="false">
+                    <v-flex>
+                      <v-text-field
+                        label="Wallet Password"
+                        v-model="walletPassword"
+                        :rules="[passwordRules.required, passwordRules.min]"
+                        required
+                        counter
+                        placeholder="ex). cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex xs2>
+                      <v-btn
+                        fab
+                        small
+                        flat
+                        @click="regenWalletPassword"
+                        :loading="isLoading"><v-icon>cached</v-icon></v-btn>
+                    </v-flex>
+                  </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn
+                    color="blue"
+                    class="white--text"
+                    @click="createWallet"
+                    :loading="isLoading"
+                    :disabled="isLoading">login</v-btn>
+                </v-card-actions>
+              </v-form>
             </v-card>
           </v-flex>
 
@@ -857,6 +871,13 @@
           {icon:"edit",title:"Cosignature",target:'#cosignature',offset:-80},
           {icon:"edit",title:"Cosignature Multisig",target:'#cosignaturemultisig',offset:-80},
         ],
+        endpoints: [
+          { url: "http://catapult48gh23s.xyz:3000", label: "catapult48gh23s.xyz" },
+          { url: "http://catapult-test.44uk.net:3000", label: "catapult-test.44uk.net" },
+          { url: "http://catapult-test.daoka.ml:3000", label: "catapult-test.daoka.ml" },
+          { url: "http://catapult-test.soralis.org:3000", label: "catapult-test.soralis.org" },
+        ],
+        endpointSelection: "http://catapult48gh23s.xyz:3000",
         endpoint: "http://catapult48gh23s.xyz:3000",
         walletPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletName: "myWallet",
@@ -1448,6 +1469,11 @@
       },
     },
     watch: {
+      endpointSelection: {
+        handler: function(newVal, oldVal) {
+          this.endpoint = newVal;
+        }
+      },
       wallet: {
         handler: function(newVal, oldVal) {
           if (this.wallet.address) {
