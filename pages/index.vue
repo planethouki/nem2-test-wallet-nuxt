@@ -45,18 +45,15 @@
   import Cosignature from '~/components/Cosignature.vue'
   import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
 
-  import TxHistory from '~/components/TxHistory.vue'
-  import AggregatetxHistory from '~/components/AggregatetxHistory.vue'
-
   import Header from '~/components/Header.vue'
   import Footer from '~/components/Footer.vue'
 
   export default {
     components: {
-      WalletInfo, Transfer, Namespace, SubNamespace, MosaicDefinition, SecretLock, SecretProof,
+      Header, Footer,
+      Login, WalletInfo,
+      Transfer, Namespace, SubNamespace, MosaicDefinition, SecretLock, SecretProof,
       ConvertMultisig, ModifyMultisig, Escrow, Cosignature, CosignatureMultisig,
-      TxHistory, AggregatetxHistory,
-      Header, Footer, Login
     },
     asyncData (context) {
       return {
