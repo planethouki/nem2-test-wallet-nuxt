@@ -56,10 +56,6 @@
         }
       },
     },
-    created: function() {
-      const random = secureRandom(10);
-      this.p_proof = random.map(x => x.toString(16)).join("").toUpperCase();
-    },
     methods: {
       p_announceHandler: function(event) {
         const account = this.wallet.open(this.walletPassword);

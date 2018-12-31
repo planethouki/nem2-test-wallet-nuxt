@@ -5,14 +5,8 @@
         div.title Secret Lock Transaction
       v-card-text
         v-text-field(
-          label="Proof (Hex secret value for lock)"
-          v-model="l_proof"
-          required
-          placeholder="ex). 095B4FCD1F88F1785E59")
-        v-text-field(
-          label="Secret (SHA3_512 for Proof)"
-          v-model="l_secret"
-          disabled)
+          label="Secret (SHA3_512 for Random)"
+          v-model="l_secret")
         v-text-field(
           label="Mosaic for Lock (namespace:mosaic::absoluteAmount) (Single Mosaic)"
           v-model="l_mosaic"
@@ -42,9 +36,7 @@
   import TxHistory from './TxHistory.vue'
   import {
     Address, Deadline, UInt64, NetworkType, Mosaic, MosaicId,
-    Password, TransactionHttp, SecretLockTransaction, HashType} from 'nem2-sdk';
-  import { sha3_512 } from 'js-sha3';
-  const secureRandom = require('secure-random');
+    TransactionHttp, SecretLockTransaction, HashType} from 'nem2-sdk';
 
   export default {
     name: "SecretLock",
@@ -59,27 +51,12 @@
     ],
     data() {
       return {
-        l_proof: "095B4FCD1F88F1785E59",
         l_mosaic: "nem:xem::10000000",
         l_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
         l_duration: 240,
         l_history: [],
+        l_secret: "B271D49970445F078CAD6979B75642B55C14DFAADF8067FE450332C63F60DE622B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D",
       }
-    },
-    computed: {
-      l_secret: function() {
-        const proof = this.l_proof;
-        const hash = sha3_512.create();
-        try {
-          return hash.update(Buffer.from(proof, 'hex')).hex().toUpperCase();
-        } catch(e) {
-          return e.message
-        }
-      },
-    },
-    created: function() {
-      const random = secureRandom(10);
-      this.l_proof = random.map(x => x.toString(16)).join("").toUpperCase();
     },
     methods: {
       l_announceHandler: function(event) {
