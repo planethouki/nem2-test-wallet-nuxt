@@ -27,6 +27,8 @@
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.7.1",
     "eslint-plugin-vue": "^4.0.0",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
     "superstatic": "^6.0.3"
   }
 }
