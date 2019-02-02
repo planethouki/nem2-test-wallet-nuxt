@@ -5,6 +5,7 @@
     v-container
       v-layout
         v-flex(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
+          Jumbo(navTargetId="jumbo")
           Login(
             v-bind:endpoints="endpoints"
             v-bind:defaultEndpoint="defaultEndpoint"
@@ -45,12 +46,13 @@
   import Cosignature from '~/components/Cosignature.vue'
   import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
 
+  import Jumbo from '~/components/Jumbo.vue'
   import Header from '~/components/Header.vue'
   import Footer from '~/components/Footer.vue'
 
   export default {
     components: {
-      Header, Footer,
+      Header, Footer, Jumbo,
       Login, WalletInfo,
       Transfer, Namespace, SubNamespace, MosaicDefinition, SecretLock, SecretProof,
       ConvertMultisig, ModifyMultisig, Escrow, Cosignature, CosignatureMultisig,
