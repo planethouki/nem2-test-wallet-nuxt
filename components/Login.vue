@@ -14,7 +14,7 @@
             value="")
           v-text-field(
           label="Endpoint"
-          v-model="endpoint"
+          v-model="userEndpoint"
           name="Endpoint"
           required
           placeholder="ex). http://catapult48gh23s.xyz:3000"
@@ -87,6 +87,7 @@
     data() {
       return {
         endpoint: "",
+        userEndpoint: "",
         privateKey: "",
         canEndpointEditable: false,
       }
@@ -126,7 +127,8 @@
           NetworkType.MIJIN_TEST
         );
         this.privateKey = "";
-        this.$emit("walletCreated", {wallet: wallet, password: password, endpoint: this.endpoint});
+        const endpoint = this.endpoint || this.userEndpoint;
+        this.$emit("walletCreated", {wallet, password, endpoint});
       },
     }
   }
