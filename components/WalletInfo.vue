@@ -32,7 +32,7 @@
             div
               span.title Mosaics
               span.caption
-                a(v-bind:href="faucetUrl" target="_blank") Get XEM
+                a(v-bind:href="faucetUrl" target="_blank" v-show="faucetUrl") Get XEM
             v-spacer
             v-btn(
               fab
@@ -55,6 +55,8 @@
         color="blue"
         class="white--text"
         @click="logoutWallet") logout
+      v-card-text
+        v-alert(type="error" :value="alert") {{ alert }}
 </template>
 
 <script>
@@ -75,12 +77,14 @@
       return {
         mosaicAmountViews: [],
         publicKey: "",
+        alert: ""
       }
     },
     watch: {
       wallet: {
         handler: function() {
           if (this.wallet.address) {
+            this.alert = "";
             this.reloadMosaics();
             const accountHttp = new AccountHttp(this.endpoint);
             accountHttp.getAccountInfo(this.wallet.address).subscribe(
@@ -126,6 +130,10 @@
             },
             error => {
               console.error(error);
+              console.log(error.message);
+              if (!error.message.includes("Not Found")) {
+                this.alert = error.message;
+              }
               mosaicService.mosaicsAmountView([XEM.createAbsolute(0)])
                 .pipe(flatMap((_) => _))
                 .subscribe(mosaicAmountView => { this.mosaicAmountViews.push(mosaicAmountView) })
