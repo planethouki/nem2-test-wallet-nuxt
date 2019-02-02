@@ -41,15 +41,10 @@
               @click="reloadMosaics")
               v-icon cached
           v-layout(column)
-            v-list-tile(v-for="m in mosaicAmountViews" v-bind:key="m.mosaicInfo.mosaicId.toHex()")
+            v-list-tile(v-for="m in mosaicAmountTexts" v-bind:key="m")
               v-list-tile-content
                 v-list-tile-title
-                  span {{ m.namespaceName }}:{{ m.mosaicName }}::{{ m.amount.compact() }}
-                  span &nbsp;
-                  span(v-if="m.mosaicInfo.divisibility")
-                    span(v-if="m.amount.compact()") ({{ m.amount.compact().toString().slice(0,-m.mosaicInfo.divisibility) + "." + m.amount.compact().toString().substr(-m.mosaicInfo.divisibility) + m.mosaicName }})
-                    span(v-if="!m.amount.compact()") ({{ m.amount.compact().toString() + m.mosaicName }})
-                  span(v-if="!m.mosaicInfo.divisibility") ({{ m.amount.compact().toString() + m.mosaicName }})
+                  span {{ m }}
       v-card-actions
         v-btn(
         color="blue"
@@ -78,6 +73,23 @@
         mosaicAmountViews: [],
         publicKey: "",
         alert: ""
+      }
+    },
+    computed: {
+      mosaicAmountTexts: function() {
+        return this.mosaicAmountViews.map(function(mosaicAmountView) {
+          const divisibility = mosaicAmountView.mosaicInfo.properties.divisibility;
+          const amount = mosaicAmountView.amount.compact();
+          let relAmount = amount / (10 ** divisibility);
+          return mosaicAmountView.namespaceName +
+            ":" +
+            mosaicAmountView.mosaicName +
+            "::" +
+            amount.toString(10) +
+            " (" +
+            relAmount.toString(10) +
+            ") ";
+        });
       }
     },
     watch: {
