@@ -5,13 +5,19 @@
         header.display-1 NF Catapult Testnet Beta
         p.blue-grey--text.text--darken-3 Welcome to the Nem Foundation Catapult Test Net
 
-        v-btn(color="indigo lighten-2").white--text View Tutorial
-          v-icon play_circle_outline
+
+
+        Tutorial
 </template>
 
 <script>
 
+  import Tutorial from '~/components/Tutorial.vue'
+
   export default {
+    components: {
+      Tutorial
+    },
     name: "Jumbo",
     props: [
       "navTargetId"
