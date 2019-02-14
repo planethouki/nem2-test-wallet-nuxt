@@ -21,7 +21,7 @@
             img(src="img/ep02.jpg")
             ul
               li If you want another endpoint, select "other".
-              li And input your url include "http://" and ":port".
+              li And input your rest-gateway url include "http://" and ":port".
           .px-3.py-1
             img(src="img/ep03.jpg")
             ul
@@ -57,7 +57,7 @@
           .px-3.py-1
             img(src="img/ac05.jpg")
             ul
-              li If it can not connect to the endpoint, an error will be displayed.
+              li If it can not connect to the endpoint, an error will be displayed. (maybe after 60 seconds)
         v-divider
         v-flex
           v-subheader.headline Transfer Transaction
