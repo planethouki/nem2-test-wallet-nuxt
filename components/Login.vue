@@ -35,28 +35,6 @@
               flat
               @click="regenPrivateKey")
                 v-icon cached
-          v-text-field(
-          v-if="false"
-          label="Wallet Name"
-          v-model="walletName"
-          required
-          placeholder="ex). myWallet")
-          v-layout(v-if="false")
-            v-flex
-              v-text-field(
-              label="Wallet Password"
-              v-model="walletPassword"
-              :rules="[passwordRules.required, passwordRules.min]"
-              required
-              counter
-              placeholder="ex). cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjtZM!EJ")
-            v-flex(xs2)
-              v-btn(
-              fab
-              small
-              flat
-              @click="regenWalletPassword")
-                v-icon cached
         v-card-actions
           v-btn(
           color="blue"
