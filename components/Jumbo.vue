@@ -6,8 +6,9 @@
         p.blue-grey--text.text--darken-3 Welcome to the Nem Foundation Catapult Test Net
 
 
+        v-btn(slot="activator" color="indigo lighten-2" dark href="https://forum.nem.io/t/guide-to-using-nf-catapult-testnet-beta-wallet/22045" target="_blank").white--text View Guide
+          v-icon play_circle_outline
 
-        Tutorial
 </template>
 
 <script>
