@@ -1,16 +1,12 @@
-# nem2-unsafe-wallet-nuxt
+# myNuxt
 
-> Do NOT use on main net
-
-This wallet keep private keys in memory.
-
-No save accounts. Reload(F5) initialize all.
+> My badass Nuxt.js project
 
 ## Build Setup
 
 ``` bash
 # install dependencies
-$ npm install # Or yarn install
+$ npm install
 
 # serve with hot reload at localhost:3000
 $ npm run dev
@@ -23,22 +19,4 @@ $ npm start
 $ npm run generate
 ```
 
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
-
-## Demo
-
-http://wallet48gh23s.z31.web.core.windows.net/
-
-## Function
-
-- Transfer Transaction
-- Register Namespace
-- Register SubNamespace
-- Create Mosaic
-- Secret Lock Transaction
-- Secret Proof Transaction
-- Convert to Multisig
-- Modify Multisig
-- Escrow with Aggregate Bonded Transaction
-- Cosignature Transaction
-- Cosignature Transaction of Multisig
+For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).

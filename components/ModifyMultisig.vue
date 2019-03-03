@@ -76,121 +76,117 @@
 </template>
 
 <script>
-  import AggregatetxHistory from './AggregatetxHistory.vue'
-  import {
-    Deadline, UInt64, NetworkType, Password, TransactionHttp, XEM, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-    MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener
-  } from 'nem2-sdk';
-  import { filter, timeout } from 'rxjs/operators';
+import {
+  Deadline, UInt64, NetworkType, TransactionHttp, XEM, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener
+} from 'nem2-sdk'
+import { filter, timeout } from 'rxjs/operators'
+import AggregatetxHistory from './AggregatetxHistory.vue'
 
-  export default {
-    name: "ModifyMultisig",
-    components: {
-      AggregatetxHistory
+export default {
+  name: 'ModifyMultisig',
+  components: {
+    AggregatetxHistory
+  },
+  props: [
+    'endpoint',
+    'wallet',
+    'walletPassword',
+    'navTargetId'
+  ],
+  data() {
+    return {
+      d_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
+      d_cosignatories: [
+        { pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C', isAdd: false }
+      ],
+      d_additionalModificationType: false,
+      d_additionalModificationPubkey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      d_minApprovalDelta: -1,
+      d_minRemovalDelta: -1,
+      d_history: []
+    }
+  },
+  methods: {
+    d_deleteModification: function (index) {
+      this.d_cosignatories.splice(index, 1)
     },
-    props: [
-      "endpoint",
-      "wallet",
-      "walletPassword",
-      "navTargetId",
-    ],
-    data() {
-      return {
-        d_multisigPublicKey: "AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26",
-        d_cosignatories: [
-          {pubKey: "5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C", isAdd: false},
+    d_addModification: function (event) {
+      this.d_cosignatories.push({
+        pubKey: this.d_additionalModificationPubkey,
+        isAdd: this.d_additionalModificationType
+      })
+      this.d_additionalModificationPubkey = ''
+      this.d_additionalModificationType = false
+    },
+    d_announceHandler: function (event) {
+      const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
+      const account = this.wallet.open(this.walletPassword)
+      const endpoint = this.endpoint
+      const wsEndpoint = endpoint.replace('http', 'ws')
+      const listener = new Listener(wsEndpoint, WebSocket)
+      const minApprovalDelta = this.d_minApprovalDelta
+      const minRemovalDelta = this.d_minRemovalDelta
+      const cosignatories = this.d_cosignatories
+      const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
+        Deadline.create(),
+        minApprovalDelta,
+        minRemovalDelta,
+        cosignatories.map((co) => {
+          return new MultisigCosignatoryModification(
+            co.isAdd ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
+            PublicAccount.createFromPublicKey(co.pubKey, NetworkType.MIJIN_TEST)
+          )
+        }),
+        NetworkType.MIJIN_TEST
+      )
+      const aggregateTx = AggregateTransaction.createBonded(
+        Deadline.create(23),
+        [
+          modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
         ],
-        d_additionalModificationType: false,
-        d_additionalModificationPubkey: "3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57",
-        d_minApprovalDelta: -1,
-        d_minRemovalDelta: -1,
-        d_history: [],
+        NetworkType.MIJIN_TEST
+      )
+      const signedAggregateTx = account.sign(aggregateTx)
+      const lockFundsTx = LockFundsTransaction.create(
+        Deadline.create(23),
+        XEM.createRelative(10),
+        UInt64.fromUint(480),
+        signedAggregateTx,
+        NetworkType.MIJIN_TEST
+      )
+      const signedLockFundsTx = account.sign(lockFundsTx)
+      const txHttp = new TransactionHttp(endpoint)
+      listener.open().then(() => {
+        return txHttp.announce(signedLockFundsTx).toPromise()
+      }).then(() => {
+        return new Promise((resolve, reject) => {
+          listener.confirmed(account.address).pipe(
+            timeout(90000),
+            filter((transaction) => {
+              return transaction.transactionInfo !== undefined &&
+                  transaction.transactionInfo.hash === signedLockFundsTx.hash
+            })
+          ).subscribe(
+            result => resolve(result),
+            error => reject(error)
+          )
+        })
+      }).then(() => {
+        return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
+      }).finally(() => {
+        listener.close()
+      })
+      const historyData = {
+        agHash: signedAggregateTx.hash,
+        agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+        lfHash: signedLockFundsTx.hash,
+        lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`
       }
-    },
-    methods: {
-      d_deleteModification: function(index) {
-        this.d_cosignatories.splice(index, 1);
-      },
-      d_addModification: function(event) {
-        this.d_cosignatories.push({
-          pubKey: this.d_additionalModificationPubkey,
-          isAdd: this.d_additionalModificationType
-        });
-        this.d_additionalModificationPubkey = "";
-        this.d_additionalModificationType = false;
-      },
-      d_announceHandler: function (event) {
-        const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey);
-        const account = this.wallet.open(this.walletPassword);
-        const endpoint = this.endpoint;
-        const wsEndpoint = endpoint.replace("http", "ws");
-        const listener = new Listener(wsEndpoint, WebSocket);
-        const minApprovalDelta = this.d_minApprovalDelta;
-        const minRemovalDelta = this.d_minRemovalDelta;
-        const cosignatories = this.d_cosignatories;
-        let modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
-          Deadline.create(),
-          minApprovalDelta,
-          minRemovalDelta,
-          cosignatories.map((co) => {
-            return new MultisigCosignatoryModification(
-              co.isAdd ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
-              PublicAccount.createFromPublicKey(co.pubKey, NetworkType.MIJIN_TEST)
-            );
-          }),
-          NetworkType.MIJIN_TEST
-        );
-        let aggregateTx = AggregateTransaction.createBonded(
-          Deadline.create(23),
-          [
-            modifyMultisigAccountTx.toAggregate(multisigPublicAccount),
-          ],
-          NetworkType.MIJIN_TEST
-        );
-        let signedAggregateTx = account.sign(aggregateTx);
-        let lockFundsTx = LockFundsTransaction.create(
-          Deadline.create(23),
-          XEM.createRelative(10),
-          UInt64.fromUint(480),
-          signedAggregateTx,
-          NetworkType.MIJIN_TEST
-        );
-        let signedLockFundsTx = account.sign(lockFundsTx);
-        let txHttp = new TransactionHttp(endpoint);
-        listener.open().then(() => {
-          return txHttp.announce(signedLockFundsTx).toPromise();
-        }).then(() => {
-          return new Promise((resolve, reject) => {
-            listener.confirmed(account.address).pipe(
-              timeout(90000),
-              filter((transaction) => {
-                return transaction.transactionInfo !== undefined
-                  && transaction.transactionInfo.hash === signedLockFundsTx.hash
-              }),
-            ).subscribe(
-              result => resolve(result),
-              error => reject(error)
-            );
-          });
-        }).then(() => {
-          return txHttp.announceAggregateBonded(signedAggregateTx).toPromise();
-        }).then((result) => {
-          console.log(result);
-        }).catch((error) => {
-          console.error(error);
-        }).finally(() => {
-          listener.close()
-        });
-        let historyData = {
-          agHash: signedAggregateTx.hash,
-          agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
-          lfHash: signedLockFundsTx.hash,
-          lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`,
-        };
-        this.d_history.push(historyData);
-      },
+      this.d_history.push(historyData)
     }
   }
+}
 </script>
 
 <style scoped>

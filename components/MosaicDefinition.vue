@@ -42,88 +42,88 @@
 </template>
 
 <script>
-  import TxHistory from './TxHistory.vue'
-  import {
-    Deadline, UInt64, NetworkType, Password, TransactionHttp,
-    MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
-    AggregateTransaction} from 'nem2-sdk';
+import {
+  Deadline, UInt64, NetworkType, TransactionHttp,
+  MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
+  AggregateTransaction } from 'nem2-sdk'
+import TxHistory from './TxHistory.vue'
 
-  export default {
-    name: "",
-    components: {
-      TxHistory
-    },
-    props: [
-      "endpoint",
-      "wallet",
-      "walletPassword",
-      "navTargetId",
-    ],
-    data() {
-      return {
-        m_name: "bar",
-        m_namespace: "foo",
-        m_supplyMutable: true,
-        m_transferable: true,
-        m_levyMutable: false,
-        m_divisibility: 0,
-        m_duration: 10,
-        m_delta: 100,
-        m_history: [],
+export default {
+  name: '',
+  components: {
+    TxHistory
+  },
+  props: [
+    'endpoint',
+    'wallet',
+    'walletPassword',
+    'navTargetId'
+  ],
+  data() {
+    return {
+      m_name: 'bar',
+      m_namespace: 'foo',
+      m_supplyMutable: true,
+      m_transferable: true,
+      m_levyMutable: false,
+      m_divisibility: 0,
+      m_duration: 10,
+      m_delta: 100,
+      m_history: []
+    }
+  },
+  methods: {
+    m_announceHandler: function (event) {
+      const namespace = this.m_namespace
+      const mosaic = this.m_name
+      const duration = this.m_duration
+      const divisibility = this.m_divisibility
+      const supplyMutable = this.m_supplyMutable
+      const transferable = this.m_transferable
+      const levyMutable = this.levyMutable
+      const delta = this.m_delta
+      const account = this.wallet.open(this.walletPassword)
+      const endpoint = this.endpoint
+      const mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
+        Deadline.create(),
+        mosaic,
+        namespace,
+        MosaicProperties.create({
+          supplyMutable: supplyMutable,
+          transferable: transferable,
+          levyMutable: levyMutable,
+          divisibility: divisibility,
+          duration: UInt64.fromUint(duration)
+        }),
+        NetworkType.MIJIN_TEST
+      )
+      const mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
+        Deadline.create(),
+        mosaicDefinitionTransaction.mosaicId,
+        MosaicSupplyType.Increase,
+        UInt64.fromUint(delta),
+        NetworkType.MIJIN_TEST
+      )
+      const aggregateTransaction = AggregateTransaction.createComplete(
+        Deadline.create(),
+        [
+          mosaicDefinitionTransaction.toAggregate(account.publicAccount),
+          mosaicSupplyChangeTransaction.toAggregate(account.publicAccount)
+        ],
+        NetworkType.MIJIN_TEST,
+        []
+      )
+      const signedTx = account.sign(aggregateTransaction)
+      const txHttp = new TransactionHttp(endpoint)
+      txHttp.announce(signedTx)
+      const historyData = {
+        hash: signedTx.hash,
+        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
       }
-    },
-    methods: {
-      m_announceHandler: function(event) {
-        const namespace = this.m_namespace;
-        const mosaic = this.m_name;
-        const duration = this.m_duration;
-        const divisibility = this.m_divisibility;
-        const supplyMutable = this.m_supplyMutable;
-        const transferable = this.m_transferable;
-        const levyMutable = this.levyMutable;
-        const delta = this.m_delta;
-        const account = this.wallet.open(this.walletPassword);
-        const endpoint = this.endpoint;
-        let mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
-          Deadline.create(),
-          mosaic,
-          namespace,
-          MosaicProperties.create({
-            supplyMutable: supplyMutable,
-            transferable: transferable,
-            levyMutable: levyMutable,
-            divisibility: divisibility,
-            duration: UInt64.fromUint(duration),
-          }),
-          NetworkType.MIJIN_TEST,
-        );
-        let mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
-          Deadline.create(),
-          mosaicDefinitionTransaction.mosaicId,
-          MosaicSupplyType.Increase,
-          UInt64.fromUint(delta),
-          NetworkType.MIJIN_TEST,
-        );
-        let aggregateTransaction = AggregateTransaction.createComplete(
-          Deadline.create(),
-          [
-            mosaicDefinitionTransaction.toAggregate(account.publicAccount),
-            mosaicSupplyChangeTransaction.toAggregate(account.publicAccount),
-          ],
-          NetworkType.MIJIN_TEST,
-          []
-        );
-        let signedTx = account.sign(aggregateTransaction);
-        let txHttp = new TransactionHttp(endpoint);
-        txHttp.announce(signedTx).subscribe(console.log, console.error);
-        let historyData = {
-          hash: signedTx.hash,
-          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-        };
-        this.m_history.push(historyData);
-      },
+      this.m_history.push(historyData)
     }
   }
+}
 </script>
 
 <style scoped>

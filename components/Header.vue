@@ -11,10 +11,11 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
-          v-show="wallet.address"
           v-for="n in nav"
-          v-bind:key="n.title"
-          v-on:click="$vuetify.goTo(n.target, {offset: n.offset})">
+          v-show="wallet.address"
+          :key="n.title"
+          @click="$vuetify.goTo(n.target, {offset: n.offset})"
+        >
           <v-list-tile-action>
             <v-icon>{{ n.icon }}</v-icon>
           </v-list-tile-action>
@@ -25,25 +26,25 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="indigo" dark fixed app>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>Catapult Account Interface</v-toolbar-title>
     </v-toolbar>
   </header>
 </template>
 
 <script>
-    export default {
-      name: "Header",
-      props: [
-        "wallet",
-        "nav"
-      ],
-      data() {
-        return {
-          drawer: false,
-        }
-      }
+export default {
+  name: 'Header',
+  props: [
+    'wallet',
+    'nav'
+  ],
+  data() {
+    return {
+      drawer: false
     }
+  }
+}
 </script>
 
 <style scoped>

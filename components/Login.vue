@@ -44,72 +44,72 @@
 
 <script>
 
-  import {Account, NetworkType, Password, SimpleWallet} from 'nem2-sdk';
-  const generator = require('generate-password');
+import { Account, NetworkType, Password, SimpleWallet } from 'nem2-sdk'
+const generator = require('generate-password')
 
-  export default {
-    name: "Login",
-    props: [
-      "navTargetId",
-      "endpoints",
-      "defaultEndpoint",
-      "defaultPrivateKey",
-      "createdWallet",
-      "createdWalletPassword",
-    ],
-    created: function() {
-      this.endpoint = this.defaultEndpoint;
-      this.privateKey = this.defaultPrivateKey;
-      this.password = new Password("cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt");
-    },
-    data() {
-      return {
-        endpoint: "",
-        userEndpoint: "",
-        privateKey: "",
-        canEndpointEditable: false,
+export default {
+  name: 'Login',
+  props: [
+    'navTargetId',
+    'endpoints',
+    'defaultEndpoint',
+    'defaultPrivateKey',
+    'createdWallet',
+    'createdWalletPassword'
+  ],
+  data() {
+    return {
+      endpoint: '',
+      userEndpoint: '',
+      privateKey: '',
+      canEndpointEditable: false
+    }
+  },
+  watch: {
+    createdWallet: {
+      handler: function (newVal, oldVal) {
+        if (oldVal.address && !newVal.address) {
+          this.privateKey = oldVal.open(this.createdWalletPassword).privateKey
+          this.$emit('deletePassword')
+        }
       }
     },
-    watch: {
-      createdWallet: {
-        handler: function(newVal, oldVal) {
-          if (oldVal.address && !newVal.address) {
-            this.privateKey = oldVal.open(this.createdWalletPassword).privateKey;
-            this.$emit("deletePassword");
-          }
-        }
-      },
-      endpoint: {
-        handler: function(newVal, oldVal) {
-          this.canEndpointEditable = !this.endpoints.map(endpoint => endpoint.url).includes(newVal);
-        }
-      },
+    endpoint: {
+      handler: function (newVal, oldVal) {
+        this.canEndpointEditable = !this.endpoints.map(endpoint => endpoint.url).includes(newVal)
+      }
+    }
+  },
+  created: function () {
+    this.endpoint = this.defaultEndpoint
+    this.privateKey = this.defaultPrivateKey
+    this.password = new Password('cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt')
+  },
+  methods: {
+    regenPrivateKey: function (event) {
+      this.privateKey = Account.generateNewAccount(NetworkType.MIJIN_TEST).privateKey
     },
-    methods: {
-      regenPrivateKey: function(event) {
-        this.privateKey = Account.generateNewAccount(NetworkType.MIJIN_TEST).privateKey;
-      },
-      createWallet: function(event) {
-        const password = new Password(
-          generator.generate({
-            length: 50,
-            numbers: true,
-            symbols: true,
-          })
-        );
-        const name = "myWallet";
-        const wallet = SimpleWallet.createFromPrivateKey(
-          name,
-          password,
-          this.privateKey,
-          NetworkType.MIJIN_TEST
-        );
-        this.privateKey = "";
-        const endpoint = this.endpoint || this.userEndpoint;
-        this.$emit("walletCreated", {wallet, password, endpoint});
-      },
+    createWallet: function (event) {
+      const password = new Password(
+        generator.generate({
+          length: 50,
+          numbers: true,
+          symbols: true
+        })
+      )
+      const name = 'myWallet'
+      const wallet = SimpleWallet.createFromPrivateKey(
+        name,
+        password,
+        this.privateKey,
+        NetworkType.MIJIN_TEST
+      )
+      this.privateKey = ''
+      const endpoint = this.endpoint || this.userEndpoint
+      this.$emit('walletCreated', { wallet, password, endpoint })
     }
   }
+}
 </script>
 
 <style scoped>

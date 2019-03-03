@@ -5,7 +5,6 @@
         header.display-1 NF Catapult Testnet Beta
         p.blue-grey--text.text--darken-3 Welcome to the Nem Foundation Catapult Test Net
 
-
         v-btn(slot="activator" color="indigo lighten-2" dark href="https://forum.nem.io/t/guide-to-using-nf-catapult-testnet-beta-wallet/22045" target="_blank").white--text View Guide
           v-icon play_circle_outline
 
@@ -13,31 +12,31 @@
 
 <script>
 
-  import Tutorial from '~/components/Tutorial.vue'
+import Tutorial from '~/components/Tutorial.vue'
 
-  export default {
-    components: {
-      Tutorial
-    },
-    name: "Jumbo",
-    props: [
-      "navTargetId"
-    ],
-    data() {
-      return {
+export default {
+  name: 'Jumbo',
+  components: {
+    Tutorial
+  },
+  props: [
+    'navTargetId'
+  ],
+  data() {
+    return {
 
-      }
-    },
-    watch: {
-      wallet: {
-        handler: function() {
-
-        }
-      }
-    },
-    methods: {
     }
+  },
+  watch: {
+    wallet: {
+      handler: function () {
+
+      }
+    }
+  },
+  methods: {
   }
+}
 </script>
 
 <style scoped>

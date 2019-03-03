@@ -33,60 +33,60 @@
 </template>
 
 <script>
-  import TxHistory from './TxHistory.vue'
-  import {
-    Address, Deadline, UInt64, NetworkType, Mosaic, MosaicId,
-    TransactionHttp, SecretLockTransaction, HashType} from 'nem2-sdk';
+import {
+  Address, Deadline, UInt64, NetworkType, Mosaic, MosaicId,
+  TransactionHttp, SecretLockTransaction, HashType } from 'nem2-sdk'
+import TxHistory from './TxHistory.vue'
 
-  export default {
-    name: "SecretLock",
-    components: {
-      TxHistory
-    },
-    props: [
-      "endpoint",
-      "wallet",
-      "walletPassword",
-      "navTargetId",
-    ],
-    data() {
-      return {
-        l_mosaic: "nem:xem::10000000",
-        l_recipient: "SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE",
-        l_duration: 240,
-        l_history: [],
-        l_secret: "B271D49970445F078CAD6979B75642B55C14DFAADF8067FE450332C63F60DE622B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D",
+export default {
+  name: 'SecretLock',
+  components: {
+    TxHistory
+  },
+  props: [
+    'endpoint',
+    'wallet',
+    'walletPassword',
+    'navTargetId'
+  ],
+  data() {
+    return {
+      l_mosaic: 'nem:xem::10000000',
+      l_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
+      l_duration: 240,
+      l_history: [],
+      l_secret: 'B271D49970445F078CAD6979B75642B55C14DFAADF8067FE450332C63F60DE622B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D'
+    }
+  },
+  methods: {
+    l_announceHandler: function (event) {
+      const account = this.wallet.open(this.walletPassword)
+      const endpoint = this.endpoint
+      const duration = this.l_duration
+      const secret = this.l_secret
+      const recipient = this.l_recipient
+      const nameAndAmount = this.l_mosaic.split('::')
+      const mosaic = new Mosaic(new MosaicId(nameAndAmount[0]), UInt64.fromUint(nameAndAmount[1]))
+      const secretLockTransaction = SecretLockTransaction.create(
+        Deadline.create(),
+        mosaic,
+        UInt64.fromUint(duration),
+        HashType.SHA3_512,
+        secret,
+        Address.createFromRawAddress(recipient),
+        NetworkType.MIJIN_TEST
+      )
+      const signedTx = account.sign(secretLockTransaction)
+      const txHttp = new TransactionHttp(endpoint)
+      txHttp.announce(signedTx)
+      const historyData = {
+        hash: signedTx.hash,
+        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
       }
-    },
-    methods: {
-      l_announceHandler: function(event) {
-        const account = this.wallet.open(this.walletPassword);
-        const endpoint = this.endpoint;
-        const duration = this.l_duration;
-        const secret = this.l_secret;
-        const recipient = this.l_recipient;
-        const nameAndAmount = this.l_mosaic.split("::");
-        const mosaic =  new Mosaic(new MosaicId(nameAndAmount[0]), UInt64.fromUint(nameAndAmount[1]));
-        let secretLockTransaction = SecretLockTransaction.create(
-          Deadline.create(),
-          mosaic,
-          UInt64.fromUint(duration),
-          HashType.SHA3_512,
-          secret,
-          Address.createFromRawAddress(recipient),
-          NetworkType.MIJIN_TEST
-        );
-        let signedTx = account.sign(secretLockTransaction);
-        let txHttp = new TransactionHttp(endpoint);
-        txHttp.announce(signedTx).subscribe(console.log, console.error);
-        let historyData = {
-          hash: signedTx.hash,
-          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-        };
-        this.l_history.push(historyData);
-      },
+      this.l_history.push(historyData)
     }
   }
+}
 </script>
 
 <style scoped>
