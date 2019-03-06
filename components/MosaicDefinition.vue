@@ -5,15 +5,11 @@
         div.title Create Mosaic
       v-card-text
         v-text-field(
-          label="Namespace"
-          v-model="m_namespace"
+          label="Nonce (Number)"
+          v-model="m_nonce"
           required
-          placeholder="ex). foo")
-        v-text-field(
-          label="Mosaic Name"
-          v-model="m_name"
-          required
-          placeholder="ex). bar")
+          type="number"
+          placeholder="ex). 35426")
         v-text-field(
           label="Supply Amount"
           v-model="m_delta"
@@ -43,13 +39,13 @@
 
 <script>
 import {
-  Deadline, UInt64, NetworkType, TransactionHttp,
+  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
   AggregateTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
-  name: '',
+  name: 'MosaicDefinition',
   components: {
     TxHistory
   },
@@ -61,8 +57,7 @@ export default {
   ],
   data() {
     return {
-      m_name: 'bar',
-      m_namespace: 'foo',
+      m_nonce: '0',
       m_supplyMutable: true,
       m_transferable: true,
       m_levyMutable: false,
@@ -74,35 +69,32 @@ export default {
   },
   methods: {
     m_announceHandler: function (event) {
-      const namespace = this.m_namespace
-      const mosaic = this.m_name
+      const networkType = this.wallet.network
+      const nonce = Number(this.m_nonce)
+      const mosaicNonce = new MosaicNonce(this.$convert.numberToUint8_4(nonce))
       const duration = this.m_duration
-      const divisibility = this.m_divisibility
-      const supplyMutable = this.m_supplyMutable
-      const transferable = this.m_transferable
-      const levyMutable = this.levyMutable
       const delta = this.m_delta
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
       const mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
         Deadline.create(),
-        mosaic,
-        namespace,
+        mosaicNonce,
+        MosaicId.createFromNonce(mosaicNonce, account.publicAccount),
         MosaicProperties.create({
-          supplyMutable: supplyMutable,
-          transferable: transferable,
-          levyMutable: levyMutable,
-          divisibility: divisibility,
+          supplyMutable: this.m_supplyMutable,
+          transferable: this.m_transferable,
+          levyMutable: this.levyMutable,
+          divisibility: this.m_divisibility,
           duration: UInt64.fromUint(duration)
         }),
-        NetworkType.MIJIN_TEST
+        networkType
       )
       const mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
         Deadline.create(),
         mosaicDefinitionTransaction.mosaicId,
         MosaicSupplyType.Increase,
         UInt64.fromUint(delta),
-        NetworkType.MIJIN_TEST
+        networkType
       )
       const aggregateTransaction = AggregateTransaction.createComplete(
         Deadline.create(),
@@ -110,7 +102,7 @@ export default {
           mosaicDefinitionTransaction.toAggregate(account.publicAccount),
           mosaicSupplyChangeTransaction.toAggregate(account.publicAccount)
         ],
-        NetworkType.MIJIN_TEST,
+        networkType,
         []
       )
       const signedTx = account.sign(aggregateTransaction)

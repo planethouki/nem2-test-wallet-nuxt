@@ -6,11 +6,11 @@
           v-layout(align-baseline)
             span.title Address
             v-btn(
-              fab
-              small
-              flat
-              @click="copyWalletAddressHandler")
-                v-icon filter_none
+            fab
+            small
+            flat
+            @click="copyWalletAddressHandler")
+              v-icon filter_none
           v-layout(overflow-hidden)
             v-list
               v-list-tile
@@ -31,17 +31,8 @@
           v-layout(align-baseline)
             div
               span.title Mosaics
-              span.caption
-                a(v-bind:href="faucetUrl" target="_blank" v-show="faucetUrl") Get XEM
-            v-spacer
-            v-btn(
-              fab
-              small
-              flat
-              @click="reloadMosaics")
-              v-icon cached
           v-layout(column)
-            v-list-tile(v-for="m in mosaicAmountTexts" v-bind:key="m")
+            v-list-tile(v-for="m in mosaicTexts" v-bind:key="m")
               v-list-tile-content
                 v-list-tile-title
                   span {{ m }}
@@ -49,12 +40,25 @@
         v-btn(
         color="blue"
         class="white--text"
+        @click="reloadAccount")
+          v-icon cached
+        v-btn(
+        color="blue"
+        class="white--text"
+        v-show="faucetUrl"
+        v-bind:href="faucetUrl"
+        target="_blank" ) Faucet
+        v-spacer
+        v-btn(
+        color="pink"
+        class="white--text"
         @click="logoutWallet") logout
-      v-card-text
+      v-card-text(v-show="alert")
         v-alert(type="error" :value="alert") {{ alert }}
 </template>
 
 <script>
+/* eslint-disable */
 
 import { AccountHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService } from 'nem2-sdk'
 import { flatMap } from 'rxjs/operators'
@@ -70,25 +74,17 @@ export default {
   ],
   data() {
     return {
-      mosaicAmountViews: [],
+      mosaics: [],
       publicKey: '',
       alert: ''
     }
   },
   computed: {
-    mosaicAmountTexts: function () {
-      return this.mosaicAmountViews.map(function (mosaicAmountView) {
-        const divisibility = mosaicAmountView.mosaicInfo.properties.divisibility
-        const amount = mosaicAmountView.amount.compact()
-        const relAmount = amount / (10 ** divisibility)
-        return mosaicAmountView.namespaceName +
-            ':' +
-            mosaicAmountView.mosaicName +
+    mosaicTexts: function () {
+      return this.mosaics.length === 0 ? ["empty"] : this.mosaics.map(function (mosaic) {
+        return mosaic.id.id.toHex().toUpperCase() +
             '::' +
-            amount.toString(10) +
-            ' (' +
-            relAmount.toString(10) +
-            ') '
+            mosaic.amount.compact()
       })
     }
   },
@@ -97,16 +93,7 @@ export default {
       handler: function () {
         if (this.wallet.address) {
           this.alert = ''
-          this.reloadMosaics()
-          const accountHttp = new AccountHttp(this.endpoint)
-          accountHttp.getAccountInfo(this.wallet.address).subscribe(
-            (accountInfo) => {
-              this.publicKey = accountInfo.publicKey
-            },
-            () => {
-              this.publicKey = ''
-            }
-          )
+          this.reloadAccount()
         }
       }
     }
@@ -124,29 +111,25 @@ export default {
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
     },
-    reloadMosaics: function (event) {
+    reloadAccount: function (event) {
       if (this.wallet.address) {
-        this.mosaicAmountViews = []
+        this.mosaics = []
+        this.publicKey = ""
         const endpoint = this.endpoint
         const address = this.wallet.address
         const accountHttp = new AccountHttp(endpoint)
-        const mosaicHttp = new MosaicHttp(endpoint)
-        const nameSpaceHttp = new NamespaceHttp(endpoint)
-        const mosaicService = new MosaicService(accountHttp, mosaicHttp, nameSpaceHttp)
         accountHttp.getAccountInfo(address).subscribe(
           (accountInfo) => {
-            const mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [XEM.createAbsolute(0)]
-            mosaicService.mosaicsAmountView(mosaics)
-              .pipe(flatMap(_ => _))
-              .subscribe((mosaicAmountView) => { this.mosaicAmountViews.push(mosaicAmountView) })
+            this.publicKey = accountInfo.publicKey
+            this.mosaics = accountInfo.mosaics
           },
           (error) => {
-            if (!error.message.includes('Not Found')) {
-              this.alert = error.message
+            if (error.toString().includes("Error: Not Found")) {
+              this.publicKey = "0000000000000000000000000000000000000000000000000000000000000000"
+              this.mosaics = []
+            } else {
+              this.alert = error
             }
-            mosaicService.mosaicsAmountView([XEM.createAbsolute(0)])
-              .pipe(flatMap(_ => _))
-              .subscribe((mosaicAmountView) => { this.mosaicAmountViews.push(mosaicAmountView) })
           }
         )
       }

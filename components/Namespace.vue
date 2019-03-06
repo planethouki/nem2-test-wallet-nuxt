@@ -15,6 +15,9 @@
           required
           type="number"
           placeholder="ex). 10")
+        v-text-field(
+          label="Max Fee"
+          v-model="n_fee")
       v-card-actions
         v-btn(
           color="blue"
@@ -25,7 +28,7 @@
 </template>
 
 <script>
-import { Deadline, UInt64, NetworkType, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, NamespaceId, NamespaceType, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -43,20 +46,24 @@ export default {
     return {
       n_name: 'foo',
       n_duration: 60,
+      n_fee: 0,
       n_history: []
     }
   },
   methods: {
     n_announceHandler: function (event) {
-      const namespace = this.n_name
-      const duration = this.n_duration
+      const namespaceName = this.n_name
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
-      const registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
+      const registerNamespaceTransaction = new RegisterNamespaceTransaction(
+        this.wallet.network,
+        this.$TransactionVersion.REGISTER_NAMESPACE,
         Deadline.create(),
-        namespace,
-        UInt64.fromUint(duration),
-        NetworkType.MIJIN_TEST
+        UInt64.fromUint(this.n_fee),
+        NamespaceType.RootNamespace,
+        namespaceName,
+        new NamespaceId(namespaceName),
+        UInt64.fromUint(this.n_duration)
       )
       const signedTx = account.sign(registerNamespaceTransaction)
       const txHttp = new TransactionHttp(endpoint)

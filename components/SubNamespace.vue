@@ -14,6 +14,9 @@
           v-model="s_parentNamespace"
           required
           placeholder="ex). foo")
+        v-text-field(
+          label="Max Fee"
+          v-model="s_fee")
       v-card-actions
         v-btn(
           color="blue"
@@ -24,7 +27,7 @@
 </template>
 
 <script>
-import { Deadline, NetworkType, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
+import { Deadline, NamespaceType, TransactionHttp, RegisterNamespaceTransaction, UInt64 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -40,22 +43,34 @@ export default {
   ],
   data() {
     return {
-      s_name: 'sub',
+      s_name: 'bar',
       s_parentNamespace: 'foo',
+      s_fee: 0,
       s_history: []
     }
   },
   methods: {
     s_announceHandler: function (event) {
       const namespaceName = this.s_name
-      const parentNamespace = this.s_parentNamespace
+      const parentNamespaceName = this.s_parentNamespace
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
-      const registerNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
+      const dummyRegisterNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
         Deadline.create(),
         namespaceName,
-        parentNamespace,
-        NetworkType.MIJIN_TEST
+        parentNamespaceName,
+        this.wallet.network
+      )
+      const registerNamespaceTransaction = new RegisterNamespaceTransaction(
+        this.wallet.network,
+        this.$TransactionVersion.REGISTER_NAMESPACE,
+        Deadline.create(),
+        UInt64.fromUint(this.s_fee),
+        NamespaceType.SubNamespace,
+        namespaceName,
+        dummyRegisterNamespaceTransaction.namespaceId,
+        undefined,
+        dummyRegisterNamespaceTransaction.parentId
       )
       const signedTx = account.sign(registerNamespaceTransaction)
       const txHttp = new TransactionHttp(endpoint)

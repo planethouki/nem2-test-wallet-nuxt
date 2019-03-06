@@ -83,7 +83,6 @@ export default {
   created: function () {
     this.endpoint = this.defaultEndpoint
     this.privateKey = this.defaultPrivateKey
-    this.password = new Password('cRb3Q$c7Mf5SPGa3PfnTmBKHHFdv3G!#g6wwXktwJm$BC*M^cjt')
   },
   methods: {
     regenPrivateKey: function (event) {
