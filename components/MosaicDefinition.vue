@@ -28,6 +28,11 @@
           required
           type="number"
           placeholder="ex). 10")
+        v-text-field(
+          label="Max Fee"
+          v-model="m_fee"
+          required
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -39,7 +44,7 @@
 
 <script>
 import {
-  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
+  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce, TransactionType,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
   AggregateTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -64,6 +69,7 @@ export default {
       m_divisibility: 0,
       m_duration: 10,
       m_delta: 100,
+      m_fee: 0,
       m_history: []
     }
   },
@@ -96,13 +102,16 @@ export default {
         UInt64.fromUint(delta),
         networkType
       )
-      const aggregateTransaction = AggregateTransaction.createComplete(
+      const aggregateTransaction = new AggregateTransaction(
+        networkType,
+        TransactionType.AGGREGATE_COMPLETE,
+        this.$TransactionVersion.AGGREGATE_COMPLETE,
         Deadline.create(),
+        UInt64.fromUint(this.m_fee),
         [
           mosaicDefinitionTransaction.toAggregate(account.publicAccount),
           mosaicSupplyChangeTransaction.toAggregate(account.publicAccount)
         ],
-        networkType,
         []
       )
       const signedTx = account.sign(aggregateTransaction)
