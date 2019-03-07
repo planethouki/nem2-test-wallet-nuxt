@@ -63,7 +63,7 @@
 
 <script>
 import {
-  Deadline, NetworkType, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
+  Deadline, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
   MultisigCosignatoryModificationType, PublicAccount, AccountHttp } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -132,6 +132,7 @@ export default {
     u_announceHandler: function (event) {
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
+      const networkType = this.wallet.network
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta
       const cosignatories = this.u_cosignatories
@@ -142,10 +143,10 @@ export default {
         cosignatories.map((co) => {
           return new MultisigCosignatoryModification(
             MultisigCosignatoryModificationType.Add,
-            PublicAccount.createFromPublicKey(co, NetworkType.MIJIN_TEST)
+            PublicAccount.createFromPublicKey(co, networkType)
           )
         }),
-        NetworkType.MIJIN_TEST
+        networkType
       )
       const signedTx = account.sign(tx)
       const txHttp = new TransactionHttp(endpoint)

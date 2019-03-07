@@ -77,7 +77,7 @@
 
 <script>
 import {
-  Deadline, UInt64, NetworkType, TransactionHttp, XEM, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
+  Deadline, UInt64, TransactionHttp, XEM, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
   MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
@@ -123,6 +123,7 @@ export default {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
+      const network = this.wallet.network
       const wsEndpoint = endpoint.replace('http', 'ws')
       const listener = new Listener(wsEndpoint, WebSocket)
       const minApprovalDelta = this.d_minApprovalDelta
@@ -135,17 +136,17 @@ export default {
         cosignatories.map((co) => {
           return new MultisigCosignatoryModification(
             co.isAdd ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
-            PublicAccount.createFromPublicKey(co.pubKey, NetworkType.MIJIN_TEST)
+            PublicAccount.createFromPublicKey(co.pubKey, network)
           )
         }),
-        NetworkType.MIJIN_TEST
+        network
       )
       const aggregateTx = AggregateTransaction.createBonded(
         Deadline.create(23),
         [
           modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
         ],
-        NetworkType.MIJIN_TEST
+        network
       )
       const signedAggregateTx = account.sign(aggregateTx)
       const lockFundsTx = LockFundsTransaction.create(
@@ -153,7 +154,7 @@ export default {
         XEM.createRelative(10),
         UInt64.fromUint(480),
         signedAggregateTx,
-        NetworkType.MIJIN_TEST
+        network
       )
       const signedLockFundsTx = account.sign(lockFundsTx)
       const txHttp = new TransactionHttp(endpoint)

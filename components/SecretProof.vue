@@ -4,15 +4,26 @@
       v-card-title
         div.title Secret Proof Transaction
       v-card-text
+        v-radio-group(label="Hash Type" v-model="p_hashType" row)
+          v-radio(
+          v-for="ht in p_hashTypes"
+          :key="ht.type"
+          :label="ht.label"
+          :value="ht.type")
         v-text-field(
           label="Proof (Hex value for unlock)"
           v-model="p_proof"
           required
           placeholder="ex). 095B4FCD1F88F1785E59")
         v-text-field(
-          label="Secret (SHA3_512 for Proof)"
+          label="Secret (Hash for Proof)"
           v-model="p_secret"
           disabled)
+        v-text-field(
+          label="Max Fee"
+          v-model="p_fee"
+          required
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -23,8 +34,7 @@
 </template>
 
 <script>
-import { Deadline, NetworkType, TransactionHttp, SecretProofTransaction, HashType } from 'nem2-sdk'
-import { sha3_512 as sha3n512 } from 'js-sha3'
+import { Deadline, SecretProofTransaction, HashType, UInt64 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -40,18 +50,31 @@ export default {
   ],
   data() {
     return {
+      p_hashType: 0,
+      p_hashTypes: [
+        { type: HashType.Op_Sha3_256, label: 'Sha3-256' },
+        { type: HashType.Op_Keccak_256, label: 'Keccak256' },
+        { type: HashType.Op_Hash_256, label: 'Hash256' },
+        { type: HashType.Op_Hash_160, label: 'Hash160' }
+      ],
       p_proof: '095B4FCD1F88F1785E59',
+      p_fee: 0,
       p_history: []
     }
   },
   computed: {
     p_secret: function () {
-      const proof = this.p_proof
-      const hash = sha3n512.create()
-      try {
-        return hash.update(Buffer.from(proof, 'hex')).hex().toUpperCase()
-      } catch (e) {
-        return e.message
+      switch (this.p_hashType) {
+        case HashType.Op_Sha3_256:
+          return this.$hash.sha3(this.p_proof)
+        case HashType.Op_Keccak_256:
+          return this.$hash.keccac(this.p_proof)
+        case HashType.Op_Hash_256:
+          return this.$hash.hash256(this.p_proof)
+        case HashType.Op_Hash_160:
+          return this.$hash.hash160(this.p_proof)
+        default:
+          return 'error'
       }
     }
   },
@@ -59,21 +82,32 @@ export default {
     p_announceHandler: function (event) {
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
-      const secret = this.p_secret
-      const proof = this.p_proof
-      const secretProofTransaction = SecretProofTransaction.create(
+      const secretProofTransaction = new SecretProofTransaction(
+        this.wallet.network,
+        this.$TransactionVersion.SECRET_PROOF,
         Deadline.create(),
-        HashType.SHA3_512,
-        secret,
-        proof,
-        NetworkType.MIJIN_TEST
+        UInt64.fromUint(this.p_fee),
+        this.p_hashType,
+        this.p_secret,
+        this.p_proof
       )
-      const signedTx = account.sign(secretProofTransaction)
-      const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx)
+      const preSignedTx = account.sign(secretProofTransaction).payload
+      const sizeDec = (this.l_hashType === HashType.Op_Hash_160 ? 143 : 155) + (this.p_proof.length) / 2
+      const size = this.$convert.endian('00000000'.concat(sizeDec.toString(16).toUpperCase()).substr(-8))
+      const signedTxPayload = size + preSignedTx.substr(8)
+      const hash = this.$hash.getSinedTxHash(signedTxPayload)
+      const request = require('request')
+      request({
+        url: `${endpoint}/transaction`,
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        json: { 'payload': signedTxPayload }
+      })
       const historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        hash: hash,
+        apiStatusUrl: `${endpoint}/transaction/${hash}/status`
       }
       this.p_history.push(historyData)
     }
