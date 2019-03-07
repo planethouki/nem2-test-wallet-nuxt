@@ -43,7 +43,8 @@ module.exports = {
     '@/plugins/vuetify',
     '@/plugins/transactionVersion',
     '@/plugins/convert',
-    '@/plugins/hash'
+    '@/plugins/hash',
+    '@/plugins/crypto'
   ],
 
   /*

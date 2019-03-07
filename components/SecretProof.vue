@@ -57,7 +57,7 @@ export default {
         { type: HashType.Op_Hash_256, label: 'Hash256' },
         { type: HashType.Op_Hash_160, label: 'Hash160' }
       ],
-      p_proof: '095B4FCD1F88F1785E59',
+      p_proof: '',
       p_fee: 0,
       p_history: []
     }
@@ -78,6 +78,9 @@ export default {
       }
     }
   },
+  created: function () {
+    this.p_proof = this.$crypto.random10()
+  },
   methods: {
     p_announceHandler: function (event) {
       const account = this.wallet.open(this.walletPassword)
@@ -91,10 +94,17 @@ export default {
         this.p_secret,
         this.p_proof
       )
-      const preSignedTx = account.sign(secretProofTransaction).payload
-      const sizeDec = (this.l_hashType === HashType.Op_Hash_160 ? 143 : 155) + (this.p_proof.length) / 2
+      const preSignedTxPayload = account.sign(secretProofTransaction).payload
+      const sizeDec = 155 + (this.p_proof.length) / 2
       const size = this.$convert.endian('00000000'.concat(sizeDec.toString(16).toUpperCase()).substr(-8))
-      const signedTxPayload = size + preSignedTx.substr(8)
+      let signedTxPayload
+      if (this.p_hashType === HashType.Op_Hash_160) {
+        const unsignedPayload = size + preSignedTxPayload.substring(8, 282) +
+          '000000000000000000000000' + preSignedTxPayload.substr(282)
+        signedTxPayload = this.$crypto.signTx(unsignedPayload, account)
+      } else {
+        signedTxPayload = size + preSignedTxPayload.substr(8)
+      }
       const hash = this.$hash.getSinedTxHash(signedTxPayload)
       const request = require('request')
       request({
