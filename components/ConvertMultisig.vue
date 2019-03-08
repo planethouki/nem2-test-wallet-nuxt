@@ -16,8 +16,7 @@
           required
           type="number"
           placeholder="ex). 2")
-      v-card-text
-        v-flex
+        v-flex.pt-5
           v-layout(v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap)
             v-flex
               v-layout(align-baseline)
@@ -34,8 +33,7 @@
                   flat
                   v-on:click="u_deleteCosignatory(index)")
                     v-icon delete_forever
-      v-card-title
-        v-flex
+        v-flex.pt-3
           v-layout(align-baseline)
             v-flex
               v-text-field(
@@ -49,6 +47,11 @@
               flat
               v-on:click="u_addCosignatory")
                 v-icon add_box
+        v-text-field.pt-5(
+          label="Max Fee"
+          v-model="u_fee"
+          required
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -64,7 +67,7 @@
 <script>
 import {
   Deadline, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, AccountHttp } from 'nem2-sdk'
+  MultisigCosignatoryModificationType, PublicAccount, AccountHttp, UInt64 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -89,7 +92,8 @@ export default {
       u_minApprovalDelta: 2,
       u_minRemovalDelta: 2,
       u_history: [],
-      u_announceDisabledMessage: ''
+      u_announceDisabledMessage: '',
+      u_fee: 0
     }
   },
   watch: {
@@ -136,8 +140,11 @@ export default {
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta
       const cosignatories = this.u_cosignatories
-      const tx = ModifyMultisigAccountTransaction.create(
+      const tx = new ModifyMultisigAccountTransaction(
+        networkType,
+        this.$TransactionVersion.MODIFY_MULTISIG_ACCOUNT,
         Deadline.create(),
+        UInt64.fromUint(this.u_fee),
         minApprovalDelta,
         minRemovalDelta,
         cosignatories.map((co) => {
@@ -145,8 +152,7 @@ export default {
             MultisigCosignatoryModificationType.Add,
             PublicAccount.createFromPublicKey(co, networkType)
           )
-        }),
-        networkType
+        })
       )
       const signedTx = account.sign(tx)
       const txHttp = new TransactionHttp(endpoint)

@@ -22,8 +22,7 @@
           required
           type="number"
           placeholder="ex). 2")
-      v-card-text
-        v-flex
+        v-flex.pt-4
           v-layout(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap)
             v-flex
               v-layout(align-baseline)
@@ -41,7 +40,6 @@
                   flat
                   v-on:click="d_deleteModification(index)")
                     v-icon delete_forever
-      v-card-title
         v-flex
           v-layout(align-baseline)
             div.mr-1.pr-1
@@ -63,22 +61,41 @@
               flat
               v-on:click="d_addModification")
                 v-icon add_box
-      v-card-text
-        v-text-field(label="Lock Funds Mosaic" value="nem:xem::10000000"  disabled)
-        v-text-field(label="Lock Funds Duration In Blocks" value="480" disabled)
-      v-card-actions
-        v-btn(
-          color="blue"
-          class="white--text"
-          @click="d_announceHandler") announce
-      v-card-text
-        aggregatetx-history(v-bind:history="d_history")
+        v-flex
+          v-text-field(
+            label="Max Fee"
+            v-model="d_fee"
+            required
+            type="number")
+        v-flex.pt-4
+          v-text-field(
+            label="Lock Funds Mosaic (hexMosaicId::absoluteAmount)"
+            placeholder="ex). 85BBEA6CC462B244::10000000"
+            v-model="d_lockMosaic"
+            required)
+          v-text-field(
+            label="Lock Funds Duration In Blocks"
+            placeholder="ex). 480"
+            v-model="d_lockDuration"
+            required)
+          v-text-field(
+            label="Lock Funds Max Fee"
+            v-model="d_lockFee"
+            required
+            type="number")
+        v-card-actions
+          v-btn(
+            color="blue"
+            class="white--text"
+            @click="d_announceHandler") announce
+        v-card-text
+          aggregatetx-history(v-bind:history="d_history")
 </template>
 
 <script>
 import {
-  Deadline, UInt64, TransactionHttp, XEM, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener
+  Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, TransactionType
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from './AggregatetxHistory.vue'
@@ -104,7 +121,11 @@ export default {
       d_additionalModificationPubkey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
       d_minApprovalDelta: -1,
       d_minRemovalDelta: -1,
-      d_history: []
+      d_history: [],
+      d_fee: 0,
+      d_lockFee: 0,
+      d_lockMosaic: '85BBEA6CC462B244::10000000',
+      d_lockDuration: 480
     }
   },
   methods: {
@@ -141,20 +162,26 @@ export default {
         }),
         network
       )
-      const aggregateTx = AggregateTransaction.createBonded(
+      const aggregateTx = new AggregateTransaction(
+        network,
+        TransactionType.AGGREGATE_BONDED,
+        this.$TransactionVersion.AGGREGATE_BONDED,
         Deadline.create(23),
+        UInt64.fromUint(this.d_fee),
         [
           modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
-        ],
-        network
+        ]
       )
       const signedAggregateTx = account.sign(aggregateTx)
-      const lockFundsTx = LockFundsTransaction.create(
+      const lockMosaic = this.$parser.parseMosaics(this.d_lockMosaic)[0]
+      const lockFundsTx = new LockFundsTransaction(
+        network,
+        this.$TransactionVersion.LOCK,
         Deadline.create(23),
-        XEM.createRelative(10),
-        UInt64.fromUint(480),
-        signedAggregateTx,
-        network
+        UInt64.fromUint(this.d_lockFee),
+        lockMosaic,
+        UInt64.fromUint(this.d_lockDuration),
+        signedAggregateTx
       )
       const signedLockFundsTx = account.sign(lockFundsTx)
       const txHttp = new TransactionHttp(endpoint)

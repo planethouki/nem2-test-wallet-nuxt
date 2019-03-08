@@ -27,7 +27,7 @@
 
 <script>
 import {
-  AccountHttp, NetworkType, TransactionHttp, PublicAccount, CosignatureTransaction } from 'nem2-sdk'
+  AccountHttp, TransactionHttp, PublicAccount, CosignatureTransaction } from 'nem2-sdk'
 import { throwIfEmpty, filter, mergeMap } from 'rxjs/operators'
 import TxHistory from './TxHistory.vue'
 
@@ -51,7 +51,8 @@ export default {
   },
   methods: {
     g_announceHandler: function (event) {
-      const multisigPublicAccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey, NetworkType.MIJIN_TEST)
+      const network = this.wallet.network
+      const multisigPublicAccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey, network)
       const account = this.wallet.open(this.walletPassword)
       const hash = this.g_hash
       const endpoint = this.endpoint
