@@ -32,7 +32,7 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, PlainMessage, TransferTransaction, Mosaic, MosaicId,
+  Address, Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp
 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       t_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
-      t_mosaics: '85BBEA6CC462B244::1000000',
+      t_mosaics: '85BBEA6CC462B244::0',
       t_message: 'Hello Nem2!',
       t_fee: 0,
       t_history: []
@@ -61,13 +61,7 @@ export default {
     t_announceHandler: function (event) {
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
-      const mosaics = this.t_mosaics.split(',').map((mosaicRawStr) => {
-        const idAndAmount = mosaicRawStr.trim().split('::')
-        return new Mosaic(
-          new MosaicId(idAndAmount[0]),
-          UInt64.fromUint(Number(idAndAmount[1]))
-        )
-      })
+      const mosaics = this.$parser.parseMosaics(this.t_mosaics)
       const tx = new TransferTransaction(
         this.wallet.network,
         this.$TransactionVersion.TRANSFER,
