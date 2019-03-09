@@ -27,6 +27,8 @@
             Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")
             Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")
             CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")
+            MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")
+            AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")
     Footer
 </template>
 
@@ -45,6 +47,8 @@ import ModifyMultisig from '~/components/ModifyMultisig.vue'
 import Escrow from '~/components/Escrow.vue'
 import Cosignature from '~/components/Cosignature.vue'
 import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
+import MosaicAlias from '~/components/MosaicAlias.vue'
+import AddressAlias from '~/components/AddressAlias.vue'
 
 import Jumbo from '~/components/Jumbo.vue'
 import Header from '~/components/Header.vue'
@@ -67,7 +71,9 @@ export default {
     ModifyMultisig,
     Escrow,
     Cosignature,
-    CosignatureMultisig
+    CosignatureMultisig,
+    MosaicAlias,
+    AddressAlias
   },
   asyncData(context) {
     return {
