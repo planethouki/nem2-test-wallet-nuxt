@@ -1,53 +1,66 @@
 <template lang="pug">
   v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
     v-card
-      v-card-title
-        v-flex
-          v-layout(align-baseline)
-            span.title Address
-            v-btn(
-            fab
-            small
-            flat
-            @click="copyWalletAddressHandler")
-              v-icon filter_none
-          v-layout(overflow-hidden)
-            v-list
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title(ref="address") {{ wallet.address.pretty() }}
-                  v-list-tile-sub-title {{ wallet.address.plain() }}
-      v-card-title
-        v-flex
-          v-layout(align-baseline)
-            span.title Public Key
-          v-layout(overflow-hidden)
+      v-card-title.pb-0
+        v-layout(align-baseline)
+          span.title Address
+          v-btn(
+          fab
+          small
+          flat
+          @click="copyWalletAddressHandler")
+            v-icon filter_none
+      v-card-text.pt-0
+        v-layout(overflow-hidden)
+          v-list
+            v-list-tile
+              v-list-tile-content
+                v-list-tile-title(ref="address") {{ wallet.address.pretty() }}
+                v-list-tile-sub-title {{ wallet.address.plain() }}
+      v-card-title.pb-0
+        v-layout(align-baseline)
+          span.title Public Key
+          v-btn(
+          fab
+          small
+          flat
+          @click="reloadAccount")
+            v-icon cached
+      v-card-text.pt-0
+        v-layout(overflow-hidden)
           v-list-tile
             v-list
               v-list-tile-content
                 v-list-tile-sub-title {{ publicKey }}
-      v-card-title
-        v-flex
-          v-layout(align-baseline)
-            div
-              span.title Mosaics
-          v-layout(column)
-            v-list-tile(v-for="m in mosaicTexts" v-bind:key="m")
-              v-list-tile-content
-                v-list-tile-title
-                  span {{ m }}
+      v-card-title.pb-0
+        v-layout(align-baseline)
+          span.title Mosaics
+          v-btn(
+          fab
+          small
+          flat
+          @click="reloadAccount")
+            v-icon cached
+      v-card-text.pt-0
+        v-layout(column)
+          v-list-tile(v-for="m in mosaicTexts" v-bind:key="m")
+            v-list-tile-content
+              v-list-tile-title
+                span {{ m }}
       v-card-actions
-        v-btn(
-        color="blue"
-        class="white--text"
-        @click="reloadAccount")
-          v-icon cached
-        v-btn(
-        color="blue"
-        class="white--text"
-        v-show="faucetUrl"
-        v-bind:href="faucetUrl"
-        target="_blank" ) Faucet
+        v-menu(offset-y)
+          template(v-slot:activator="{ on }")
+            v-btn(v-on="on") Links
+          v-list
+            v-list-tile
+              v-list-tile-title
+                a(v-bind:href="faucetUrl" v-show="faucetUrl" target="_blank") Faucet
+            v-list-tile
+              v-list-tile-title
+                a(v-bind:href="endpoint + '/account/properties/' + wallet.address.plain()" target="_blank") Properties
+            v-list-tile
+              v-list-tile-title
+                a(v-bind:href="endpoint + '/account/' + wallet.address.plain() + '/multisig'" target="_blank") Multisig
         v-spacer
         v-btn(
         color="pink"

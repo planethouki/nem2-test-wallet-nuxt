@@ -12,6 +12,7 @@
               v-bind:defaultPrivateKey="defaultPrivateKey"
               v-bind:createdWallet="wallet"
               v-bind:createdWalletPassword="walletPassword"
+              v-bind:defaultNetworkType="defaultNetworkType"
               v-on:walletCreated="walletCreated"
               v-on:deletePassword="deleteWalletPassword"
               navTargetId="login")
@@ -62,6 +63,8 @@ import Jumbo from '~/components/Jumbo.vue'
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
 
+import { NetworkType } from 'nem2-sdk'
+
 export default {
   components: {
     Header,
@@ -109,6 +112,7 @@ export default {
       ],
       defaultEndpoint: 'http://54.178.241.129:3000',
       defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
+      defaultNetworkType: NetworkType.MIJIN_TEST,
       walletPassword: {},
       endpoint: '',
       faucetUrl: '',
