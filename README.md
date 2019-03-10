@@ -27,7 +27,7 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 
 ## Demo
 
-http://wallet48gh23s.z31.web.core.windows.net/
+http://walletcow.z31.web.core.windows.net/
 
 ## Function
 
@@ -42,3 +42,9 @@ http://wallet48gh23s.z31.web.core.windows.net/
 - Escrow with Aggregate Bonded Transaction
 - Cosignature Transaction
 - Cosignature Transaction of Multisig
+- Mosaic Alias Transaction
+- Address Alias Transaction
+- Account Property Address Transaction
+- Account Property Mosaic Transaction
+- Account Property EntityType Transaction
+- Account Link Transaction
