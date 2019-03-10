@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { Account, Deadline, UInt64, PropertyType, TransactionHttp,
+import { Address, Account, Deadline, UInt64, PropertyType, TransactionHttp,
   PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -122,7 +122,7 @@ export default {
         this.modifications.map((modification) => {
           return AccountPropertyTransaction.createAddressFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
-            modification.rawAddress
+            Address.createFromRawAddress(modification.rawAddress)
           )
         })
       )
