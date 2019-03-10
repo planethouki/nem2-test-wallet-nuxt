@@ -5,15 +5,11 @@
         div.title Create Mosaic
       v-card-text
         v-text-field(
-          label="Namespace"
-          v-model="m_namespace"
+          label="Nonce (Number)"
+          v-model="m_nonce"
           required
-          placeholder="ex). foo")
-        v-text-field(
-          label="Mosaic Name"
-          v-model="m_name"
-          required
-          placeholder="ex). bar")
+          type="number"
+          placeholder="ex). 35426")
         v-text-field(
           label="Supply Amount"
           v-model="m_delta"
@@ -32,6 +28,11 @@
           required
           type="number"
           placeholder="ex). 10")
+        v-text-field(
+          label="Max Fee"
+          v-model="m_fee"
+          required
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -42,88 +43,88 @@
 </template>
 
 <script>
-  import TxHistory from './TxHistory.vue'
-  import {
-    Deadline, UInt64, NetworkType, Password, TransactionHttp,
-    MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
-    AggregateTransaction} from 'nem2-sdk';
+import {
+  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce, TransactionType,
+  MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
+  AggregateTransaction } from 'nem2-sdk'
+import TxHistory from './TxHistory.vue'
 
-  export default {
-    name: "",
-    components: {
-      TxHistory
-    },
-    props: [
-      "endpoint",
-      "wallet",
-      "walletPassword",
-      "navTargetId",
-    ],
-    data() {
-      return {
-        m_name: "bar",
-        m_namespace: "foo",
-        m_supplyMutable: true,
-        m_transferable: true,
-        m_levyMutable: false,
-        m_divisibility: 0,
-        m_duration: 10,
-        m_delta: 100,
-        m_history: [],
+export default {
+  name: 'MosaicDefinition',
+  components: {
+    TxHistory
+  },
+  props: [
+    'endpoint',
+    'wallet',
+    'walletPassword',
+    'navTargetId'
+  ],
+  data() {
+    return {
+      m_nonce: '0',
+      m_supplyMutable: true,
+      m_transferable: true,
+      m_levyMutable: false,
+      m_divisibility: 0,
+      m_duration: 10,
+      m_delta: 100,
+      m_fee: 0,
+      m_history: []
+    }
+  },
+  methods: {
+    m_announceHandler: function (event) {
+      const networkType = this.wallet.network
+      const nonce = Number(this.m_nonce)
+      const mosaicNonce = new MosaicNonce(this.$convert.numberToUint8_4(nonce))
+      const duration = this.m_duration
+      const delta = this.m_delta
+      const account = this.wallet.open(this.walletPassword)
+      const endpoint = this.endpoint
+      const mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
+        Deadline.create(),
+        mosaicNonce,
+        MosaicId.createFromNonce(mosaicNonce, account.publicAccount),
+        MosaicProperties.create({
+          supplyMutable: this.m_supplyMutable,
+          transferable: this.m_transferable,
+          levyMutable: this.levyMutable,
+          divisibility: this.m_divisibility,
+          duration: UInt64.fromUint(duration)
+        }),
+        networkType
+      )
+      const mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
+        Deadline.create(),
+        mosaicDefinitionTransaction.mosaicId,
+        MosaicSupplyType.Increase,
+        UInt64.fromUint(delta),
+        networkType
+      )
+      const aggregateTransaction = new AggregateTransaction(
+        networkType,
+        TransactionType.AGGREGATE_COMPLETE,
+        this.$TransactionVersion.AGGREGATE_COMPLETE,
+        Deadline.create(),
+        UInt64.fromUint(this.m_fee),
+        [
+          mosaicDefinitionTransaction.toAggregate(account.publicAccount),
+          mosaicSupplyChangeTransaction.toAggregate(account.publicAccount)
+        ],
+        []
+      )
+      const signedTx = account.sign(aggregateTransaction)
+      const txHttp = new TransactionHttp(endpoint)
+      txHttp.announce(signedTx)
+      const historyData = {
+        hash: signedTx.hash,
+        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
       }
-    },
-    methods: {
-      m_announceHandler: function(event) {
-        const namespace = this.m_namespace;
-        const mosaic = this.m_name;
-        const duration = this.m_duration;
-        const divisibility = this.m_divisibility;
-        const supplyMutable = this.m_supplyMutable;
-        const transferable = this.m_transferable;
-        const levyMutable = this.levyMutable;
-        const delta = this.m_delta;
-        const account = this.wallet.open(this.walletPassword);
-        const endpoint = this.endpoint;
-        let mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
-          Deadline.create(),
-          mosaic,
-          namespace,
-          MosaicProperties.create({
-            supplyMutable: supplyMutable,
-            transferable: transferable,
-            levyMutable: levyMutable,
-            divisibility: divisibility,
-            duration: UInt64.fromUint(duration),
-          }),
-          NetworkType.MIJIN_TEST,
-        );
-        let mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
-          Deadline.create(),
-          mosaicDefinitionTransaction.mosaicId,
-          MosaicSupplyType.Increase,
-          UInt64.fromUint(delta),
-          NetworkType.MIJIN_TEST,
-        );
-        let aggregateTransaction = AggregateTransaction.createComplete(
-          Deadline.create(),
-          [
-            mosaicDefinitionTransaction.toAggregate(account.publicAccount),
-            mosaicSupplyChangeTransaction.toAggregate(account.publicAccount),
-          ],
-          NetworkType.MIJIN_TEST,
-          []
-        );
-        let signedTx = account.sign(aggregateTransaction);
-        let txHttp = new TransactionHttp(endpoint);
-        txHttp.announce(signedTx).subscribe(console.log, console.error);
-        let historyData = {
-          hash: signedTx.hash,
-          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-        };
-        this.m_history.push(historyData);
-      },
+      this.m_history.push(historyData)
     }
   }
+}
 </script>
 
 <style scoped>

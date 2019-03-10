@@ -1,14 +1,14 @@
 <template>
-  <nuxt/>
+  <nuxt />
 </template>
 
 <script>
-  export default {
-    data: () => ({
+export default {
+  data: () => ({
 
-    }),
-    methods: {
+  }),
+  methods: {
 
-    },
   }
+}
 </script>

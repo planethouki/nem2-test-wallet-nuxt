@@ -10,7 +10,7 @@ No save accounts. Reload(F5) initialize all.
 
 ``` bash
 # install dependencies
-$ npm install # Or yarn install
+$ npm install
 
 # serve with hot reload at localhost:3000
 $ npm run dev
@@ -23,11 +23,11 @@ $ npm start
 $ npm run generate
 ```
 
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
+For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
 
 ## Demo
 
-http://wallet48gh23s.z31.web.core.windows.net/
+http://walletcow.z31.web.core.windows.net/
 
 ## Function
 
@@ -42,3 +42,9 @@ http://wallet48gh23s.z31.web.core.windows.net/
 - Escrow with Aggregate Bonded Transaction
 - Cosignature Transaction
 - Cosignature Transaction of Multisig
+- Mosaic Alias Transaction
+- Address Alias Transaction
+- Account Property Address Transaction
+- Account Property Mosaic Transaction
+- Account Property EntityType Transaction
+- Account Link Transaction

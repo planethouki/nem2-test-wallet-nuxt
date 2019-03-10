@@ -26,60 +26,56 @@
 </template>
 
 <script>
-  import TxHistory from './TxHistory.vue'
-  import {
-    AccountHttp, Password, NetworkType, TransactionHttp, PublicAccount, CosignatureTransaction} from 'nem2-sdk';
-  import { throwIfEmpty, filter, mergeMap} from 'rxjs/operators';
+import {
+  AccountHttp, TransactionHttp, PublicAccount, CosignatureTransaction } from 'nem2-sdk'
+import { throwIfEmpty, filter, mergeMap } from 'rxjs/operators'
+import TxHistory from './TxHistory.vue'
 
-  export default {
-    name: "CosignatureMultisig",
-    components: {
-      TxHistory
-    },
-    props: [
-      "endpoint",
-      "wallet",
-      "walletPassword",
-      "navTargetId",
-    ],
-    data() {
-      return {
-        g_multisigPublicKey: "AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26",
-        g_hash: "",
-        g_history: [],
-      }
-    },
-    methods: {
-      g_announceHandler: function(event) {
-        const multisigPublicAccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey, NetworkType.MIJIN_TEST);
-        const account = this.wallet.open(this.walletPassword);
-        const hash = this.g_hash;
-        const endpoint = this.endpoint;
-        const txHttp = new TransactionHttp(endpoint);
-        const accountHttp = new AccountHttp(endpoint);
-        accountHttp.aggregateBondedTransactions(multisigPublicAccount).pipe(
-          mergeMap((_) => _),
-          filter((_) => !_.signedByAccount(account.publicAccount)),
-          throwIfEmpty(() => new Error('can not find that transaction hash')),
-        ).toPromise().then((aggregateTx) => {
-          let cosigTx = CosignatureTransaction.create(aggregateTx);
-          let signedTx = account.signCosignatureTransaction(cosigTx);
-          return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
-        }).then((result) => {
-          console.log(result);
-          let historyData = {
-            hash: hash,
-            apiStatusUrl: `${endpoint}/transaction/${hash}/status`
-          };
-          this.g_history.push(historyData);
-        }).catch((error) => {
-          console.error(error)
-        }).finally(() => {
-
-        });
-      },
+export default {
+  name: 'CosignatureMultisig',
+  components: {
+    TxHistory
+  },
+  props: [
+    'endpoint',
+    'wallet',
+    'walletPassword',
+    'navTargetId'
+  ],
+  data() {
+    return {
+      g_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
+      g_hash: '',
+      g_history: []
+    }
+  },
+  methods: {
+    g_announceHandler: function (event) {
+      const network = this.wallet.network
+      const multisigPublicAccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey, network)
+      const account = this.wallet.open(this.walletPassword)
+      const hash = this.g_hash
+      const endpoint = this.endpoint
+      const txHttp = new TransactionHttp(endpoint)
+      const accountHttp = new AccountHttp(endpoint)
+      accountHttp.aggregateBondedTransactions(multisigPublicAccount).pipe(
+        mergeMap(_ => _),
+        filter(_ => !_.signedByAccount(account.publicAccount)),
+        throwIfEmpty(() => new Error('can not find that transaction hash'))
+      ).toPromise().then((aggregateTx) => {
+        const cosigTx = CosignatureTransaction.create(aggregateTx)
+        const signedTx = account.signCosignatureTransaction(cosigTx)
+        return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
+      }).then((result) => {
+        const historyData = {
+          hash: hash,
+          apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+        }
+        this.g_history.push(historyData)
+      })
     }
   }
+}
 </script>
 
 <style scoped>

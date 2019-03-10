@@ -14,6 +14,9 @@
           v-model="s_parentNamespace"
           required
           placeholder="ex). foo")
+        v-text-field(
+          label="Max Fee"
+          v-model="s_fee")
       v-card-actions
         v-btn(
           color="blue"
@@ -24,50 +27,62 @@
 </template>
 
 <script>
-  import TxHistory from './TxHistory.vue'
-  import {Deadline, NetworkType, Password, TransactionHttp, RegisterNamespaceTransaction} from 'nem2-sdk'
+import { Deadline, NamespaceType, TransactionHttp, RegisterNamespaceTransaction, UInt64 } from 'nem2-sdk'
+import TxHistory from './TxHistory.vue'
 
-  export default {
-    name: "SubNamespace",
-    components: {
-      TxHistory
-    },
-    props: [
-      "endpoint",
-      "wallet",
-      "walletPassword",
-      "navTargetId",
-    ],
-    data() {
-      return {
-        s_name: "sub",
-        s_parentNamespace: "foo",
-        s_history: [],
+export default {
+  name: 'SubNamespace',
+  components: {
+    TxHistory
+  },
+  props: [
+    'endpoint',
+    'wallet',
+    'walletPassword',
+    'navTargetId'
+  ],
+  data() {
+    return {
+      s_name: 'bar',
+      s_parentNamespace: 'foo',
+      s_fee: 0,
+      s_history: []
+    }
+  },
+  methods: {
+    s_announceHandler: function (event) {
+      const namespaceName = this.s_name
+      const parentNamespaceName = this.s_parentNamespace
+      const account = this.wallet.open(this.walletPassword)
+      const endpoint = this.endpoint
+      const dummyRegisterNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
+        Deadline.create(),
+        namespaceName,
+        parentNamespaceName,
+        this.wallet.network
+      )
+      const registerNamespaceTransaction = new RegisterNamespaceTransaction(
+        this.wallet.network,
+        this.$TransactionVersion.REGISTER_NAMESPACE,
+        Deadline.create(),
+        UInt64.fromUint(this.s_fee),
+        NamespaceType.SubNamespace,
+        namespaceName,
+        dummyRegisterNamespaceTransaction.namespaceId,
+        undefined,
+        dummyRegisterNamespaceTransaction.parentId
+      )
+      const signedTx = account.sign(registerNamespaceTransaction)
+      const txHttp = new TransactionHttp(endpoint)
+      txHttp.announce(signedTx)
+      const historyData = {
+        hash: signedTx.hash,
+        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
       }
-    },
-    methods: {
-      s_announceHandler: function(event) {
-        const namespaceName = this.s_name;
-        const parentNamespace = this.s_parentNamespace;
-        const account = this.wallet.open(this.walletPassword);
-        const endpoint = this.endpoint;
-        let registerNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
-          Deadline.create(),
-          namespaceName,
-          parentNamespace,
-          NetworkType.MIJIN_TEST,
-        );
-        let signedTx = account.sign(registerNamespaceTransaction);
-        let txHttp = new TransactionHttp(endpoint);
-        txHttp.announce(signedTx).subscribe(console.log, console.error);
-        let historyData = {
-          hash: signedTx.hash,
-          apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
-        };
-        this.s_history.push(historyData);
-      },
+      this.s_history.push(historyData)
     }
   }
+}
 </script>
 
 <style scoped>

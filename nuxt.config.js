@@ -1,71 +1,90 @@
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
+const pkg = require('./package')
+
 module.exports = {
+  mode: 'spa',
+
   /*
   ** Headers of the page
   */
   head: {
-    title: 'Catapult Account Interface',
+    title: pkg.name,
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Catapult Account Interface' }
+      { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+      }
     ]
   },
+
   /*
-  ** CSS of the page
+  ** Customize the progress-bar color
+  */
+  loading: { color: '#fff' },
+
+  /*
+  ** Global CSS
   */
   css: [
-
+    '~/assets/style/app.styl'
   ],
+
   /*
-  ** Customize the progress bar color
+  ** Plugins to load before mounting the App
   */
-  loading: { color: '#3B8070' },
+  plugins: [
+    '@/plugins/vuetify',
+    '@/plugins/transactionVersion',
+    '@/plugins/convert',
+    '@/plugins/hash',
+    '@/plugins/crypto',
+    '@/plugins/parser'
+  ],
+
+  /*
+  ** Nuxt.js modules
+  */
+  modules: [
+    '@nuxtjs/pwa'
+  ],
+
   /*
   ** Build configuration
   */
   build: {
+    transpile: ['vuetify/lib'],
+    plugins: [new VuetifyLoaderPlugin()],
+    loaders: {
+      stylus: {
+        import: ['~assets/style/variables.styl']
+      }
+    },
+
     /*
-    ** Run ESLint on save
+    ** You can extend webpack config here
     */
-    extend(config) {
-      if (process.server && process.browser) {
+    extend(config, ctx) {
+      // Run ESLint on save
+      if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules)/
-        });
+        })
       }
       config.node = {
         fs: 'empty',
         net: 'empty',
         tls: 'empty'
       }
-    },
-    vendor: [
-      'nem2-sdk',
-      'rxjs/operators',
-      'js-joda',
-      'js-sha3',
-    ],
-  },
-  mode: 'spa',
-  modules: [
-    '@nuxtjs/vuetify'
-  ],
-  vuetify: {
-    theme: {
-      primary: '#3f51b5',
-      secondary: '#b0bec5',
-      accent: '#8c9eff',
-      error: '#b71c1c'
     }
-  },
-  plugins: [
-
-  ],
+  }
 }
-

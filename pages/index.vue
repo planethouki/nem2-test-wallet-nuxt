@@ -12,6 +12,7 @@
               v-bind:defaultPrivateKey="defaultPrivateKey"
               v-bind:createdWallet="wallet"
               v-bind:createdWalletPassword="walletPassword"
+              v-bind:defaultNetworkType="defaultNetworkType"
               v-on:walletCreated="walletCreated"
               v-on:deletePassword="deleteWalletPassword"
               navTargetId="login")
@@ -27,97 +28,121 @@
             Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")
             Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")
             CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")
+            MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")
+            AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")
+            AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")
+            AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")
+            AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")
+            AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")
     Footer
 </template>
 
 <script>
-  import Login from '~/components/Login.vue'
+import Login from '~/components/Login.vue'
 
-  import WalletInfo from '~/components/WalletInfo.vue'
-  import Transfer from '~/components/Transfer.vue'
-  import Namespace from '~/components/Namespace.vue'
-  import SubNamespace from '~/components/SubNamespace.vue'
-  import MosaicDefinition from '~/components/MosaicDefinition.vue'
-  import SecretLock from '~/components/SecretLock.vue'
-  import SecretProof from '~/components/SecretProof.vue'
-  import ConvertMultisig from '~/components/ConvertMultisig.vue'
-  import ModifyMultisig from '~/components/ModifyMultisig.vue'
-  import Escrow from '~/components/Escrow.vue'
-  import Cosignature from '~/components/Cosignature.vue'
-  import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
+import WalletInfo from '~/components/WalletInfo.vue'
+import Transfer from '~/components/Transfer.vue'
+import Namespace from '~/components/Namespace.vue'
+import SubNamespace from '~/components/SubNamespace.vue'
+import MosaicDefinition from '~/components/MosaicDefinition.vue'
+import SecretLock from '~/components/SecretLock.vue'
+import SecretProof from '~/components/SecretProof.vue'
+import ConvertMultisig from '~/components/ConvertMultisig.vue'
+import ModifyMultisig from '~/components/ModifyMultisig.vue'
+import Escrow from '~/components/Escrow.vue'
+import Cosignature from '~/components/Cosignature.vue'
+import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
+import MosaicAlias from '~/components/MosaicAlias.vue'
+import AddressAlias from '~/components/AddressAlias.vue'
+import AccountPropertyAddress from '~/components/AccountPropertyAddress.vue'
+import AccountPropertyMosaic from '~/components/AccountPropertyMosaic.vue'
+import AccountPropertyEntityType from '~/components/AccountPropertyEntityType.vue'
+import AccountLink from '~/components/AccountLink.vue'
 
-  import Jumbo from '~/components/Jumbo.vue'
-  import Header from '~/components/Header.vue'
-  import Footer from '~/components/Footer.vue'
+import Jumbo from '~/components/Jumbo.vue'
+import Header from '~/components/Header.vue'
+import Footer from '~/components/Footer.vue'
 
-  export default {
-    components: {
-      Header, Footer, Jumbo,
-      Login, WalletInfo,
-      Transfer, Namespace, SubNamespace, MosaicDefinition, SecretLock, SecretProof,
-      ConvertMultisig, ModifyMultisig, Escrow, Cosignature, CosignatureMultisig,
+import { NetworkType } from 'nem2-sdk'
+
+export default {
+  components: {
+    Header,
+    Footer,
+    Jumbo,
+    Login,
+    WalletInfo,
+    Transfer,
+    Namespace,
+    SubNamespace,
+    MosaicDefinition,
+    SecretLock,
+    SecretProof,
+    ConvertMultisig,
+    ModifyMultisig,
+    Escrow,
+    Cosignature,
+    CosignatureMultisig,
+    MosaicAlias,
+    AddressAlias,
+    AccountPropertyAddress,
+    AccountPropertyMosaic,
+    AccountPropertyEntityType,
+    AccountLink
+  },
+  asyncData(context) {
+    return {
+      nav: [
+        { icon: 'home', title: 'Home', target: 0, offset: 0 },
+        { icon: 'star', title: 'Wallet', target: '#wallet', offset: -80 },
+        { icon: 'arrow_forward', title: 'Transfer Tx', target: '#transfer', offset: -80 },
+        { icon: 'domain', title: 'Namespace', target: '#namespace', offset: -80 },
+        { icon: 'domain', title: 'SubNamespace', target: '#subnamespace', offset: -80 },
+        { icon: 'web_asset', title: 'Mosaic', target: '#mosaic', offset: -80 },
+        { icon: 'lock', title: 'Secret Lock Tx', target: '#secretlock', offset: -80 },
+        { icon: 'lock_open', title: 'Secret proof Tx', target: '#secretproof', offset: -80 },
+        { icon: 'menu', title: 'Multisig', target: '#multisig', offset: -80 },
+        { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: -80 },
+        { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: -80 },
+        { icon: 'edit', title: 'Cosignature', target: '#cosignature', offset: -80 },
+        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: -80 }
+      ],
+      endpoints: [
+        { url: 'http://54.178.241.129:3000', label: 'cow' }
+      ],
+      defaultEndpoint: 'http://54.178.241.129:3000',
+      defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
+      defaultNetworkType: NetworkType.MIJIN_TEST,
+      walletPassword: {},
+      endpoint: '',
+      faucetUrl: '',
+      wallet: {}
+    }
+  },
+  methods: {
+    logoutWallet: function (event) {
+      this.wallet = {}
     },
-    asyncData (context) {
-      return {
-        nav: [
-          {icon:"home",title:"Home",target:0,offset:0},
-          {icon:"star",title:"Wallet",target:'#wallet',offset:-80},
-          {icon:"arrow_forward",title:"Transfer Tx",target:'#transfer',offset:-80},
-          {icon:"domain",title:"Namespace",target:'#namespace',offset:-80},
-          {icon:"domain",title:"SubNamespace",target:'#subnamespace',offset:-80},
-          {icon:"web_asset",title:"Mosaic",target:'#mosaic',offset:-80},
-          {icon:"lock",title:"Secret Lock Tx",target:'#secretlock',offset:-80},
-          {icon:"lock_open",title:"Secret proof Tx",target:'#secretproof',offset:-80},
-          {icon:"menu",title:"Multisig",target:'#multisig',offset:-80},
-          {icon:"menu",title:"Modify Multisig",target:'#modifymultisig',offset:-80},
-          {icon:"compare_arrows",title:"Escrow with Aggregate",target:'#escrow',offset:-80},
-          {icon:"edit",title:"Cosignature",target:'#cosignature',offset:-80},
-          {icon:"edit",title:"Cosignature Multisig",target:'#cosignaturemultisig',offset:-80},
-        ],
-        endpoints: [
-          { url: "http://catapult48gh23s.xyz:3000", label: "catapult48gh23s.xyz" },
-          { url: "http://catapult-test.44uk.net:3000", label: "catapult-test.44uk.net" },
-          { url: "http://catapult-test.daoka.ml:3000", label: "catapult-test.daoka.ml" },
-        ],
-        defaultEndpoint: "http://catapult48gh23s.xyz:3000",
-        defaultPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
-        walletPassword: {},
-        endpoint: "",
-        faucetUrl: "",
-        wallet: {},
+    deleteWalletPassword: function (event) {
+      this.walletPassword = {}
+    },
+    walletCreated: function (event) {
+      this.wallet = event.wallet
+      this.walletPassword = event.password
+      this.endpoint = event.endpoint
+      if (this.endpoint.includes('54.178.241.129')) {
+        this.faucetUrl = `https://faucet-cow.azurewebsites.net`
       }
-    },
-    methods: {
-      logoutWallet: function(event) {
-        this.wallet = {};
-        console.log("wallet deleted");
-      },
-      deleteWalletPassword: function(event) {
-        this.walletPassword = {};
-        console.log("wallet password deleted");
-      },
-      walletCreated: function(event) {
-        this.wallet = event.wallet;
-        this.walletPassword = event.password;
-        this.endpoint = event.endpoint;
-        if (this.endpoint.includes("44uk")) {
-          this.faucetUrl = `http://test-nem2-faucet.44uk.net/?address=${this.wallet.address.plain()}`;
-        } else if (this.endpoint.includes("daoka")) {
-          this.faucetUrl = `http://catapult-test.daoka.ml:4567/?address=${this.wallet.address.plain()}`;
-        } else if (this.endpoint.includes("48gh23s")) {
-          this.faucetUrl = `https://faucet48gh23s.azurewebsites.net/?address=${this.wallet.address.plain()}`;
-        }
-        console.log("wallet created");
-      },
-    },
-    head () {
-      return {
-        meta: [
-          { hid: 'top', name: 'top', content: 'top' }
-        ]
-      }
-    },
+    }
+  },
+  head() {
+    return {
+      meta: [
+        { hid: 'top', name: 'top', content: 'top' }
+      ]
+    }
   }
+}
 </script>
 
 <style>
