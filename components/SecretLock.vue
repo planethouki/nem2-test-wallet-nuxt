@@ -98,14 +98,13 @@ export default {
       )
       const preSignedTx = account.sign(secretLockTransaction)
       const preSignedTxPayload = preSignedTx.payload
-      const size = 'CA000000'
       let signedTxPayload
       if (this.l_hashType === HashType.Op_Hash_160) {
-        const unsignedPayload = size + preSignedTxPayload.substring(8, 330) +
+        const unsignedPayload = preSignedTxPayload.substring(0, 330) +
           '000000000000000000000000' + preSignedTxPayload.substr(330)
         signedTxPayload = this.$crypto.signTx(unsignedPayload, account)
       } else {
-        signedTxPayload = size + preSignedTxPayload.substr(8)
+        signedTxPayload = preSignedTxPayload
       }
       const hash = this.$hash.getSinedTxHash(signedTxPayload)
       const request = require('request')

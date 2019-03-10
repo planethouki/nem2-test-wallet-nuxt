@@ -95,15 +95,15 @@ export default {
         this.p_proof
       )
       const preSignedTxPayload = account.sign(secretProofTransaction).payload
-      const sizeDec = 155 + (this.p_proof.length) / 2
-      const size = this.$convert.endian('00000000'.concat(sizeDec.toString(16).toUpperCase()).substr(-8))
       let signedTxPayload
       if (this.p_hashType === HashType.Op_Hash_160) {
+        const sizeDec = 155 + (this.p_proof.length) / 2
+        const size = this.$convert.endian('00000000'.concat(sizeDec.toString(16).toUpperCase()).substr(-8))
         const unsignedPayload = size + preSignedTxPayload.substring(8, 282) +
           '000000000000000000000000' + preSignedTxPayload.substr(282)
         signedTxPayload = this.$crypto.signTx(unsignedPayload, account)
       } else {
-        signedTxPayload = size + preSignedTxPayload.substr(8)
+        signedTxPayload = preSignedTxPayload
       }
       const hash = this.$hash.getSinedTxHash(signedTxPayload)
       const request = require('request')
