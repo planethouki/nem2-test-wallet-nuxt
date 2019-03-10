@@ -29,6 +29,10 @@
             CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")
             MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")
             AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")
+            AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")
+            AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")
+            AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")
+            AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")
     Footer
 </template>
 
@@ -49,6 +53,10 @@ import Cosignature from '~/components/Cosignature.vue'
 import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
 import MosaicAlias from '~/components/MosaicAlias.vue'
 import AddressAlias from '~/components/AddressAlias.vue'
+import AccountPropertyAddress from '~/components/AccountPropertyAddress.vue'
+import AccountPropertyMosaic from '~/components/AccountPropertyMosaic.vue'
+import AccountPropertyEntityType from '~/components/AccountPropertyEntityType.vue'
+import AccountLink from '~/components/AccountLink.vue'
 
 import Jumbo from '~/components/Jumbo.vue'
 import Header from '~/components/Header.vue'
@@ -73,7 +81,11 @@ export default {
     Cosignature,
     CosignatureMultisig,
     MosaicAlias,
-    AddressAlias
+    AddressAlias,
+    AccountPropertyAddress,
+    AccountPropertyMosaic,
+    AccountPropertyEntityType,
+    AccountLink
   },
   asyncData(context) {
     return {
