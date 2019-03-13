@@ -5,17 +5,16 @@
       v-container
         v-layout
           v-flex(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
-            Jumbo(navTargetId="jumbo")
             Login(
-              v-bind:endpoints="endpoints"
-              v-bind:defaultEndpoint="defaultEndpoint"
-              v-bind:defaultPrivateKey="defaultPrivateKey"
-              v-bind:createdWallet="wallet"
-              v-bind:createdWalletPassword="walletPassword"
-              v-bind:defaultNetworkType="defaultNetworkType"
-              v-on:walletCreated="walletCreated"
-              v-on:deletePassword="deleteWalletPassword"
-              navTargetId="login")
+            v-bind:endpoints="endpoints"
+            v-bind:defaultEndpoint="defaultEndpoint"
+            v-bind:defaultPrivateKey="defaultPrivateKey"
+            v-bind:createdWallet="wallet"
+            v-bind:createdWalletPassword="walletPassword"
+            v-bind:defaultNetworkType="defaultNetworkType"
+            v-on:walletCreated="walletCreated"
+            v-on:deletePassword="deleteWalletPassword"
+            navTargetId="login")
             WalletInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" v-bind:faucetUrl="faucetUrl" v-on:logoutWallet="logoutWallet" navTargetId="wallet")
             Transfer(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="transfer")
             Namespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="namespace")
@@ -105,10 +104,17 @@ export default {
         { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: -80 },
         { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: -80 },
         { icon: 'edit', title: 'Cosignature', target: '#cosignature', offset: -80 },
-        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: -80 }
+        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: -80 },
+        { icon: 'text_rotation_none', title: 'Mosaic Alias', target: '#mosaicAlias', offset: -80 },
+        { icon: 'text_rotation_none', title: 'Address Alias', target: '#addressAlias', offset: -80 },
+        { icon: 'person_add', title: 'Account Property Address', target: '#accountPropertyAddress', offset: -80 },
+        { icon: 'person_add', title: 'Account Property Mosaic', target: '#accountPropertyMosaic', offset: -80 },
+        { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: -80 },
+        { icon: 'people', title: 'Account Link', target: '#accountLink', offset: -80 }
       ],
       endpoints: [
-        { url: 'http://54.178.241.129:3000', label: 'cow' }
+        { url: 'http://54.178.241.129:3000', label: 'cow (54.178.241.129)' },
+        { url: 'http://52.197.250.79:3000', label: 'cow with fee (52.197.250.79)' }
       ],
       defaultEndpoint: 'http://54.178.241.129:3000',
       defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
