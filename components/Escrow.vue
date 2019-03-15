@@ -15,7 +15,7 @@
                 required
                 placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ")
               v-text-field(
-                label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
                 v-model="e_mosaics1"
                 required
                 placeholder="ex). 85BBEA6CC462B244::1000000")
@@ -36,7 +36,7 @@
                 :counter="64"
                 placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993")
               v-text-field(
-                label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
                 v-model="e_mosaics2"
                 required
                 placeholder="ex). 85BBEA6CC462B244::1000000")
