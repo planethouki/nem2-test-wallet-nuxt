@@ -27,11 +27,14 @@
             Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")
             Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")
             CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")
+            AliasInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="aliasInfo")
             MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")
             AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")
+            AccountPropertyInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyInfo")
             AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")
             AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")
             AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")
+            AccountLinkInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLinkInfo")
             AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")
     Footer
 </template>
@@ -51,11 +54,14 @@ import ModifyMultisig from '~/components/ModifyMultisig.vue'
 import Escrow from '~/components/Escrow.vue'
 import Cosignature from '~/components/Cosignature.vue'
 import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
+import AliasInfo from '~/components/AliasInfo.vue'
 import MosaicAlias from '~/components/MosaicAlias.vue'
 import AddressAlias from '~/components/AddressAlias.vue'
+import AccountPropertyInfo from '~/components/AccountPropertyInfo.vue'
 import AccountPropertyAddress from '~/components/AccountPropertyAddress.vue'
 import AccountPropertyMosaic from '~/components/AccountPropertyMosaic.vue'
 import AccountPropertyEntityType from '~/components/AccountPropertyEntityType.vue'
+import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
 import AccountLink from '~/components/AccountLink.vue'
 
 import Jumbo from '~/components/Jumbo.vue'
@@ -82,11 +88,14 @@ export default {
     Escrow,
     Cosignature,
     CosignatureMultisig,
+    AliasInfo,
     MosaicAlias,
     AddressAlias,
+    AccountPropertyInfo,
     AccountPropertyAddress,
     AccountPropertyMosaic,
     AccountPropertyEntityType,
+    AccountLinkInfo,
     AccountLink
   },
   asyncData(context) {
