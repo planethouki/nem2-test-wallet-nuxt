@@ -95,9 +95,15 @@ export default {
       history: []
     }
   },
-  mounted: function () {
-    this.additionalModification.rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
-    this.modifications[0].rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
+  watch: {
+    wallet: {
+      handler: function () {
+        if (this.wallet.address) {
+          this.additionalModification.rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
+          this.modifications[0].rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
+        }
+      }
+    }
   },
   methods: {
     deleteModification: function (index) {
