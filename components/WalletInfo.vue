@@ -48,6 +48,11 @@
               v-list-tile-title
                 span {{ m }}
       v-card-actions
+        v-btn(
+        color="pink"
+        class="white--text"
+        @click="logoutWallet") logout
+        v-spacer
         v-menu(offset-y)
           template(v-slot:activator="{ on }")
             v-btn(v-on="on") Links
@@ -57,15 +62,7 @@
                 a(v-bind:href="faucetUrl" v-show="faucetUrl" target="_blank") Faucet
             v-list-tile
               v-list-tile-title
-                a(v-bind:href="endpoint + '/account/properties/' + wallet.address.plain()" target="_blank") Properties
-            v-list-tile
-              v-list-tile-title
                 a(v-bind:href="endpoint + '/account/' + wallet.address.plain() + '/multisig'" target="_blank") Multisig
-        v-spacer
-        v-btn(
-        color="pink"
-        class="white--text"
-        @click="logoutWallet") logout
       v-card-text(v-show="alert")
         v-alert(type="error" :value="alert") {{ alert }}
 </template>
