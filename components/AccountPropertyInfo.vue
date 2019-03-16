@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
     v-card
       v-card-title
         v-layout(align-baseline)
@@ -22,8 +22,7 @@ export default {
   name: 'AccountPropertyInfo',
   props: [
     'endpoint',
-    'wallet',
-    'walletPassword',
+    'address',
     'navTargetId'
   ],
   data() {
@@ -55,9 +54,9 @@ export default {
     }
   },
   watch: {
-    wallet: {
+    address: {
       handler: function () {
-        if (this.wallet.address) {
+        if (this.address) {
           this.reloadAccount()
         }
       }
@@ -65,8 +64,9 @@ export default {
   },
   methods: {
     reloadAccount: function (event) {
+      this.properties = []
       const accountHttp = new AccountHttp(this.endpoint)
-      accountHttp.getAccountInfo(this.wallet.address).pipe(
+      accountHttp.getAccountInfo(this.address).pipe(
         mergeMap((accountInfo) => {
           return accountHttp.getAccountProperty(accountInfo.publicAccount)
         })

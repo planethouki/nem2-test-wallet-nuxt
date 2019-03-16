@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
     v-card
       v-card-title
         v-layout(align-baseline)
@@ -32,8 +32,7 @@ export default {
   name: 'AliasInfo',
   props: [
     'endpoint',
-    'wallet',
-    'walletPassword',
+    'address',
     'navTargetId'
   ],
   data() {
@@ -76,9 +75,9 @@ export default {
     }
   },
   watch: {
-    wallet: {
+    address: {
       handler: function () {
-        if (this.wallet.address) {
+        if (this.address) {
           this.reloadAccount()
         }
       }
@@ -89,7 +88,7 @@ export default {
       this.namespaces = []
       const namespaces = {}
       const namespaceHttp = new NamespaceHttp(this.endpoint)
-      namespaceHttp.getNamespacesFromAccount(this.wallet.address).pipe(
+      namespaceHttp.getNamespacesFromAccount(this.address).pipe(
         flatMap(_ => _),
         mergeMap((x) => {
           namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x }

@@ -27,14 +27,14 @@
             Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")
             Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")
             CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")
-            AliasInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="aliasInfo")
+            AliasInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="aliasInfo")
             MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")
             AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")
-            AccountPropertyInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyInfo")
+            AccountPropertyInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountPropertyInfo")
             AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")
             AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")
             AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")
-            AccountLinkInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLinkInfo")
+            AccountLinkInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountLinkInfo")
             AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")
     Footer
 </template>

@@ -2,6 +2,14 @@ importScripts('/_nuxt/workbox.4c4f5ca6.js')
 
 workbox.precaching.precacheAndRoute([
   {
+    "url": "/_nuxt/031b70fcaaf3dd5168e6.js",
+    "revision": "959842278576cdf5f18fe4f509b4948d"
+  },
+  {
+    "url": "/_nuxt/15b89bfbd855e272eb8b.js",
+    "revision": "27178bd2af15a79aa8f9dc38045ad235"
+  },
+  {
     "url": "/_nuxt/3632d154bd5e653c22c6.js",
     "revision": "e63c8d002f8b451aaf1f0dd2ded067d5"
   },
@@ -16,14 +24,6 @@ workbox.precaching.precacheAndRoute([
   {
     "url": "/_nuxt/a31ca7625d35d8f6990d.js",
     "revision": "36728b27bbd1116cd6d97475fe9f2beb"
-  },
-  {
-    "url": "/_nuxt/a61fcb42330d69a5da71.js",
-    "revision": "08bfdda31253078565c5dd6d09a99b14"
-  },
-  {
-    "url": "/_nuxt/ecbbd660738a37a85f01.js",
-    "revision": "bad160956d75ad3b4a44337ae197c2c6"
   }
 ], {
   "cacheId": "nem2-test-wallet-nuxt",

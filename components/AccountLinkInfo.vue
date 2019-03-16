@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
     v-card
       v-card-title
         v-layout(align-baseline)
@@ -22,8 +22,7 @@ export default {
   name: 'AccountLinkInfo',
   props: [
     'endpoint',
-    'wallet',
-    'walletPassword',
+    'address',
     'navTargetId'
   ],
   data() {
@@ -34,9 +33,9 @@ export default {
     }
   },
   watch: {
-    wallet: {
+    address: {
       handler: function () {
-        if (this.wallet.address) {
+        if (this.address) {
           this.reloadAccount()
         }
       }
@@ -44,8 +43,9 @@ export default {
   },
   methods: {
     reloadAccount: async function (event) {
+      this.remoteAccountKey = ''
       const rp = require('request-promise-native')
-      const account = await rp(`${this.endpoint}/account/${this.wallet.address.plain()}`)
+      const account = await rp(`${this.endpoint}/account/${this.address.plain()}`)
       const linkedAccountKey = this.$convert.base64ToHex(JSON.parse(account).account.linkedAccountKey)
       if (linkedAccountKey === '0000000000000000000000000000000000000000000000000000000000000000') {
         this.remoteAccountKey = 'none'
