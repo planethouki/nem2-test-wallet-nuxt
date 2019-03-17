@@ -14,6 +14,7 @@
           label="Proof (Hex value for unlock)"
           v-model="p_proof"
           required
+          counter
           placeholder="ex). 095B4FCD1F88F1785E59")
         v-text-field(
           label="Secret (Hash for Proof)"

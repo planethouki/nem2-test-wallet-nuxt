@@ -12,6 +12,7 @@
           :value="ht.type")
         v-text-field(
           label="Secret (Hash for Random)"
+          :counter="l_hashStrLen"
           v-model="l_secret")
         v-text-field(
           label="Mosaic for Lock (hexMosaicId::absoluteAmount)"
@@ -62,11 +63,12 @@ export default {
   data() {
     return {
       l_hashType: HashType.Op_Sha3_256,
+      l_hashStrLen: '64',
       l_hashTypes: [
-        { type: HashType.Op_Sha3_256, label: 'Sha3-256' },
-        { type: HashType.Op_Keccak_256, label: 'Keccak256' },
-        { type: HashType.Op_Hash_256, label: 'Hash256' },
-        { type: HashType.Op_Hash_160, label: 'Hash160' }
+        { type: HashType.Op_Sha3_256, label: 'Sha3-256', strLen: '64' },
+        { type: HashType.Op_Keccak_256, label: 'Keccak256', strLen: '64' },
+        { type: HashType.Op_Hash_256, label: 'Hash256', strLen: '64' },
+        { type: HashType.Op_Hash_160, label: 'Hash160', strLen: '40' }
       ],
       l_mosaic: '85BBEA6CC462B244::10000000',
       l_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
@@ -74,6 +76,17 @@ export default {
       l_history: [],
       l_secret: '2B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D',
       l_fee: 0
+    }
+  },
+  watch: {
+    l_hashType: {
+      handler: function () {
+        for (let i = 0; i < this.l_hashTypes.length; i++) {
+          if (this.l_hashType === this.l_hashTypes[i].type) {
+            this.l_hashStrLen = this.l_hashTypes[i].strLen
+          }
+        }
+      }
     }
   },
   methods: {
