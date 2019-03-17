@@ -1,7 +1,7 @@
 <template lang="pug">
   v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
     v-card
-      v-card-title
+      v-card-text
         v-layout(align-baseline)
           span.title Current Account Property
           v-btn(
@@ -10,7 +10,6 @@
           flat
           @click="reloadAccount")
             v-icon cached
-      v-card-text
         v-treeview(:items="propertiesTree")
 </template>
 

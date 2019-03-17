@@ -1,7 +1,7 @@
 <template lang="pug">
   v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
     v-card
-      v-card-title
+      v-card-text
         v-layout(align-baseline)
           span.title Current Alias
           v-btn(
@@ -10,9 +10,8 @@
           flat
           @click="reloadAccount")
             v-icon cached
-        v-spacer
-        small (max 10 namespaces)
-      v-card-text
+          v-spacer
+          small (max 10 namespaces)
         v-data-table(
         :headers="headers"
         :items="namespaceTable"
@@ -48,7 +47,22 @@ export default {
   },
   computed: {
     namespaceTable: function () {
-      return this.namespaces.map((ns) => {
+      return this.namespaces.filter((ns, index, namespaces) => {
+        for (let i = 0; i < index; i++) {
+          if (ns === namespaces[i]) return false
+        }
+        return true
+      }).sort(function (a, b) {
+        const nameA = a.namespaceInfo.metaId
+        const nameB = b.namespaceInfo.metaId
+        if (nameA < nameB) {
+          return -1
+        }
+        if (nameA > nameB) {
+          return 1
+        }
+        return 0
+      }).map((ns) => {
         let aliasText
         let aliasType
         switch (ns.namespaceInfo.alias.type) {

@@ -1,7 +1,7 @@
 <template lang="pug">
   v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
     v-card
-      v-card-title
+      v-card-text
         v-layout(align-baseline)
           span.title Current Linked Public Key
           v-btn(
@@ -10,13 +10,10 @@
           flat
           @click="reloadAccount")
             v-icon cached
-      v-card-text
         p {{ remoteAccountKey }}
 </template>
 
 <script>
-// eslint-disable-next-line
-import { Account } from 'nem2-sdk'
 
 export default {
   name: 'AccountLinkInfo',
@@ -46,7 +43,7 @@ export default {
       this.remoteAccountKey = ''
       const rp = require('request-promise-native')
       const account = await rp(`${this.endpoint}/account/${this.address.plain()}`)
-      const linkedAccountKey = this.$convert.base64ToHex(JSON.parse(account).account.linkedAccountKey)
+      const linkedAccountKey = this.$convert.base64ToHex(JSON.parse(account).account.linkedAccountKey).toUpperCase()
       if (linkedAccountKey === '0000000000000000000000000000000000000000000000000000000000000000') {
         this.remoteAccountKey = 'none'
       } else {
