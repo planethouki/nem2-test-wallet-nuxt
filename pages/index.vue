@@ -16,6 +16,7 @@
             v-on:deletePassword="deleteWalletPassword"
             navTargetId="login")
             WalletInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" v-bind:faucetUrl="faucetUrl" v-on:logoutWallet="logoutWallet" navTargetId="wallet")
+            Balance(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="balance")
             Transfer(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="transfer")
             Namespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="namespace")
             SubNamespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="subnamespace")
@@ -43,6 +44,7 @@
 import Login from '~/components/Login.vue'
 
 import WalletInfo from '~/components/WalletInfo.vue'
+import Balance from '~/components/Balance.vue'
 import Transfer from '~/components/Transfer.vue'
 import Namespace from '~/components/Namespace.vue'
 import SubNamespace from '~/components/SubNamespace.vue'
@@ -77,6 +79,7 @@ export default {
     Jumbo,
     Login,
     WalletInfo,
+    Balance,
     Transfer,
     Namespace,
     SubNamespace,

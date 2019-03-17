@@ -32,21 +32,6 @@
             v-list
               v-list-tile-content
                 v-list-tile-sub-title {{ publicKey }}
-      v-card-title.pb-0
-        v-layout(align-baseline)
-          span.title Mosaics
-          v-btn(
-          fab
-          small
-          flat
-          @click="reloadAccount")
-            v-icon cached
-      v-card-text.pt-0
-        v-layout(column)
-          v-list-tile(v-for="m in mosaicTexts" v-bind:key="m")
-            v-list-tile-content
-              v-list-tile-title
-                span {{ m }}
       v-card-actions
         v-btn(
         color="pink"
@@ -68,10 +53,8 @@
 </template>
 
 <script>
-/* eslint-disable */
 
-import { AccountHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService } from 'nem2-sdk'
-import { flatMap } from 'rxjs/operators'
+import { AccountHttp } from 'nem2-sdk'
 
 export default {
   name: 'WalletInfo',
@@ -84,18 +67,8 @@ export default {
   ],
   data() {
     return {
-      mosaics: [],
       publicKey: '',
       alert: ''
-    }
-  },
-  computed: {
-    mosaicTexts: function () {
-      return this.mosaics.length === 0 ? ["empty"] : this.mosaics.map(function (mosaic) {
-        return mosaic.id.id.toHex().toUpperCase() +
-            '::' +
-            mosaic.amount.compact()
-      })
     }
   },
   watch: {
@@ -124,19 +97,17 @@ export default {
     reloadAccount: function (event) {
       if (this.wallet.address) {
         this.mosaics = []
-        this.publicKey = ""
+        this.publicKey = ''
         const endpoint = this.endpoint
         const address = this.wallet.address
         const accountHttp = new AccountHttp(endpoint)
         accountHttp.getAccountInfo(address).subscribe(
           (accountInfo) => {
             this.publicKey = accountInfo.publicKey
-            this.mosaics = accountInfo.mosaics
           },
           (error) => {
-            if (error.toString().includes("Error: Not Found")) {
-              this.publicKey = "0000000000000000000000000000000000000000000000000000000000000000"
-              this.mosaics = []
+            if (error.toString().includes('Error: Not Found')) {
+              this.publicKey = '0000000000000000000000000000000000000000000000000000000000000000'
             } else {
               this.alert = error
             }
