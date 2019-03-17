@@ -2,7 +2,7 @@
   v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
     v-card
       v-card-title
-        div.title Account Link (Not yet
+        div.title Account Link
       v-card-text
         v-radio-group(label="Link Action" v-model="linkAction" row)
           v-radio(
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Account, LinkAction, AccountLinkTransaction, Deadline, UInt64, TransactionHttp } from 'nem2-sdk'
+import { LinkAction, AccountLinkTransaction, Deadline, UInt64 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -44,7 +44,7 @@ export default {
   ],
   data() {
     return {
-      remoteAccountKey: '',
+      remoteAccountKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
       linkAction: LinkAction.Link,
       linkActions: [
         { type: LinkAction.Link, label: 'Link' },
@@ -52,15 +52,6 @@ export default {
       ],
       fee: 0,
       history: []
-    }
-  },
-  watch: {
-    wallet: {
-      handler: function () {
-        if (this.wallet.address) {
-          this.remoteAccountKey = Account.generateNewAccount(this.wallet.network).publicKey
-        }
-      }
     }
   },
   methods: {
@@ -76,8 +67,18 @@ export default {
         this.linkAction
       )
       const signedTx = account.sign(accountLinkTransaction)
-      const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx)
+      const preSignedTxPayload = signedTx.payload
+      const signedTxPayload = '99000000' + preSignedTxPayload.substr(8)
+      const request = require('request')
+      request({
+        url: `${endpoint}/transaction`,
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        json: { 'payload': signedTxPayload }
+      })
+
       const historyData = {
         hash: signedTx.hash,
         apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
