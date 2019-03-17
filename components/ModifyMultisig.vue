@@ -68,9 +68,10 @@
             required
             type="number")
         v-flex.pt-4
+          small Lock Funds Tx is not resolved yet. please put mosaicId.
           v-text-field(
-            label="Lock Funds Mosaic (hexMosaicId::absoluteAmount)"
-            placeholder="ex). 85BBEA6CC462B244::10000000"
+            label="Lock Funds Mosaic"
+            placeholder="ex). @cat.currency::10000000"
             v-model="d_lockMosaic"
             required)
           v-text-field(
@@ -124,7 +125,7 @@ export default {
       d_history: [],
       d_fee: 0,
       d_lockFee: 0,
-      d_lockMosaic: '85BBEA6CC462B244::10000000',
+      d_lockMosaic: '119E15661E9B2758::10000000',
       d_lockDuration: 480
     }
   },
@@ -173,7 +174,7 @@ export default {
         ]
       )
       const signedAggregateTx = account.sign(aggregateTx)
-      const lockMosaic = this.$parser.parseMosaics(this.d_lockMosaic)[0]
+      const lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
       const lockFundsTx = new LockFundsTransaction(
         network,
         this.$TransactionVersion.LOCK,

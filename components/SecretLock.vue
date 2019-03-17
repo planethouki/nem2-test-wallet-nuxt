@@ -11,14 +11,14 @@
           :label="ht.label"
           :value="ht.type")
         v-text-field(
-          label="Secret (Hash for Random)"
+          label="Hash"
           :counter="l_hashStrLen"
           v-model="l_secret")
         v-text-field(
-          label="Mosaic for Lock (hexMosaicId::absoluteAmount)"
+          label="Mosaic"
           v-model="l_mosaic"
           required
-          placeholder="ex). 85BBEA6CC462B244::1000000")
+          placeholder="ex). @cat.currency::1000000")
         v-text-field(
           label="To Address"
           v-model="l_recipient"
@@ -46,7 +46,7 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, Mosaic, MosaicId, SecretLockTransaction, HashType } from 'nem2-sdk'
+  Address, Deadline, UInt64, SecretLockTransaction, HashType } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -70,7 +70,7 @@ export default {
         { type: HashType.Op_Hash_256, label: 'Hash256', strLen: '64' },
         { type: HashType.Op_Hash_160, label: 'Hash160', strLen: '40' }
       ],
-      l_mosaic: '85BBEA6CC462B244::10000000',
+      l_mosaic: '@cat.currency::10000000',
       l_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
       l_duration: 240,
       l_history: [],
@@ -96,8 +96,7 @@ export default {
       const duration = this.l_duration
       const secret = this.l_secret
       const recipient = this.l_recipient
-      const nameAndAmount = this.l_mosaic.split('::')
-      const mosaic = new Mosaic(new MosaicId(nameAndAmount[0]), UInt64.fromUint(nameAndAmount[1]))
+      const mosaic = this.$parser.parseMosaic(this.l_mosaic)
       const secretLockTransaction = new SecretLockTransaction(
         this.wallet.network,
         this.$TransactionVersion.SECRET_LOCK,

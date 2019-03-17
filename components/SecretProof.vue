@@ -11,13 +11,13 @@
           :label="ht.label"
           :value="ht.type")
         v-text-field(
-          label="Proof (Hex value for unlock)"
+          label="Proof"
           v-model="p_proof"
           required
           counter
           placeholder="ex). 095B4FCD1F88F1785E59")
         v-text-field(
-          label="Secret (Hash for Proof)"
+          label="Hash"
           v-model="p_secret"
           disabled)
         v-text-field(

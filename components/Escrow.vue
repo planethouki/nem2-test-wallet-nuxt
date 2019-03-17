@@ -15,10 +15,10 @@
                 required
                 placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ")
               v-text-field(
-                label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
+                label="Mosaics"
                 v-model="e_mosaics1"
                 required
-                placeholder="ex). 85BBEA6CC462B244::1000000")
+                placeholder="ex). @cat.currency::0, 941299B2B7E1291C::0")
               v-text-field(
                 label="Message"
                 v-model="e_message1"
@@ -39,7 +39,7 @@
                 label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
                 v-model="e_mosaics2"
                 required
-                placeholder="ex). 85BBEA6CC462B244::1000000")
+                placeholder="ex). 85BBEA6CC462B244::0, @cat.harvest::0")
               v-text-field(
                 label="Message"
                 v-model="e_message2"
@@ -48,13 +48,13 @@
         v-flex.pt-3
           v-text-field(
             label="Max Fee"
-            v-model="e_fee"
-            placeholder="ex). 85BBEA6CC462B244::1000000")
+            v-model="e_fee")
         v-flex.pt-3
+          small Lock Funds Tx is not resolved yet. please put mosaicId.
           v-text-field(
             label="Lock Funds Mosaic"
             v-model="e_mosaic3"
-            placeholder="ex). nem:xem::10000000")
+            placeholder="ex). 119E15661E9B2758::10000000")
           v-text-field(
             label="Lock Funds Duration In Blocks"
             v-model="e_duration3"
@@ -62,8 +62,7 @@
             placeholder="ex). 480")
           v-text-field(
             label="Lock Funds Max Fee"
-            v-model="e_fee3"
-            placeholder="ex). 85BBEA6CC462B244::1000000")
+            v-model="e_fee3")
       v-card-actions
         v-btn(
           color="blue"
@@ -95,12 +94,12 @@ export default {
   data() {
     return {
       e_recipient1: 'SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ',
-      e_mosaics1: '85BBEA6CC462B244::1000000',
+      e_mosaics1: '@cat.currency::0, 941299B2B7E1291C::0',
       e_message1: 'escrow payment',
       e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
-      e_mosaics2: '85BBEA6CC462B244::1000000',
+      e_mosaics2: '85BBEA6CC462B244::0, @cat.harvest::0',
       e_message2: 'escrow invoice',
-      e_mosaic3: '85BBEA6CC462B244::10000000',
+      e_mosaic3: '119E15661E9B2758::10000000',
       e_duration3: 480,
       e_history: [],
       e_fee: 0,
@@ -116,7 +115,7 @@ export default {
       const network = this.wallet.network
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
-      const lockFundsMosaic = this.$parser.parseMosaics(this.e_mosaic3)[0]
+      const lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
         Address.createFromRawAddress(this.e_recipient1),

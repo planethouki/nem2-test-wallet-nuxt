@@ -10,9 +10,10 @@
           required
           placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
         v-text-field(
-          label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
+          label="Mosaics"
           v-model="t_mosaics"
-          required)
+          required
+          placeholder="ex). @cat.currency::0, 941299B2B7E1291C::0")
         v-text-field(
           label="Message"
           v-model="t_message"
@@ -51,7 +52,7 @@ export default {
   data() {
     return {
       t_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
-      t_mosaics: '85BBEA6CC462B244::0',
+      t_mosaics: '@cat.currency::0, 941299B2B7E1291C::0',
       t_message: 'Hello Nem2!',
       t_fee: 0,
       t_history: []
