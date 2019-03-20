@@ -153,7 +153,7 @@ export default {
         const name = ns.namespaceName.name
         const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
         const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight
-        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired after ${-expireWithin} blocks`
+        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
         let parentText
         if (ns.namespaceInfo.depth > 1) {
           parentText = 'parent: ' + ns.namespaceInfo.levels[ns.namespaceInfo.depth - 2].toHex().toUpperCase()
@@ -191,7 +191,7 @@ export default {
         const startHeight = mosaicAmountView.mosaicInfo.height.compact()
         const endHeight = startHeight + duration
         const expireWithin = endHeight - blockHeight
-        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired after ${-expireWithin} blocks`
+        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
         return {
           text: hexId + ', ' + expireText,
           link: `${endpoint}/mosaic/${hexId}`
@@ -248,19 +248,21 @@ export default {
       const namespaces = {}
       const namespaceHttp = new NamespaceHttp(this.endpoint)
       namespaceHttp.getNamespacesFromAccount(this.address).pipe(
-        flatMap(_ => _),
-        mergeMap((x) => {
-          namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x }
-          return namespaceHttp.getNamespacesName([x.id])
-        }),
-        flatMap(_ => _)
-      ).subscribe((namespaceName) => {
-        const namespace = namespaces[namespaceName.namespaceId.toHex().toUpperCase()]
-        namespace.namespaceName = namespaceName
-        this.namespaces.push(namespace)
+        mergeMap((mosaicsInfo) => {
+          const mosaicIds = mosaicsInfo.map((x) => {
+            namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x }
+            return x.id
+          })
+          return namespaceHttp.getNamespacesName(mosaicIds)
+        })
+      ).subscribe((namespacesName) => {
+        this.namespaces = namespacesName.map((namespaceName) => {
+          const namespace = namespaces[namespaceName.namespaceId.toHex().toUpperCase()]
+          namespace.namespaceName = namespaceName
+          return namespace
+        })
+        this.isNamespaceLoading = false
       })
-      // actually, loading is not complete
-      this.isNamespaceLoading = false
     }
   }
 }
