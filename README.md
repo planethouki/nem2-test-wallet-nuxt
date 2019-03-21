@@ -1,4 +1,4 @@
-# nem2-unsafe-wallet-nuxt
+# nem2-test-wallet-nuxt
 
 > Do NOT use on main net
 
@@ -27,7 +27,7 @@ For detailed explanation on how things work, checkout the [Nuxt.js docs](https:/
 
 ## Demo
 
-http://wallet48gh23s.z31.web.core.windows.net/
+http://walletalpaca.z31.web.core.windows.net/
 
 ## Function
 
