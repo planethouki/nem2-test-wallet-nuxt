@@ -5,7 +5,6 @@
       v-container
         v-layout
           v-flex(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
-            Jumbo(navTargetId="jumbo")
             Login(
               v-bind:endpoints="endpoints"
               v-bind:defaultEndpoint="defaultEndpoint"
@@ -75,11 +74,9 @@
           {icon:"edit",title:"Cosignature Multisig",target:'#cosignaturemultisig',offset:-80},
         ],
         endpoints: [
-          { url: "http://catapult48gh23s.xyz:3000", label: "catapult48gh23s.xyz" },
-          { url: "http://catapult-test.44uk.net:3000", label: "catapult-test.44uk.net" },
-          { url: "http://catapult-test.daoka.ml:3000", label: "catapult-test.daoka.ml" },
+          { url: "http://52.194.141.193:3000", label: "52.194.141.193" },
         ],
-        defaultEndpoint: "http://catapult48gh23s.xyz:3000",
+        defaultEndpoint: "http://52.194.141.193:3000",
         defaultPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletPassword: {},
         endpoint: "",
@@ -100,12 +97,8 @@
         this.wallet = event.wallet;
         this.walletPassword = event.password;
         this.endpoint = event.endpoint;
-        if (this.endpoint.includes("44uk")) {
-          this.faucetUrl = `http://test-nem2-faucet.44uk.net/?address=${this.wallet.address.plain()}`;
-        } else if (this.endpoint.includes("daoka")) {
-          this.faucetUrl = `http://catapult-test.daoka.ml:4567/?address=${this.wallet.address.plain()}`;
-        } else if (this.endpoint.includes("48gh23s")) {
-          this.faucetUrl = `https://faucet48gh23s.azurewebsites.net/?address=${this.wallet.address.plain()}`;
+        if (this.endpoint.includes("52.194.141.193")) {
+          this.faucetUrl = `https://faucet-alpaca.azurewebsites.net/`;
         }
         console.log("wallet created");
       },
