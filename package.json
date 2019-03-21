@@ -1,6 +1,6 @@
 {
-  "name": "nem2-unsafe-wallet-nuxt",
-  "version": "1.0.0",
+  "name": "nem2-test-wallet-nuxt",
+  "version": "0.1.0",
   "description": "",
   "author": "planethouki",
   "private": true,
@@ -16,7 +16,8 @@
   "dependencies": {
     "@nuxtjs/vuetify": "^0.4.3",
     "generate-password": "^1.4.0",
-    "nem2-sdk": "^0.10.1",
+    "nem2-sdk": "0.10.1",
+    "nem2-library": "0.9.5",
     "nuxt": "^2.0.0",
     "rxjs": "^6.3.3",
     "secure-random": "^1.1.1"
