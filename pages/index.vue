@@ -19,8 +19,8 @@
             Namespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="namespace")
             SubNamespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="subnamespace")
             MosaicDefinition(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaic")
-            SecretLock(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretlock")
-            SecretProof(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretproof")
+            <!--SecretLock(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretlock")-->
+            <!--SecretProof(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretproof")-->
             ConvertMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="multisig")
             ModifyMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="modifymultisig")
             Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")
@@ -74,9 +74,9 @@
           {icon:"edit",title:"Cosignature Multisig",target:'#cosignaturemultisig',offset:-80},
         ],
         endpoints: [
-          { url: "http://52.194.141.193:3000", label: "52.194.141.193" },
+          { url: "http://54.238.216.37:3000", label: "54.238.216.37" },
         ],
-        defaultEndpoint: "http://52.194.141.193:3000",
+        defaultEndpoint: "http://54.238.216.37:3000",
         defaultPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletPassword: {},
         endpoint: "",
@@ -97,8 +97,8 @@
         this.wallet = event.wallet;
         this.walletPassword = event.password;
         this.endpoint = event.endpoint;
-        if (this.endpoint.includes("52.194.141.193")) {
-          this.faucetUrl = `https://faucet-alpaca.azurewebsites.net/`;
+        if (this.endpoint.includes("54.238.216.37")) {
+          this.faucetUrl = `https://faucet-bison.azurewebsites.net/`;
         }
         console.log("wallet created");
       },
