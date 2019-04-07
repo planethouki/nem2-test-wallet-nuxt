@@ -86,7 +86,13 @@ export default {
     },
     createWallet: async function (event) {
       this.loginDisabled = true
-      const endpoint = this.predefinedEndpoint || this.userEndpoint
+      let endpoint = this.predefinedEndpoint || this.userEndpoint
+      if (endpoint.match(/:\d+$/) === null) {
+        endpoint = `${endpoint}:3000`
+      }
+      if (!endpoint.startsWith('http')) {
+        endpoint = `http://${endpoint}`
+      }
       let network
       try {
         const nodeInfo = JSON.parse(await rp(`${endpoint}/node/info`))
