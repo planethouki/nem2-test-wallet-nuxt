@@ -20,5 +20,14 @@ Vue.prototype.$parser = {
   },
   parseMosaic: function (str) {
     return this.parseMosaics(str)[0]
+  },
+  resolveIfNamespace: async function (namespaceHttp, mosaic) {
+    const isNamespace = (mosaic.id.id.higher >>> 31) === 1
+    if (isNamespace) {
+      const mosaicId = await namespaceHttp.getLinkedMosaicId(mosaic.id).toPromise()
+      return new Mosaic(mosaicId, mosaic.amount)
+    } else {
+      return mosaic
+    }
   }
 }

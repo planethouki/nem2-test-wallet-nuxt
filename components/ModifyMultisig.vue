@@ -68,7 +68,6 @@
             required
             type="number")
         v-flex.pt-4
-          small Lock Funds Tx is not resolved yet. please put mosaicId.
           v-text-field(
             label="Lock Funds Mosaic"
             placeholder="ex). @cat.currency::10000000"
@@ -96,7 +95,7 @@
 <script>
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, TransactionType
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, TransactionType, NamespaceHttp
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from './AggregatetxHistory.vue'
@@ -125,7 +124,7 @@ export default {
       d_history: [],
       d_fee: 0,
       d_lockFee: 0,
-      d_lockMosaic: '119E15661E9B2758::10000000',
+      d_lockMosaic: '@cat.currency::10000000',
       d_lockDuration: 480
     }
   },
@@ -141,7 +140,7 @@ export default {
       this.d_additionalModificationPubkey = ''
       this.d_additionalModificationType = false
     },
-    d_announceHandler: function (event) {
+    d_announceHandler: async function (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
@@ -174,7 +173,9 @@ export default {
         ]
       )
       const signedAggregateTx = account.sign(aggregateTx)
-      const lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
+      let lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
+      const namespaceHttp = new NamespaceHttp(endpoint)
+      lockMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockMosaic)
       const lockFundsTx = new LockFundsTransaction(
         network,
         this.$TransactionVersion.LOCK,
