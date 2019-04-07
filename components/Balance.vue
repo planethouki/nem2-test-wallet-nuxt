@@ -31,8 +31,8 @@
         v-layout(column)
           div(v-for="m in namespaceTexts" v-bind:key="m.link").ml-3
             div {{ m.text }}
-              a(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                v-icon(small) arrow_right
+              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
+                v-icon(small) info
       v-card-text
         v-layout(align-baseline)
           span.title Owned Mosaics
@@ -55,7 +55,7 @@
 <script>
 import { MosaicId, MosaicService, NetworkCurrencyMosaic, NamespaceId,
   AccountHttp, MosaicHttp, BlockchainHttp, NamespaceHttp } from 'nem2-sdk'
-import { flatMap, mergeMap } from 'rxjs/operators'
+import { mergeMap } from 'rxjs/operators'
 
 export default {
   name: 'AliasInfo',
@@ -114,9 +114,9 @@ export default {
         const relAmount = amount / (10 ** divisibility)
         let mosaicName
         if (mosaicAmountView.mosaicInfo.mosaicId.equals(currencyMosaicId)) {
-          mosaicName = currencyNamespaceName
+          mosaicName = `${mosaicAmountView.fullName().toUpperCase()}@${currencyNamespaceName}`
         } else if (mosaicAmountView.mosaicInfo.mosaicId.equals(harvestMosaicId)) {
-          mosaicName = harvestNamespaceName
+          mosaicName = `${mosaicAmountView.fullName().toUpperCase()}@${harvestNamespaceName}`
         } else {
           mosaicName = mosaicAmountView.fullName().toUpperCase()
         }
@@ -149,19 +149,13 @@ export default {
           return 1
         }
         return 0
-      }).map((ns) => {
-        const name = ns.namespaceName.name
+      }).map((ns, index, original) => {
+        const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.')
         const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
         const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight
         const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
-        let parentText
-        if (ns.namespaceInfo.depth > 1) {
-          parentText = 'parent: ' + ns.namespaceInfo.levels[ns.namespaceInfo.depth - 2].toHex().toUpperCase()
-        } else {
-          parentText = 'top level'
-        }
         return {
-          text: name + ', ' + hexId + ', ' + expireText + ', ' + parentText,
+          text: name + ', ' + hexId + ', ' + expireText,
           link: `${endpoint}/namespace/${hexId}`
         }
       })
@@ -233,10 +227,9 @@ export default {
         mergeMap((accountInfo) => {
           const mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [NetworkCurrencyMosaic.createAbsolute(0)]
           return mosaicService.mosaicsAmountView(mosaics)
-        }),
-        flatMap(_ => _)
-      ).subscribe((mosaicAmountView) => {
-        this.mosaicAmountViews.push(mosaicAmountView)
+        })
+      ).subscribe((mosaicAmountViews) => {
+        this.mosaicAmountViews = mosaicAmountViews
         this.isBalanceLoading = false
       }, () => {
         this.isBalanceLoading = false
