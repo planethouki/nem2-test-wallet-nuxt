@@ -229,7 +229,9 @@ export default {
           return mosaicService.mosaicsAmountView(mosaics)
         })
       ).subscribe((mosaicAmountViews) => {
-        this.mosaicAmountViews = mosaicAmountViews
+        mosaicAmountViews.map((x) => {
+          this.mosaicAmountViews.push(x)
+        })
         this.isBalanceLoading = false
       }, () => {
         this.isBalanceLoading = false
