@@ -150,7 +150,7 @@ export default {
       this.endpoint = event.endpoint
       if (this.endpoint.includes('54.178.241.129')) {
         this.faucetUrl = `https://faucet-cow.azurewebsites.net`
-      } else if (this.endpoint.includes('52.197.250.79')) {
+      } else if (this.endpoint.includes('13.114.36.139')) {
         this.faucetUrl = `https://faucet-cow-fee.azurewebsites.net/`
       }
     }
