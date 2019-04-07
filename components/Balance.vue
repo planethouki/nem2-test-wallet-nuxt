@@ -48,8 +48,8 @@
         v-layout(column)
           div(v-for="m in mosaicTexts" v-bind:key="m.link").ml-3
             div {{ m.text }}
-              a(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                v-icon(small) arrow_right
+              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
+                v-icon(small) info
 </template>
 
 <script>
