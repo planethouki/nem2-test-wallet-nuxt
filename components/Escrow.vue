@@ -50,11 +50,10 @@
             label="Max Fee"
             v-model="e_fee")
         v-flex.pt-3
-          small Lock Funds Tx is not resolved yet. please put mosaicId.
           v-text-field(
             label="Lock Funds Mosaic"
             v-model="e_mosaic3"
-            placeholder="ex). 119E15661E9B2758::10000000")
+            placeholder="ex). @cat.currency::10000000")
           v-text-field(
             label="Lock Funds Duration In Blocks"
             v-model="e_duration3"
@@ -75,7 +74,8 @@
 <script>
 import {
   Address, Deadline, UInt64, PlainMessage, TransferTransaction, TransactionType,
-  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener
+  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener,
+  NamespaceHttp
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from './AggregatetxHistory.vue'
@@ -99,7 +99,7 @@ export default {
       e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
       e_mosaics2: '85BBEA6CC462B244::0, @cat.harvest::0',
       e_message2: 'escrow invoice',
-      e_mosaic3: '119E15661E9B2758::10000000',
+      e_mosaic3: '@cat.currency::10000000',
       e_duration3: 480,
       e_history: [],
       e_fee: 0,
@@ -107,7 +107,7 @@ export default {
     }
   },
   methods: {
-    e_announceHandler: function (event) {
+    e_announceHandler: async function (event) {
       const endpoint = this.endpoint
       const wsEndpoint = endpoint.replace('http', 'ws')
       const listener = new Listener(wsEndpoint, WebSocket)
@@ -115,7 +115,9 @@ export default {
       const network = this.wallet.network
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
-      const lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
+      let lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
+      const namespaceHttp = new NamespaceHttp(endpoint)
+      lockFundsMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockFundsMosaic)
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
         Address.createFromRawAddress(this.e_recipient1),
