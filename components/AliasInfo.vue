@@ -62,7 +62,7 @@ export default {
           return 1
         }
         return 0
-      }).map((ns) => {
+      }).map((ns, index, original) => {
         let aliasText
         let aliasType
         switch (ns.namespaceInfo.alias.type) {
@@ -80,7 +80,7 @@ export default {
             break
         }
         return {
-          name: ns.namespaceName.name,
+          name: ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.'),
           hexId: ns.namespaceInfo.id.toHex().toUpperCase(),
           type: aliasType,
           alias: aliasText
