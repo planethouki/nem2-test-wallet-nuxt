@@ -14,7 +14,7 @@
           v-spacer
           small resolve only cat.currency and cat.harvest
         v-layout(column)
-          v-list-tile(v-for="m in mosaicAmountTexts" v-bind:key="m")
+          v-list-tile(v-for="m in balanceTexts" v-bind:key="m")
             v-list-tile-content
               v-list-tile-title
                 span {{ m }}
@@ -80,7 +80,7 @@ export default {
     }
   },
   computed: {
-    mosaicAmountTexts: function () {
+    balanceTexts: function () {
       const blockHeight = this.blockHeight
       const currencyMosaicId = this.currencyMosaicId
       const harvestMosaicId = this.harvestMosaicId
@@ -167,7 +167,7 @@ export default {
       if (this.isBalanceLoading === false && this.mosaicAmountViews.length === 0) {
         return [{ text: 'none', link: '' }]
       }
-      return this.mosaicAmountViews.filter(function (mosaicAmountView) {
+      const emptyOrMosaicTexts = this.mosaicAmountViews.filter(function (mosaicAmountView) {
         return mosaicAmountView.mosaicInfo.owner.address.equals(address)
       }).sort(function (a, b) {
         const nameA = a.mosaicInfo.metaId
@@ -191,6 +191,7 @@ export default {
           link: `${endpoint}/mosaic/${hexId}`
         }
       })
+      return emptyOrMosaicTexts.length === 0 ? [{ text: 'none', link: '' }] : emptyOrMosaicTexts
     }
   },
   watch: {
