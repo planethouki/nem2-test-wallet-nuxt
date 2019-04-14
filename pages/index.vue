@@ -5,38 +5,29 @@
       v-container
         v-layout
           v-flex(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
-            Login(
-            v-bind:endpoints="endpoints"
-            v-bind:defaultEndpoint="defaultEndpoint"
-            v-bind:defaultPrivateKey="defaultPrivateKey"
-            v-bind:createdWallet="wallet"
-            v-bind:createdWalletPassword="walletPassword"
-            v-bind:defaultNetworkType="defaultNetworkType"
-            v-on:walletCreated="walletCreated"
-            v-on:deletePassword="deleteWalletPassword"
-            navTargetId="login")
-            WalletInfo(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" v-bind:faucetUrl="faucetUrl" v-on:logoutWallet="logoutWallet" navTargetId="wallet")
-            Balance(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="balance")
-            Transfer(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="transfer")
-            Namespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="namespace")
-            SubNamespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="subnamespace")
-            MosaicDefinition(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaic")
-            SecretLock(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretlock")
-            SecretProof(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretproof")
-            ConvertMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="multisig")
-            ModifyMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="modifymultisig")
-            Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")
-            Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")
-            CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")
-            AliasInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="aliasInfo")
-            MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")
-            AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")
-            AccountPropertyInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountPropertyInfo")
-            AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")
-            AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")
-            AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")
-            AccountLinkInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountLinkInfo")
-            AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")
+            Login(navTargetId="login")
+            WalletInfo(navTargetId="wallet")
+            Balance(navTargetId="balance")
+            Transfer(navTargetId="transfer")
+            <!--Namespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="namespace")-->
+            <!--SubNamespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="subnamespace")-->
+            <!--MosaicDefinition(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaic")-->
+            <!--SecretLock(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretlock")-->
+            <!--SecretProof(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretproof")-->
+            <!--ConvertMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="multisig")-->
+            <!--ModifyMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="modifymultisig")-->
+            <!--Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")-->
+            <!--Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")-->
+            <!--CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")-->
+            <!--AliasInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="aliasInfo")-->
+            <!--MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")-->
+            <!--AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")-->
+            <!--AccountPropertyInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountPropertyInfo")-->
+            <!--AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")-->
+            <!--AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")-->
+            <!--AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")-->
+            <!--AccountLinkInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountLinkInfo")-->
+            <!--AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")-->
     Footer
 </template>
 
@@ -69,8 +60,6 @@ import AccountLink from '~/components/AccountLink.vue'
 import Jumbo from '~/components/Jumbo.vue'
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
-
-import { NetworkType } from 'nem2-sdk'
 
 export default {
   components: {
@@ -124,13 +113,6 @@ export default {
         { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: -80 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: -80 }
       ],
-      endpoints: [
-        { url: 'http://54.178.241.129:3000', label: 'cow (54.178.241.129)' },
-        { url: 'http://13.114.36.139:3000', label: 'cow with fee (13.114.36.139)' }
-      ],
-      defaultEndpoint: 'http://54.178.241.129:3000',
-      defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
-      defaultNetworkType: NetworkType.MIJIN_TEST,
       walletPassword: {},
       endpoint: '',
       faucetUrl: '',

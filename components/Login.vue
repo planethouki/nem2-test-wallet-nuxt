@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="!createdWallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="isShow" v-bind:id="navTargetId")
     v-card
       v-form
         v-card-text
@@ -13,7 +13,7 @@
               label="other"
               value="")
           v-text-field(
-            v-show="predefinedEndpoint.length == 0"
+            v-show="predefinedEndpoint.length === 0"
             label="Endpoint"
             v-model="userEndpoint"
             name="Endpoint"
@@ -43,38 +43,40 @@
 
 <script>
 
-import { Password, SimpleWallet } from 'nem2-sdk'
-const generator = require('generate-password')
+import { NetworkType } from 'nem2-sdk'
 const rp = require('request-promise-native')
 
 export default {
   name: 'Login',
-  props: [
-    'navTargetId',
-    'endpoints',
-    'defaultEndpoint',
-    'defaultPrivateKey',
-    'createdWallet',
-    'createdWalletPassword',
-    'defaultNetworkType'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'login'
+      }
+    }
+  },
   data() {
     return {
       predefinedEndpoint: '',
       userEndpoint: '',
       privateKey: '',
-      loginDisabled: false
+      loginDisabled: false,
+      endpoints: [
+        { url: 'http://54.178.241.129:3000', label: 'cow (54.178.241.129)' },
+        { url: 'http://13.114.36.139:3000', label: 'cow with fee (13.114.36.139)' }
+      ],
+      defaultEndpoint: 'http://54.178.241.129:3000',
+      defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
+      defaultNetworkType: NetworkType.MIJIN_TEST
+    }
+  },
+  computed: {
+    isShow() {
+      return !this.$store.getters['wallet/existsAccount']
     }
   },
   watch: {
-    createdWallet: {
-      handler: function (newVal, oldVal) {
-        if (oldVal.address && !newVal.address) {
-          this.privateKey = oldVal.open(this.createdWalletPassword).privateKey
-          this.$emit('deletePassword')
-        }
-      }
-    }
   },
   created: function () {
     this.predefinedEndpoint = this.defaultEndpoint
@@ -86,6 +88,7 @@ export default {
     },
     createWallet: async function (event) {
       this.loginDisabled = true
+      const privateKey = this.privateKey
       let endpoint = this.predefinedEndpoint || this.userEndpoint
       if (endpoint.match(/:\d+$/) === null) {
         endpoint = `${endpoint}:3000`
@@ -93,30 +96,16 @@ export default {
       if (!endpoint.startsWith('http')) {
         endpoint = `http://${endpoint}`
       }
-      let network
+      let networkType = NetworkType.MIJIN_TEST
       try {
         const nodeInfo = JSON.parse(await rp(`${endpoint}/node/info`))
-        network = nodeInfo.networkIdentifier
+        networkType = nodeInfo.networkIdentifier
       } catch (e) {
-        network = this.defaultNetworkType
+        // eslint-disable-next-line
+        console.log("failed to get NetworkType. MIJIN_TEST assumed.")
       }
-      const password = new Password(
-        generator.generate({
-          length: 50,
-          numbers: true,
-          symbols: true
-        })
-      )
-      const name = 'myWallet'
-      const wallet = SimpleWallet.createFromPrivateKey(
-        name,
-        password,
-        this.privateKey,
-        network
-      )
-      this.privateKey = ''
+      this.$store.commit('wallet/login', { privateKey, endpoint, networkType })
       this.loginDisabled = false
-      this.$emit('walletCreated', { wallet, password, endpoint })
     }
   }
 }
