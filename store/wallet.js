@@ -1,34 +1,60 @@
-import { Account, NetworkType } from 'nem2-sdk'
+import { Account } from 'nem2-sdk'
 
 export const state = () => ({
-  privateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
-  endpoint: 'http://54.178.241.129:3000',
-  networkType: NetworkType.MIJIN_TEST
+  privateKey: null,
+  endpoint: null,
+  networkType: null,
+  faucet: null,
+  address: null,
+  account: null,
+  publicAccount: null,
+  mutateCount: 0
 })
 
 export const getters = {
   getAddress(state) {
-    return Account.createFromPrivateKey(state.privateKey, state.networkType).address
+    return state.address
   },
   getPublicAccount(state) {
-    return Account.createFromPrivateKey(state.privateKey, state.networkType).publicAccount
+    return state.publicAccount
   },
   getAccount(state) {
-    return Account.createFromPrivateKey(state.privateKey, state.networkType)
+    return state.account
+  },
+  getEndpoint(state) {
+    return state.endpoint
+  },
+  getFaucet(state) {
+    return state.faucet
+  },
+  existsAccount(state) {
+    return state.privateKey !== null
+  },
+  getMutateCount(state) {
+    return state.mutateCount
   }
 }
 
 export const mutations = {
-  addAccount(state, account) {
-    state.accounts.push(account)
+  login(state, wallet) {
+    state.faucet = wallet.faucet
+    state.networkType = wallet.networkType
+    state.endpoint = wallet.endpoint
+    state.privateKey = wallet.privateKey
+    const account = Account.createFromPrivateKey(wallet.privateKey, wallet.networkType)
+    state.account = account
+    state.publicAccount = account.publicAccount
+    state.address = account.address
+    state.mutateCount++
   },
-  removeAccount(state, { account }) {
-    state.accounts.splice(state.account.indexOf(account), 1)
-  },
-  addEndpoint(state, endpoint) {
-    state.endpoints.push(endpoint)
-  },
-  removeEndpoint(state, { endpoint }) {
-    state.endpoints.splice(state.endpoints.indexOf(endpoint), 1)
+  logout(state) {
+    state.privateKey = null
+    state.endpoint = null
+    state.networkType = null
+    state.faucet = null
+    state.account = null
+    state.publicAccount = null
+    state.address = null
+    state.mutateCount++
   }
 }
