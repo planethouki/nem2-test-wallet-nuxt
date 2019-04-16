@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-text
         v-layout(align-baseline)
@@ -19,17 +19,32 @@ import { mergeMap } from 'rxjs/operators'
 
 export default {
   name: 'AccountPropertyInfo',
-  props: [
-    'endpoint',
-    'address',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'accountPropertyInfo'
+      }
+    }
+  },
   data() {
     return {
       properties: []
     }
   },
   computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
+    },
+    address() {
+      return this.$store.getters['wallet/getAddress']
+    },
+    walletMutateCount() {
+      return this.$store.getters['wallet/getMutateCount']
+    },
     propertiesTree: function () {
       return this.properties.map((property) => {
         return {
@@ -53,16 +68,15 @@ export default {
     }
   },
   watch: {
-    address: {
+    walletMutateCount: {
       handler: function () {
-        if (this.address) {
-          this.reloadAccount()
-        }
+        this.reloadAccount()
       }
     }
   },
   methods: {
     reloadAccount: function (event) {
+      if (!this.existsAccount) return
       this.properties = []
       const accountHttp = new AccountHttp(this.endpoint)
       accountHttp.getAccountInfo(this.address).pipe(

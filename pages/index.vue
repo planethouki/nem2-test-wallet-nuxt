@@ -19,14 +19,14 @@
             Escrow(navTargetId="escrow")
             Cosignature(navTargetId="cosignature")
             CosignatureMultisig(navTargetId="cosignaturemultisig")
-            <!--AliasInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="aliasInfo")-->
+            AliasInfo(navTargetId="aliasInfo")
             <!--MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")-->
             <!--AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")-->
-            <!--AccountPropertyInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountPropertyInfo")-->
+            AccountPropertyInfo(navTargetId="accountPropertyInfo")
             <!--AccountPropertyAddress(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyAddress")-->
             <!--AccountPropertyMosaic(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyMosaic")-->
             <!--AccountPropertyEntityType(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountPropertyEntityType")-->
-            <!--AccountLinkInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="accountLinkInfo")-->
+            AccountLinkInfo(navTargetId="accountLinkInfo")
             <!--AccountLink(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="accountLink")-->
     Footer
 </template>
