@@ -9,11 +9,11 @@
             WalletInfo(navTargetId="wallet")
             Balance(navTargetId="balance")
             Transfer(navTargetId="transfer")
-            <!--Namespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="namespace")-->
-            <!--SubNamespace(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="subnamespace")-->
-            <!--MosaicDefinition(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaic")-->
-            <!--SecretLock(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretlock")-->
-            <!--SecretProof(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="secretproof")-->
+            Namespace(navTargetId="namespace")
+            SubNamespace(navTargetId="subnamespace")
+            MosaicDefinition(navTargetId="mosaic")
+            SecretLock(navTargetId="secretlock")
+            SecretProof(navTargetId="secretproof")
             <!--ConvertMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="multisig")-->
             <!--ModifyMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="modifymultisig")-->
             <!--Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")-->
