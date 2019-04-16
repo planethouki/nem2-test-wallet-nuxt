@@ -1,6 +1,6 @@
 <template lang="pug">
   v-app
-    Header(v-bind:wallet="wallet" v-bind:nav="nav")
+    Header(v-bind:nav="nav")
     v-content
       v-container
         v-layout
@@ -90,6 +90,11 @@ export default {
     AccountLinkInfo,
     AccountLink
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   asyncData(context) {
     return {
       nav: [
@@ -112,30 +117,10 @@ export default {
         { icon: 'person_add', title: 'Account Property Mosaic', target: '#accountPropertyMosaic', offset: -80 },
         { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: -80 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: -80 }
-      ],
-      walletPassword: {},
-      endpoint: '',
-      faucetUrl: '',
-      wallet: {}
+      ]
     }
   },
   methods: {
-    logoutWallet: function (event) {
-      this.wallet = {}
-    },
-    deleteWalletPassword: function (event) {
-      this.walletPassword = {}
-    },
-    walletCreated: function (event) {
-      this.wallet = event.wallet
-      this.walletPassword = event.password
-      this.endpoint = event.endpoint
-      if (this.endpoint.includes('54.178.241.129')) {
-        this.faucetUrl = `https://faucet-cow.azurewebsites.net`
-      } else if (this.endpoint.includes('13.114.36.139')) {
-        this.faucetUrl = `https://faucet-cow-fee.azurewebsites.net/`
-      }
-    }
   },
   head() {
     return {
