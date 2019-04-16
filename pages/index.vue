@@ -14,11 +14,11 @@
             MosaicDefinition(navTargetId="mosaic")
             SecretLock(navTargetId="secretlock")
             SecretProof(navTargetId="secretproof")
-            <!--ConvertMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="multisig")-->
-            <!--ModifyMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="modifymultisig")-->
-            <!--Escrow(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="escrow")-->
-            <!--Cosignature(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignature")-->
-            <!--CosignatureMultisig(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="cosignaturemultisig")-->
+            ConvertMultisig(navTargetId="multisig")
+            ModifyMultisig(navTargetId="modifymultisig")
+            Escrow(navTargetId="escrow")
+            Cosignature(navTargetId="cosignature")
+            CosignatureMultisig(navTargetId="cosignaturemultisig")
             <!--AliasInfo(v-bind:endpoint="endpoint" v-bind:address="wallet.address" navTargetId="aliasInfo")-->
             <!--MosaicAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="mosaicAlias")-->
             <!--AddressAlias(v-bind:endpoint="endpoint" v-bind:wallet="wallet" v-bind:walletPassword="walletPassword" navTargetId="addressAlias")-->

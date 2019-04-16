@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Modify Multisig
@@ -105,12 +105,14 @@ export default {
   components: {
     AggregatetxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'modifymultisig'
+      }
+    }
+  },
   data() {
     return {
       d_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
@@ -126,6 +128,11 @@ export default {
       d_lockFee: 0,
       d_lockMosaic: '@cat.currency::10000000',
       d_lockDuration: 480
+    }
+  },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
     }
   },
   methods: {

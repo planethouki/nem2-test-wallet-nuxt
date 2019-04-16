@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Cosignature Transaction of Multisig
@@ -36,12 +36,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'cosignaturemultisig'
+      }
+    }
+  },
   data() {
     return {
       g_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
@@ -49,13 +51,18 @@ export default {
       g_history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     g_announceHandler: function (event) {
-      const network = this.wallet.network
+      const account = this.$store.getters['wallet/getAccount']
+      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const network = account.address.networkType
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey, network)
-      const account = this.wallet.open(this.walletPassword)
       const hash = this.g_hash
-      const endpoint = this.endpoint
       const txHttp = new TransactionHttp(endpoint)
       const accountHttp = new AccountHttp(endpoint)
       accountHttp.aggregateBondedTransactions(multisigPublicAccount).pipe(
