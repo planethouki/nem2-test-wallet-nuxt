@@ -2,7 +2,7 @@
   <header>
     <v-navigation-drawer v-model="drawer" fixed app>
       <v-list dense>
-        <v-list-tile v-show="!wallet.address">
+        <v-list-tile v-show="!existsAccount">
           <v-list-tile-action>
             <v-icon>info</v-icon>
           </v-list-tile-action>
@@ -12,7 +12,7 @@
         </v-list-tile>
         <v-list-tile
           v-for="n in nav"
-          v-show="wallet.address"
+          v-show="existsAccount"
           :key="n.title"
           @click="$vuetify.goTo(n.target, {offset: n.offset})"
         >
@@ -35,13 +35,22 @@
 <script>
 export default {
   name: 'Header',
-  props: [
-    'wallet',
-    'nav'
-  ],
+  props: {
+    nav: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       drawer: false
+    }
+  },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
     }
   }
 }

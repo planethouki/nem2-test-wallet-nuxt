@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-text
         v-layout(align-baseline)
@@ -17,11 +17,14 @@
 
 export default {
   name: 'AccountLinkInfo',
-  props: [
-    'endpoint',
-    'address',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'accountLinkInfo'
+      }
+    }
+  },
   data() {
     return {
       remoteAccountKey: '',
@@ -29,17 +32,30 @@ export default {
       history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
+    },
+    address() {
+      return this.$store.getters['wallet/getAddress']
+    },
+    walletMutateCount() {
+      return this.$store.getters['wallet/getMutateCount']
+    }
+  },
   watch: {
-    address: {
+    walletMutateCount: {
       handler: function () {
-        if (this.address) {
-          this.reloadAccount()
-        }
+        this.reloadAccount()
       }
     }
   },
   methods: {
     reloadAccount: async function (event) {
+      if (!this.existsAccount) return
       this.remoteAccountKey = ''
       const rp = require('request-promise-native')
       const account = await rp(`${this.endpoint}/account/${this.address.plain()}`)

@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="isShow" v-bind:id="navTargetId")
     v-card
       v-card-title.pb-0
         v-layout(align-baseline)
@@ -8,15 +8,15 @@
           fab
           small
           flat
-          @click="copyWalletAddressHandler")
+          @click="copyAddressHandler")
             v-icon filter_none
       v-card-text.pt-0
         v-layout(overflow-hidden)
           v-list
             v-list-tile
               v-list-tile-content
-                v-list-tile-title(ref="address") {{ wallet.address.pretty() }}
-                v-list-tile-sub-title {{ wallet.address.plain() }}
+                v-list-tile-title(ref="address") {{ address.pretty() }}
+                v-list-tile-sub-title {{ address.plain() }}
       v-card-title.pb-0
         v-layout(align-baseline)
           span.title Public Key
@@ -24,14 +24,14 @@
           fab
           small
           flat
-          @click="reloadAccount")
-            v-icon cached
+          @click="copyPublicKeyHandler")
+            v-icon filter_none
       v-card-text.pt-0
         v-layout(overflow-hidden)
           v-list-tile
             v-list
               v-list-tile-content
-                v-list-tile-sub-title {{ publicKey }}
+                v-list-tile-sub-title(ref="publicKey") {{ publicKey }}
       v-card-actions
         v-btn(
         color="pink"
@@ -42,50 +42,57 @@
           template(v-slot:activator="{ on }")
             v-btn(v-on="on") Links
           v-list
+            v-list-tile(v-show="faucetUrl")
+              v-list-tile-title
+                a(v-bind:href="faucetUrl" target="_blank") Faucet
             v-list-tile
               v-list-tile-title
-                a(v-bind:href="faucetUrl" v-show="faucetUrl" target="_blank") Faucet
-            v-list-tile
-              v-list-tile-title
-                a(v-bind:href="endpoint + '/account/' + wallet.address.plain() + '/multisig'" target="_blank") Multisig
+                a(v-bind:href="endpoint + '/account/' + address.plain() + '/multisig'" target="_blank") Multisig
       v-card-text(v-show="alert")
         v-alert(type="error" :value="alert") {{ alert }}
 </template>
 
 <script>
 
-import { AccountHttp } from 'nem2-sdk'
-
 export default {
   name: 'WalletInfo',
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId',
-    'faucetUrl'
-  ],
-  data() {
-    return {
-      publicKey: '',
-      alert: ''
-    }
-  },
-  watch: {
-    wallet: {
-      handler: function () {
-        if (this.wallet.address) {
-          this.alert = ''
-          this.reloadAccount()
-        }
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'wallet'
       }
     }
   },
+  data() {
+    return {
+      alert: ''
+    }
+  },
+  computed: {
+    isShow() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    address() {
+      return this.$store.getters['wallet/getAddress']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
+    },
+    faucetUrl() {
+      return this.$store.getters['wallet/getFaucet']
+    },
+    publicKey() {
+      return this.$store.getters['wallet/getPublicAccount'].publicKey
+    }
+  },
+  watch: {
+  },
   methods: {
     logoutWallet: function (event) {
-      this.$emit('logoutWallet')
+      this.$store.commit('wallet/logout')
     },
-    copyWalletAddressHandler: function (event) {
+    copyAddressHandler: function (event) {
       const target = this.$refs.address
       const range = document.createRange()
       range.selectNode(target)
@@ -94,26 +101,14 @@ export default {
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
     },
-    reloadAccount: function (event) {
-      if (this.wallet.address) {
-        this.mosaics = []
-        this.publicKey = ''
-        const endpoint = this.endpoint
-        const address = this.wallet.address
-        const accountHttp = new AccountHttp(endpoint)
-        accountHttp.getAccountInfo(address).subscribe(
-          (accountInfo) => {
-            this.publicKey = accountInfo.publicKey
-          },
-          (error) => {
-            if (error.toString().includes('Error: Not Found')) {
-              this.publicKey = '0000000000000000000000000000000000000000000000000000000000000000'
-            } else {
-              this.alert = error
-            }
-          }
-        )
-      }
+    copyPublicKeyHandler: function (event) {
+      const target = this.$refs.publicKey
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
     }
   }
 }

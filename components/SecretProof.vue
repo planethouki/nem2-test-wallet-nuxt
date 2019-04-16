@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Secret Proof Transaction
@@ -43,12 +43,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'secretproof'
+      }
+    }
+  },
   data() {
     return {
       p_hashType: 0,
@@ -77,6 +79,9 @@ export default {
         default:
           return 'error'
       }
+    },
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
     }
   },
   created: function () {
@@ -84,10 +89,10 @@ export default {
   },
   methods: {
     p_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
+      const account = this.$store.getters['wallet/getAccount']
+      const endpoint = this.$store.getters['wallet/getEndpoint']
       const secretProofTransaction = new SecretProofTransaction(
-        this.wallet.network,
+        account.address.networkType,
         this.$TransactionVersion.SECRET_PROOF,
         Deadline.create(),
         UInt64.fromUint(this.p_fee),

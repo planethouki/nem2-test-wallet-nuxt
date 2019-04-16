@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Register Sub Namespace
@@ -35,12 +35,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'subnamespace'
+      }
+    }
+  },
   data() {
     return {
       s_name: 'bar',
@@ -49,20 +51,25 @@ export default {
       s_history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     s_announceHandler: function (event) {
       const namespaceName = this.s_name
       const parentNamespaceName = this.s_parentNamespace
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
+      const account = this.$store.getters['wallet/getAccount']
+      const endpoint = this.$store.getters['wallet/getEndpoint']
       const dummyRegisterNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
         Deadline.create(),
         namespaceName,
         parentNamespaceName,
-        this.wallet.network
+        account.address.networkType
       )
       const registerNamespaceTransaction = new RegisterNamespaceTransaction(
-        this.wallet.network,
+        account.address.networkType,
         this.$TransactionVersion.REGISTER_NAMESPACE,
         Deadline.create(),
         UInt64.fromUint(this.s_fee),

@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Escrow with Aggregate Bonded Transaction
@@ -85,12 +85,14 @@ export default {
   components: {
     AggregatetxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'escrow'
+      }
+    }
+  },
   data() {
     return {
       e_recipient1: 'SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ',
@@ -106,13 +108,18 @@ export default {
       e_fee3: 0
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     e_announceHandler: async function (event) {
-      const endpoint = this.endpoint
+      const endpoint = this.$store.getters['wallet/getEndpoint']
       const wsEndpoint = endpoint.replace('http', 'ws')
       const listener = new Listener(wsEndpoint, WebSocket)
-      const account = this.wallet.open(this.walletPassword)
-      const network = this.wallet.network
+      const account = this.$store.getters['wallet/getAccount']
+      const network = account.address.networkType
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
       let lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)

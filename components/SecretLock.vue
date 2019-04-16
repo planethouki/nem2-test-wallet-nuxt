@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Secret Lock Transaction
@@ -54,12 +54,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'secretlock'
+      }
+    }
+  },
   data() {
     return {
       l_hashType: HashType.Op_Sha3_256,
@@ -78,6 +80,11 @@ export default {
       l_fee: 0
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   watch: {
     l_hashType: {
       handler: function () {
@@ -91,14 +98,14 @@ export default {
   },
   methods: {
     l_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
+      const account = this.$store.getters['wallet/getAccount']
+      const endpoint = this.$store.getters['wallet/getEndpoint']
       const duration = this.l_duration
       const secret = this.l_secret
       const recipient = this.l_recipient
       const mosaic = this.$parser.parseMosaic(this.l_mosaic)
       const secretLockTransaction = new SecretLockTransaction(
-        this.wallet.network,
+        account.address.networkType,
         this.$TransactionVersion.SECRET_LOCK,
         Deadline.create(),
         UInt64.fromUint(this.l_fee),

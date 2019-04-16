@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-text
         v-layout(align-baseline)
@@ -29,11 +29,14 @@ import { flatMap, mergeMap } from 'rxjs/operators'
 
 export default {
   name: 'AliasInfo',
-  props: [
-    'endpoint',
-    'address',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'aliasInfo'
+      }
+    }
+  },
   data() {
     return {
       namespaces: [],
@@ -46,6 +49,18 @@ export default {
     }
   },
   computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
+    },
+    address() {
+      return this.$store.getters['wallet/getAddress']
+    },
+    walletMutateCount() {
+      return this.$store.getters['wallet/getMutateCount']
+    },
     namespaceTable: function () {
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
@@ -89,20 +104,21 @@ export default {
     }
   },
   watch: {
-    address: {
+    walletMutateCount: {
       handler: function () {
-        if (this.address) {
-          this.reloadAccount()
-        }
+        this.reloadAccount()
       }
     }
   },
   methods: {
     reloadAccount: function (event) {
+      if (!this.existsAccount) return
+      const address = this.address
+      const endpoint = this.endpoint
       this.namespaces = []
       const namespaces = {}
-      const namespaceHttp = new NamespaceHttp(this.endpoint)
-      namespaceHttp.getNamespacesFromAccount(this.address).pipe(
+      const namespaceHttp = new NamespaceHttp(endpoint)
+      namespaceHttp.getNamespacesFromAccount(address).pipe(
         flatMap(_ => _),
         mergeMap((x) => {
           namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x }

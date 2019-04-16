@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-text.pb-0
         v-layout(align-baseline)
@@ -58,12 +58,15 @@ import { MosaicId, MosaicService, NetworkCurrencyMosaic, NamespaceId,
 import { mergeMap } from 'rxjs/operators'
 
 export default {
-  name: 'AliasInfo',
-  props: [
-    'endpoint',
-    'address',
-    'navTargetId'
-  ],
+  name: 'Balance',
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'balance'
+      }
+    }
+  },
   data() {
     return {
       mosaicAmountViews: [],
@@ -80,7 +83,19 @@ export default {
     }
   },
   computed: {
-    balanceTexts: function () {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    walletMutateCount() {
+      return this.$store.getters['wallet/getMutateCount']
+    },
+    address() {
+      return this.$store.getters['wallet/getAddress']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
+    },
+    balanceTexts() {
       const blockHeight = this.blockHeight
       const currencyMosaicId = this.currencyMosaicId
       const harvestMosaicId = this.harvestMosaicId
@@ -128,7 +143,7 @@ export default {
           ') '
       })
     },
-    namespaceTexts: function () {
+    namespaceTexts() {
       const blockHeight = this.blockHeight
       const endpoint = this.endpoint
       if (this.isNamespaceLoading === false && this.namespaces.length === 0) {
@@ -160,7 +175,7 @@ export default {
         }
       })
     },
-    mosaicTexts: function () {
+    mosaicTexts() {
       const blockHeight = this.blockHeight
       const endpoint = this.endpoint
       const address = this.address
@@ -195,17 +210,15 @@ export default {
     }
   },
   watch: {
-    address: {
+    walletMutateCount: {
       handler: function () {
-        if (this.address) {
-          this.reloadBalance()
-          this.reloadNamespaces()
-        }
+        this.reload()
       }
     }
   },
   methods: {
     reload: function () {
+      if (!this.existsAccount) return
       this.reloadBalance()
       this.reloadNamespaces()
     },
