@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Account Property Address
@@ -68,12 +68,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'accountPropertyAddress'
+      }
+    }
+  },
   data() {
     return {
       propertyType: PropertyType.AllowAddress,
@@ -84,7 +86,7 @@ export default {
       modifications: [
         {
           isAdd: true,
-          rawAddress: ''
+          rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
         }
       ],
       additionalModification: {
@@ -95,12 +97,27 @@ export default {
       history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    walletMutateCount() {
+      return this.$store.getters['wallet/getMutateCount']
+    },
+    account() {
+      return this.$store.getters['wallet/getAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
+    }
+  },
   watch: {
-    wallet: {
+    walletMutateCount: {
       handler: function () {
-        if (this.wallet.address) {
-          this.additionalModification.rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
-          this.modifications[0].rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
+        if (this.existsAccount) {
+          const network = this.account.address.networkType
+          this.additionalModification.rawAddress = Account.generateNewAccount(network).address.pretty()
+          this.modifications[0].rawAddress = Account.generateNewAccount(network).address.pretty()
         }
       }
     }
@@ -114,13 +131,13 @@ export default {
         rawAddress: this.additionalModification.rawAddress,
         isAdd: this.additionalModification.isAdd
       })
-      this.additionalModification.rawAddress = 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
+      this.additionalModification.rawAddress = ''
     },
     announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
+      const account = this.account
       const endpoint = this.endpoint
       const modifyAccountPropertyAddressTransaction = new ModifyAccountPropertyAddressTransaction(
-        this.wallet.network,
+        account.address.networkType,
         this.$TransactionVersion.MODIFY_ACCOUNT_PROPERTY_ADDRESS,
         Deadline.create(),
         UInt64.fromUint(this.fee),
