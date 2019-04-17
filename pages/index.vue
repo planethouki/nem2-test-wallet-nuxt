@@ -1,10 +1,10 @@
 <template lang="pug">
   v-app
-    Header(v-bind:nav="nav")
+    Header(:nav="nav" :active="navActive")
     v-content
       v-container
         v-layout
-          v-flex(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
+          v-flex#content(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
             Login(navTargetId="login")
             WalletInfo(navTargetId="wallet")
             Balance(navTargetId="balance")
@@ -98,7 +98,7 @@ export default {
   asyncData(context) {
     return {
       nav: [
-        { icon: 'home', title: 'Home', target: 0, offset: 0 },
+        { icon: 'home', title: 'Home', target: 0, offset: 0, active: true },
         { icon: 'star', title: 'Wallet', target: '#wallet', offset: -80 },
         { icon: 'arrow_forward', title: 'Transfer Tx', target: '#transfer', offset: -80 },
         { icon: 'domain', title: 'Namespace', target: '#namespace', offset: -80 },
@@ -117,10 +117,27 @@ export default {
         { icon: 'person_add', title: 'Account Property Mosaic', target: '#accountPropertyMosaic', offset: -80 },
         { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: -80 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: -80 }
-      ]
+      ],
+      navActive: ''
     }
   },
+  created() {
+    window.addEventListener('scroll', this.onScroll)
+  },
+  destroyed() {
+    window.removeEventListener('scroll', this.onScroll)
+  },
   methods: {
+    onScroll(e) {
+      const elements = document.querySelectorAll('#content > div')
+      elements.forEach((elm) => {
+        const top = elm.getBoundingClientRect().top
+        const bottom = elm.getBoundingClientRect().bottom
+        if (top < 0 && bottom >= 0) {
+          this.navActive = `#${elm.id}`
+        }
+      })
+    }
   },
   head() {
     return {

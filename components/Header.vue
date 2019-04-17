@@ -14,8 +14,8 @@
           v-for="n in nav"
           v-show="existsAccount"
           :key="n.title"
-          @click="$vuetify.goTo(n.target, {offset: n.offset})"
-        >
+          :class="active === n.target ? 'indigo lighten-5' : ''"
+          @click="$vuetify.goTo(n.target, {offset: n.offset})">
           <v-list-tile-action>
             <v-icon>{{ n.icon }}</v-icon>
           </v-list-tile-action>
@@ -40,6 +40,12 @@ export default {
       type: Array,
       default() {
         return []
+      }
+    },
+    active: {
+      type: String,
+      default() {
+        return ''
       }
     }
   },
