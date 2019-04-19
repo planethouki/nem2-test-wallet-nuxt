@@ -1,11 +1,10 @@
 <template lang="pug">
   v-app
-    Header
-    Navigation
+    Header(:nav="nav" :active="navActive")
     v-content
-      v-container.pa-0(fluid)
+      v-container
         v-layout
-          v-flex#content.pt-3.px-3(xs12 sm12 md10 lg9 xl8)
+          v-flex#content(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
             Login(navTargetId="login")
             WalletInfo(navTargetId="wallet")
             Balance(navTargetId="balance")
@@ -29,9 +28,7 @@
             AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
             AccountLinkInfo(navTargetId="accountLinkInfo")
             AccountLink(navTargetId="accountLink")
-          v-flex#sidebar(hidden-sm-and-down md2 lg3 xl4 pl-1 style="position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
-            Sidebar(:nav="nav" :active="navActive")
-      Footer
+    Footer
 </template>
 
 <script>
@@ -62,15 +59,11 @@ import AccountLink from '~/components/AccountLink.vue'
 
 import Jumbo from '~/components/Jumbo.vue'
 import Header from '~/components/Header.vue'
-import Navigation from '~/components/Navigation.vue'
-import Sidebar from '~/components/Sidebar.vue'
 import Footer from '~/components/Footer.vue'
 
 export default {
   components: {
     Header,
-    Navigation,
-    Sidebar,
     Footer,
     Jumbo,
     Login,
@@ -105,28 +98,25 @@ export default {
   asyncData(context) {
     return {
       nav: [
-        { icon: 'star', title: 'Wallet', target: '#wallet', offset: 48 },
-        { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
-        { icon: 'arrow_forward', title: 'Transfer Tx', target: '#transfer', offset: 48 },
-        { icon: 'domain', title: 'Namespace', target: '#namespace', offset: 48 },
-        { icon: 'domain', title: 'SubNamespace', target: '#subnamespace', offset: 48 },
-        { icon: 'web_asset', title: 'Mosaic', target: '#mosaic', offset: 48 },
-        { icon: 'lock', title: 'Secret Lock Tx', target: '#secretlock', offset: 48 },
-        { icon: 'lock_open', title: 'Secret proof Tx', target: '#secretproof', offset: 48 },
-        { icon: 'menu', title: 'Multisig', target: '#multisig', offset: 48 },
-        { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: 48 },
-        { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: 48 },
-        { icon: 'edit', title: 'Cosignature', target: '#cosignature', offset: 48 },
-        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: 48 },
-        { icon: 'star', title: 'Current Alias', target: '#aliasInfo', offset: 48 },
-        { icon: 'text_rotation_none', title: 'Mosaic Alias', target: '#mosaicAlias', offset: 48 },
-        { icon: 'text_rotation_none', title: 'Address Alias', target: '#addressAlias', offset: 48 },
-        { icon: 'star', title: 'Current Account Property', target: '#accountPropertyInfo', offset: 48 },
-        { icon: 'person_add', title: 'Account Property Address', target: '#accountPropertyAddress', offset: 48 },
-        { icon: 'person_add', title: 'Account Property Mosaic', target: '#accountPropertyMosaic', offset: 48 },
-        { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: 48 },
-        { icon: 'star', title: 'Current Account Link', target: '#accountLinkInfo', offset: 48 },
-        { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 48 }
+        { icon: 'home', title: 'Home', target: 0, offset: 0, active: true },
+        { icon: 'star', title: 'Wallet', target: '#wallet', offset: -80 },
+        { icon: 'arrow_forward', title: 'Transfer Tx', target: '#transfer', offset: -80 },
+        { icon: 'domain', title: 'Namespace', target: '#namespace', offset: -80 },
+        { icon: 'domain', title: 'SubNamespace', target: '#subnamespace', offset: -80 },
+        { icon: 'web_asset', title: 'Mosaic', target: '#mosaic', offset: -80 },
+        { icon: 'lock', title: 'Secret Lock Tx', target: '#secretlock', offset: -80 },
+        { icon: 'lock_open', title: 'Secret proof Tx', target: '#secretproof', offset: -80 },
+        { icon: 'menu', title: 'Multisig', target: '#multisig', offset: -80 },
+        { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: -80 },
+        { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: -80 },
+        { icon: 'edit', title: 'Cosignature', target: '#cosignature', offset: -80 },
+        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: -80 },
+        { icon: 'text_rotation_none', title: 'Mosaic Alias', target: '#mosaicAlias', offset: -80 },
+        { icon: 'text_rotation_none', title: 'Address Alias', target: '#addressAlias', offset: -80 },
+        { icon: 'person_add', title: 'Account Property Address', target: '#accountPropertyAddress', offset: -80 },
+        { icon: 'person_add', title: 'Account Property Mosaic', target: '#accountPropertyMosaic', offset: -80 },
+        { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: -80 },
+        { icon: 'people', title: 'Account Link', target: '#accountLink', offset: -80 }
       ],
       navActive: ''
     }
@@ -143,7 +133,7 @@ export default {
       elements.forEach((elm) => {
         const top = elm.getBoundingClientRect().top
         const bottom = elm.getBoundingClientRect().bottom
-        if (top < 72 && bottom >= 72) {
+        if (top < 0 && bottom >= 0) {
           this.navActive = `#${elm.id}`
         }
       })
