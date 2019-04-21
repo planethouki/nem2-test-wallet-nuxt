@@ -1,37 +1,34 @@
 <template lang="pug">
-  v-app
-    Header
-    Navigation
-    v-content
-      v-container.pa-0(fluid)
-        v-layout
-          v-flex#content.pt-3.px-3(xs12 sm12 md10 lg9 xl8)
-            Login(navTargetId="login")
-            WalletInfo(navTargetId="wallet")
-            Balance(navTargetId="balance")
-            Transfer(navTargetId="transfer")
-            Namespace(navTargetId="namespace")
-            SubNamespace(navTargetId="subnamespace")
-            MosaicDefinition(navTargetId="mosaic")
-            SecretLock(navTargetId="secretlock")
-            SecretProof(navTargetId="secretproof")
-            ConvertMultisig(navTargetId="multisig")
-            ModifyMultisig(navTargetId="modifymultisig")
-            Escrow(navTargetId="escrow")
-            Cosignature(navTargetId="cosignature")
-            CosignatureMultisig(navTargetId="cosignaturemultisig")
-            AliasInfo(navTargetId="aliasInfo")
-            MosaicAlias(navTargetId="mosaicAlias")
-            AddressAlias(navTargetId="addressAlias")
-            AccountPropertyInfo(navTargetId="accountPropertyInfo")
-            AccountPropertyAddress(navTargetId="accountPropertyAddress")
-            AccountPropertyMosaic(navTargetId="accountPropertyMosaic")
-            AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
-            AccountLinkInfo(navTargetId="accountLinkInfo")
-            AccountLink(navTargetId="accountLink")
-          v-flex#sidebar(hidden-sm-and-down md2 lg3 xl4 pl-1 style="position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
-            Sidebar(:nav="nav" :active="navActive")
-      Footer
+  v-content
+    v-container.pa-0(fluid)
+      v-layout
+        v-flex#content.pt-3.px-3(xs12 sm12 md10 lg9 xl8)
+          Login(navTargetId="login")
+          WalletInfo(navTargetId="wallet")
+          Balance(navTargetId="balance")
+          Transfer(navTargetId="transfer")
+          Namespace(navTargetId="namespace")
+          SubNamespace(navTargetId="subnamespace")
+          MosaicDefinition(navTargetId="mosaic")
+          SecretLock(navTargetId="secretlock")
+          SecretProof(navTargetId="secretproof")
+          ConvertMultisig(navTargetId="multisig")
+          ModifyMultisig(navTargetId="modifymultisig")
+          Escrow(navTargetId="escrow")
+          Cosignature(navTargetId="cosignature")
+          CosignatureMultisig(navTargetId="cosignaturemultisig")
+          AliasInfo(navTargetId="aliasInfo")
+          MosaicAlias(navTargetId="mosaicAlias")
+          AddressAlias(navTargetId="addressAlias")
+          AccountPropertyInfo(navTargetId="accountPropertyInfo")
+          AccountPropertyAddress(navTargetId="accountPropertyAddress")
+          AccountPropertyMosaic(navTargetId="accountPropertyMosaic")
+          AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
+          AccountLinkInfo(navTargetId="accountLinkInfo")
+          AccountLink(navTargetId="accountLink")
+        v-flex#sidebar(hidden-sm-and-down md2 lg3 xl4 pl-1 style="position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
+          Sidebar(:nav="nav" :active="navActive")
+    Footer
 </template>
 
 <script>
@@ -61,15 +58,11 @@ import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
 import AccountLink from '~/components/AccountLink.vue'
 
 import Jumbo from '~/components/Jumbo.vue'
-import Header from '~/components/Header.vue'
-import Navigation from '~/components/Navigation.vue'
 import Sidebar from '~/components/Sidebar.vue'
 import Footer from '~/components/Footer.vue'
 
 export default {
   components: {
-    Header,
-    Navigation,
     Sidebar,
     Footer,
     Jumbo,
