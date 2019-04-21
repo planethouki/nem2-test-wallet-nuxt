@@ -74,6 +74,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.reloadAccount()
+  },
   methods: {
     reloadAccount: function (event) {
       if (!this.existsAccount) return

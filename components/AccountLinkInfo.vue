@@ -53,6 +53,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.reloadAccount()
+  },
   methods: {
     reloadAccount: async function (event) {
       if (!this.existsAccount) return

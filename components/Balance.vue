@@ -216,6 +216,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.reload()
+  },
   methods: {
     reload: function () {
       if (!this.existsAccount) return
