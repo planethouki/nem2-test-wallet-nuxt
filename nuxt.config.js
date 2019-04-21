@@ -45,7 +45,8 @@ module.exports = {
     '@/plugins/convert',
     '@/plugins/hash',
     '@/plugins/crypto',
-    '@/plugins/parser'
+    '@/plugins/parser',
+    '@/plugins/transactionType'
   ],
 
   /*
