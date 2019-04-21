@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" fixed app>
+  <v-navigation-drawer v-model="drawer" app>
     <v-toolbar flat>
       <v-list>
         <v-list-tile>
@@ -17,7 +17,17 @@
           <v-icon>offline_bolt</v-icon>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-list-tile-title>Transaction</v-list-tile-title>
+          <v-list-tile-title>Send Transaction</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-list-tile
+        to="/info"
+      >
+        <v-list-tile-action>
+          <v-icon>offline_bolt</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>Account Info</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
     </v-list>

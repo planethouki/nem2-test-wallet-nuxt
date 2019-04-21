@@ -1,33 +1,15 @@
 <template lang="pug">
-  v-app
-    Header(:nav="nav" :active="navActive")
-    v-content
-      v-container
-        v-layout
-          v-flex#content(offset-xl3 xl6 offset-lg2 lg8 offset-md1 md10 sm12 xs12)
-            Login(navTargetId="login")
-            WalletInfo(navTargetId="wallet")
-            Balance(navTargetId="balance")
-            Transfer(navTargetId="transfer")
-            Namespace(navTargetId="namespace")
-            SubNamespace(navTargetId="subnamespace")
-            MosaicDefinition(navTargetId="mosaic")
-            SecretLock(navTargetId="secretlock")
-            SecretProof(navTargetId="secretproof")
-            ConvertMultisig(navTargetId="multisig")
-            ModifyMultisig(navTargetId="modifymultisig")
-            Escrow(navTargetId="escrow")
-            Cosignature(navTargetId="cosignature")
-            CosignatureMultisig(navTargetId="cosignaturemultisig")
-            AliasInfo(navTargetId="aliasInfo")
-            MosaicAlias(navTargetId="mosaicAlias")
-            AddressAlias(navTargetId="addressAlias")
-            AccountPropertyInfo(navTargetId="accountPropertyInfo")
-            AccountPropertyAddress(navTargetId="accountPropertyAddress")
-            AccountPropertyMosaic(navTargetId="accountPropertyMosaic")
-            AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
-            AccountLinkInfo(navTargetId="accountLinkInfo")
-            AccountLink(navTargetId="accountLink")
+  v-content
+    v-container.pa-0(fluid fill-height="true")
+      v-layout
+        v-flex#content.pt-3.px-3(xs12 sm12 md10 lg9 xl8)
+          Login(navTargetId="login")
+          WalletInfo(navTargetId="wallet")
+          TransactionInfo(navTargetId="transactionInfo")
+          Balance(navTargetId="balance")
+          AliasInfo(navTargetId="aliasInfo")
+          AccountPropertyInfo(navTargetId="accountPropertyInfo")
+          AccountLinkInfo(navTargetId="accountLinkInfo")
     Footer
 </template>
 
@@ -36,59 +18,25 @@ import Login from '~/components/Login.vue'
 
 import WalletInfo from '~/components/WalletInfo.vue'
 import Balance from '~/components/Balance.vue'
-import Transfer from '~/components/Transfer.vue'
-import Namespace from '~/components/Namespace.vue'
-import SubNamespace from '~/components/SubNamespace.vue'
-import MosaicDefinition from '~/components/MosaicDefinition.vue'
-import SecretLock from '~/components/SecretLock.vue'
-import SecretProof from '~/components/SecretProof.vue'
-import ConvertMultisig from '~/components/ConvertMultisig.vue'
-import ModifyMultisig from '~/components/ModifyMultisig.vue'
-import Escrow from '~/components/Escrow.vue'
-import Cosignature from '~/components/Cosignature.vue'
-import CosignatureMultisig from '~/components/CosignatureMultisig.vue'
 import AliasInfo from '~/components/AliasInfo.vue'
-import MosaicAlias from '~/components/MosaicAlias.vue'
-import AddressAlias from '~/components/AddressAlias.vue'
 import AccountPropertyInfo from '~/components/AccountPropertyInfo.vue'
-import AccountPropertyAddress from '~/components/AccountPropertyAddress.vue'
-import AccountPropertyMosaic from '~/components/AccountPropertyMosaic.vue'
-import AccountPropertyEntityType from '~/components/AccountPropertyEntityType.vue'
 import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
-import AccountLink from '~/components/AccountLink.vue'
+import TransactionInfo from '~/components/TransactionInfo.vue'
 
 import Jumbo from '~/components/Jumbo.vue'
-import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
 
 export default {
   components: {
-    Header,
     Footer,
     Jumbo,
     Login,
     WalletInfo,
     Balance,
-    Transfer,
-    Namespace,
-    SubNamespace,
-    MosaicDefinition,
-    SecretLock,
-    SecretProof,
-    ConvertMultisig,
-    ModifyMultisig,
-    Escrow,
-    Cosignature,
-    CosignatureMultisig,
     AliasInfo,
-    MosaicAlias,
-    AddressAlias,
     AccountPropertyInfo,
-    AccountPropertyAddress,
-    AccountPropertyMosaic,
-    AccountPropertyEntityType,
     AccountLinkInfo,
-    AccountLink
+    TransactionInfo
   },
   computed: {
     existsAccount() {
