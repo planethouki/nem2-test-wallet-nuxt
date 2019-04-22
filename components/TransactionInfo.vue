@@ -8,7 +8,8 @@
           v-flex: strong Hash
           v-flex(text-xs-right): strong Type
         v-layout(v-for="t in unconfirmedTransactions" :key="t.transactionInfo.id" justify-space-between)
-          v-flex {{ t.transactionInfo.hash }}
+          v-flex
+            a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
           v-flex(text-xs-right) {{ typeToName(t.type) }}
       v-card-title.pb-0
         span.title Aggregate Bonded
@@ -17,7 +18,8 @@
           v-flex: strong Hash
           v-flex(text-xs-right): strong Type
         v-layout(v-for="t in aggregateBondedTransactions" :key="t.transactionInfo.id" justify-space-between)
-          v-flex {{ t.transactionInfo.hash }}
+          v-flex
+            a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
           v-flex(text-xs-right) {{ typeToName(t.type) }}
       v-card-title.pb-0
         span.title Confirmed
@@ -28,7 +30,8 @@
           v-flex(text-xs-right): strong Type
         v-layout(v-for="t in confirmedTransactions" :key="t.transactionInfo.id" justify-space-between)
           v-flex {{ t.transactionInfo.height.compact() }}
-          v-flex {{ t.transactionInfo.hash }}
+          v-flex
+            a(:href="endpoint + '/transaction/' + t.transactionInfo.hash" target="_blank") {{ t.transactionInfo.hash }}
           v-flex(text-xs-right) {{ typeToName(t.type) }}
 </template>
 
@@ -53,7 +56,8 @@ export default {
       aggregateBondedTransactions: [],
       subscriptions: {
         confirmed: null,
-        unconfirmedAdded: null
+        unconfirmedAdded: null,
+        aggregateBondedAdded: null
       }
     }
   },
