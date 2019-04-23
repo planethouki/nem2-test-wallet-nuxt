@@ -57,7 +57,7 @@ import AccountPropertyEntityType from '~/components/AccountPropertyEntityType.vu
 import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
 import AccountLink from '~/components/AccountLink.vue'
 
-import Jumbo from '~/components/Jumbo.vue'
+import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
 import Footer from '~/components/Footer.vue'
 
@@ -65,7 +65,7 @@ export default {
   components: {
     Sidebar,
     Footer,
-    Jumbo,
+    NemFoundation,
     Login,
     WalletInfo,
     Balance,

@@ -23,13 +23,13 @@ import AccountPropertyInfo from '~/components/AccountPropertyInfo.vue'
 import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
 import TransactionInfo from '~/components/TransactionInfo.vue'
 
-import Jumbo from '~/components/Jumbo.vue'
+import NemFoundation from '~/components/NemFoundation.vue'
 import Footer from '~/components/Footer.vue'
 
 export default {
   components: {
     Footer,
-    Jumbo,
+    NemFoundation,
     Login,
     WalletInfo,
     Balance,
