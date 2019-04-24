@@ -18,7 +18,7 @@
     "@nuxtjs/pwa": "^2.6.0",
     "cross-env": "^5.2.0",
     "generate-password": "^1.4.1",
-    "nem2-sdk": "^0.11.0",
+    "nem2-sdk": "^0.11.5",
     "nuxt": "^2.6.2",
     "rxjs": "^6.4.0",
     "secure-random": "^1.1.1",
