@@ -8,7 +8,7 @@
           label="To Address"
           v-model="t_recipientAddress"
           required
-          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC")
+          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
         v-text-field(
           label="Mosaics"
           v-model="t_mosaics"
@@ -45,7 +45,7 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, PlainMessage, TransferTransaction,
+  Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp, EncryptedMessage, PublicAccount
 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -90,6 +90,7 @@ export default {
     t_announceHandler: function (event) {
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.endpoint
+      const recipient = this.$parser.parseAddress(this.t_recipientAddress)
       const mosaics = this.$parser.parseMosaics(this.t_mosaics)
       const message = (() => {
         if (this.t_messageType === 0) {
@@ -106,7 +107,7 @@ export default {
         this.$TransactionVersion.TRANSFER,
         Deadline.create(),
         UInt64.fromUint(this.t_fee),
-        Address.createFromRawAddress(this.t_recipientAddress),
+        recipient,
         mosaics,
         message
       )

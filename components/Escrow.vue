@@ -13,7 +13,7 @@
                 label="To Address"
                 v-model="e_recipient1"
                 required
-                placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ")
+                placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
               v-text-field(
                 label="Mosaics"
                 v-model="e_mosaics1"
@@ -73,7 +73,7 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, PlainMessage, TransferTransaction, TransactionType,
+  Deadline, UInt64, PlainMessage, TransferTransaction, TransactionType,
   TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener,
   NamespaceHttp
 } from 'nem2-sdk'
@@ -95,7 +95,7 @@ export default {
   },
   data() {
     return {
-      e_recipient1: 'SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ',
+      e_recipient1: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       e_mosaics1: '@cat.currency::0, 941299B2B7E1291C::0',
       e_message1: 'escrow payment',
       e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
@@ -127,7 +127,7 @@ export default {
       lockFundsMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockFundsMosaic)
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
-        Address.createFromRawAddress(this.e_recipient1),
+        this.$parser.parseAddress(this.e_recipient1),
         this.$parser.parseMosaics(this.e_mosaics1),
         PlainMessage.create(this.e_message1),
         network

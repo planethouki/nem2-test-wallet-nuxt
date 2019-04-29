@@ -23,7 +23,7 @@
           label="To Address"
           v-model="l_recipient"
           required
-          placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
+          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
         v-text-field(
           label="Duration In Blocks"
           v-model="l_duration"
@@ -46,7 +46,7 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, SecretLockTransaction, HashType } from 'nem2-sdk'
+  Deadline, UInt64, SecretLockTransaction, HashType } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -73,7 +73,7 @@ export default {
         { type: HashType.Op_Hash_160, label: 'Hash160', strLen: '40' }
       ],
       l_mosaic: '@cat.currency::10000000',
-      l_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
+      l_recipient: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       l_duration: 240,
       l_history: [],
       l_secret: '2B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D',
@@ -102,7 +102,7 @@ export default {
       const endpoint = this.$store.getters['wallet/getEndpoint']
       const duration = this.l_duration
       const secret = this.l_secret
-      const recipient = this.l_recipient
+      const recipient = this.$parser.parseAddressSecretLock(this.l_recipient)
       const mosaic = this.$parser.parseMosaic(this.l_mosaic)
       const secretLockTransaction = new SecretLockTransaction(
         account.address.networkType,
@@ -113,7 +113,7 @@ export default {
         UInt64.fromUint(duration),
         this.l_hashType,
         secret,
-        Address.createFromRawAddress(recipient)
+        recipient
       )
       const preSignedTx = account.sign(secretLockTransaction)
       const preSignedTxPayload = preSignedTx.payload

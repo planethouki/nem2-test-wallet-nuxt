@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { Mosaic, MosaicId, NamespaceId, UInt64 } from 'nem2-sdk'
+import { Mosaic, MosaicId, NamespaceId, UInt64, Address } from 'nem2-sdk'
+import { address as addressLib, convert } from 'nem2-library'
 
 Vue.prototype.$parser = {
   parseMosaics: function (str) {
@@ -29,5 +30,30 @@ Vue.prototype.$parser = {
     } else {
       return mosaic
     }
+  },
+  parseAddress: function (str) {
+    let address
+    if (str.startsWith('@')) {
+      address = new NamespaceId(str.substr(1))
+    } else {
+      address = Address.createFromRawAddress(str)
+    }
+    return address
+  },
+  parseAddressSecretLock: function (str) {
+    let address
+    if (str.startsWith('@')) {
+      const namespaceId = new NamespaceId(str.substr(1))
+      const uint8ns = convert.hexToUint8(namespaceId.toHex())
+      const hexAddress = '91' + convert.uint8ToHex(uint8ns.reverse()) + '00000000000000000000000000000000'
+      address = {
+        plain: function () {
+          return addressLib.addressToString(convert.hexToUint8(hexAddress))
+        }
+      }
+    } else {
+      address = Address.createFromRawAddress(str)
+    }
+    return address
   }
 }
