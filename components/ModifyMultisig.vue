@@ -95,7 +95,7 @@
 <script>
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, TransactionType, NamespaceHttp
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, NamespaceHttp
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from './AggregatetxHistory.vue'
@@ -169,28 +169,26 @@ export default {
         }),
         network
       )
-      const aggregateTx = new AggregateTransaction(
-        network,
-        TransactionType.AGGREGATE_BONDED,
-        this.$TransactionVersion.AGGREGATE_BONDED,
+      const aggregateTx = AggregateTransaction.createBonded(
         Deadline.create(23),
-        UInt64.fromUint(this.d_fee),
         [
           modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
-        ]
+        ],
+        network,
+        [],
+        UInt64.fromUint(this.d_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx)
       let lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
       const namespaceHttp = new NamespaceHttp(endpoint)
       lockMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockMosaic)
-      const lockFundsTx = new LockFundsTransaction(
-        network,
-        this.$TransactionVersion.LOCK,
-        Deadline.create(23),
-        UInt64.fromUint(this.d_lockFee),
+      const lockFundsTx = LockFundsTransaction.create(
+        Deadline.create(),
         lockMosaic,
         UInt64.fromUint(this.d_lockDuration),
-        signedAggregateTx
+        signedAggregateTx,
+        network,
+        UInt64.fromUint(this.d_lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx)
       const txHttp = new TransactionHttp(endpoint)

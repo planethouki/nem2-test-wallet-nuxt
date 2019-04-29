@@ -102,18 +102,15 @@ export default {
           return EncryptedMessage.create(this.t_message, recipientPublicAccount, account.privateKey)
         }
       })()
-      const tx = new TransferTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.TRANSFER,
+      const tx = TransferTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.t_fee),
         recipient,
         mosaics,
-        message
+        message,
+        account.address.networkType,
+        UInt64.fromUint(this.t_fee)
       )
       const signedTx = account.sign(tx)
-      // eslint-disable-next-line
-      console.log(signedTx.payload, signedTx.payload.length)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
       })

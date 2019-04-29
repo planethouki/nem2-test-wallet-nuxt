@@ -91,14 +91,13 @@ export default {
     p_announceHandler: function (event) {
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.$store.getters['wallet/getEndpoint']
-      const secretProofTransaction = new SecretProofTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.SECRET_PROOF,
+      const secretProofTransaction = SecretProofTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.p_fee),
         this.p_hashType,
         this.p_secret,
-        this.p_proof
+        this.p_proof,
+        account.address.networkType,
+        UInt64.fromUint(this.p_fee)
       )
       const preSignedTxPayload = account.sign(secretProofTransaction).payload
       let signedTxPayload

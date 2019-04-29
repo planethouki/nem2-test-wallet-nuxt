@@ -70,14 +70,13 @@ export default {
     announceHandler: function (event) {
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.$store.getters['wallet/getEndpoint']
-      const mosaicAliasTransaction = new MosaicAliasTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.MOSAIC_ALIAS,
+      const mosaicAliasTransaction = MosaicAliasTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.actionType,
         new NamespaceId(this.namespaceName),
-        new MosaicId(this.hexMosaicId)
+        new MosaicId(this.hexMosaicId),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(mosaicAliasTransaction)
       const txHttp = new TransactionHttp(endpoint)

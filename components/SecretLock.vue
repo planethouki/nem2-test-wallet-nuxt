@@ -104,16 +104,15 @@ export default {
       const secret = this.l_secret
       const recipient = this.$parser.parseAddressSecretLock(this.l_recipient)
       const mosaic = this.$parser.parseMosaic(this.l_mosaic)
-      const secretLockTransaction = new SecretLockTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.SECRET_LOCK,
+      const secretLockTransaction = SecretLockTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.l_fee),
         mosaic,
         UInt64.fromUint(duration),
         this.l_hashType,
         secret,
-        recipient
+        recipient,
+        account.address.networkType,
+        UInt64.fromUint(this.l_fee)
       )
       const preSignedTx = account.sign(secretLockTransaction)
       const preSignedTxPayload = preSignedTx.payload

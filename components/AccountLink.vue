@@ -65,13 +65,12 @@ export default {
     announceHandler: function (event) {
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.$store.getters['wallet/getEndpoint']
-      const accountLinkTransaction = new AccountLinkTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.LINK_ACCOUNT,
+      const accountLinkTransaction = AccountLinkTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.remoteAccountKey,
-        this.linkAction
+        this.linkAction,
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(accountLinkTransaction)
       const preSignedTxPayload = signedTx.payload

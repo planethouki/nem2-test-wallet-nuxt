@@ -136,18 +136,17 @@ export default {
     announceHandler: function (event) {
       const account = this.account
       const endpoint = this.endpoint
-      const modifyAccountPropertyAddressTransaction = new ModifyAccountPropertyAddressTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.MODIFY_ACCOUNT_PROPERTY_ADDRESS,
+      const modifyAccountPropertyAddressTransaction = ModifyAccountPropertyAddressTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.propertyType,
         this.modifications.map((modification) => {
           return AccountPropertyTransaction.createAddressFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             Address.createFromRawAddress(modification.rawAddress)
           )
-        })
+        }),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(modifyAccountPropertyAddressTransaction)
       const txHttp = new TransactionHttp(endpoint)

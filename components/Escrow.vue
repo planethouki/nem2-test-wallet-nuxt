@@ -73,7 +73,7 @@
 
 <script>
 import {
-  Deadline, UInt64, PlainMessage, TransferTransaction, TransactionType,
+  Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener,
   NamespaceHttp
 } from 'nem2-sdk'
@@ -139,27 +139,24 @@ export default {
         PlainMessage.create(this.e_message2),
         network
       )
-      const aggregateTx = new AggregateTransaction(
-        network,
-        TransactionType.AGGREGATE_BONDED,
-        this.$TransactionVersion.AGGREGATE_BONDED,
+      const aggregateTx = AggregateTransaction.createBonded(
         Deadline.create(23),
-        UInt64.fromUint(this.e_fee),
         [
           paymentTx.toAggregate(paySender),
           invoiceTx.toAggregate(invSender)
         ],
-        []
+        network,
+        [],
+        UInt64.fromUint(this.e_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx)
       const lockFundsTx = new LockFundsTransaction(
-        network,
-        this.$TransactionVersion.LOCK,
-        Deadline.create(23),
-        UInt64.fromUint(this.e_fee3),
+        Deadline.create(),
         lockFundsMosaic,
         UInt64.fromUint(this.e_duration3),
-        signedAggregateTx
+        signedAggregateTx,
+        network,
+        UInt64.fromUint(this.e_fee3)
       )
       const signedLockFundsTx = account.sign(lockFundsTx)
       const txHttp = new TransactionHttp(endpoint)

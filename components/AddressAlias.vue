@@ -71,14 +71,13 @@ export default {
     announceHandler: function (event) {
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.$store.getters['wallet/getEndpoint']
-      const addressAliasTransaction = new AddressAliasTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.MOSAIC_ALIAS,
+      const addressAliasTransaction = AddressAliasTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.actionType,
         new NamespaceId(this.namespaceName),
-        Address.createFromRawAddress(this.rawAddress)
+        Address.createFromRawAddress(this.rawAddress),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(addressAliasTransaction)
       const txHttp = new TransactionHttp(endpoint)

@@ -127,18 +127,17 @@ export default {
     announceHandler: function (event) {
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.$store.getters['wallet/getEndpoint']
-      const modifyAccountPropertyEntityTypeTransaction = new ModifyAccountPropertyEntityTypeTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.MODIFY_ACCOUNT_PROPERTY_ENTITY_TYPE,
+      const modifyAccountPropertyEntityTypeTransaction = ModifyAccountPropertyEntityTypeTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.propertyType,
         this.modifications.map((modification) => {
           return AccountPropertyTransaction.createEntityTypeFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             Number('0x'.concat(modification.hexEntityType))
           )
-        })
+        }),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(modifyAccountPropertyEntityTypeTransaction)
       const txHttp = new TransactionHttp(endpoint)

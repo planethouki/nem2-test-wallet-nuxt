@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Deadline, UInt64, NamespaceId, NamespaceType, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -62,15 +62,12 @@ export default {
       const namespaceName = this.n_name
       const account = this.$store.getters['wallet/getAccount']
       const endpoint = this.$store.getters['wallet/getEndpoint']
-      const registerNamespaceTransaction = new RegisterNamespaceTransaction(
-        account.address.networkType,
-        this.$TransactionVersion.REGISTER_NAMESPACE,
+      const registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
         Deadline.create(),
-        UInt64.fromUint(this.n_fee),
-        NamespaceType.RootNamespace,
         namespaceName,
-        new NamespaceId(namespaceName),
-        UInt64.fromUint(this.n_duration)
+        UInt64.fromUint(this.n_duration),
+        account.address.networkType,
+        UInt64.fromUint(this.n_fee)
       )
       const signedTx = account.sign(registerNamespaceTransaction)
       const txHttp = new TransactionHttp(endpoint)

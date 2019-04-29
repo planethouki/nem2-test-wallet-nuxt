@@ -162,11 +162,8 @@ export default {
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta
       const cosignatories = this.u_cosignatories
-      const tx = new ModifyMultisigAccountTransaction(
-        networkType,
-        this.$TransactionVersion.MODIFY_MULTISIG_ACCOUNT,
+      const tx = ModifyMultisigAccountTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.u_fee),
         minApprovalDelta,
         minRemovalDelta,
         cosignatories.map((co) => {
@@ -174,7 +171,9 @@ export default {
             MultisigCosignatoryModificationType.Add,
             PublicAccount.createFromPublicKey(co, networkType)
           )
-        })
+        }),
+        networkType,
+        UInt64.fromUint(this.u_fee)
       )
       const signedTx = account.sign(tx)
       const txHttp = new TransactionHttp(endpoint)

@@ -44,7 +44,7 @@
 
 <script>
 import {
-  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce, TransactionType,
+  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
   AggregateTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -109,17 +109,15 @@ export default {
         UInt64.fromUint(delta),
         networkType
       )
-      const aggregateTransaction = new AggregateTransaction(
-        networkType,
-        TransactionType.AGGREGATE_COMPLETE,
-        this.$TransactionVersion.AGGREGATE_COMPLETE,
+      const aggregateTransaction = AggregateTransaction.createComplete(
         Deadline.create(),
-        UInt64.fromUint(this.m_fee),
         [
           mosaicDefinitionTransaction.toAggregate(account.publicAccount),
           mosaicSupplyChangeTransaction.toAggregate(account.publicAccount)
         ],
-        []
+        networkType,
+        [],
+        UInt64.fromUint(this.m_fee)
       )
       const signedTx = account.sign(aggregateTransaction)
       const txHttp = new TransactionHttp(endpoint)
