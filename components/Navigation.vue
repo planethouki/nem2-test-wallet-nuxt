@@ -11,16 +11,6 @@
     </v-toolbar>
     <v-list dense>
       <v-list-tile
-        to="/"
-      >
-        <v-list-tile-action>
-          <v-icon>offline_bolt</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>Send Transaction</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile
         to="/info"
       >
         <v-list-tile-action>
@@ -30,7 +20,25 @@
           <v-list-tile-title>Account Info</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
+      <v-list-tile
+        to="/"
+      >
+        <v-list-tile-action>
+          <v-icon>offline_bolt</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>Send Transaction</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
     </v-list>
+    <v-layout>
+      <v-flex justify-center>
+        <div class="text-xs-center pt-5">
+          <a class="github-button" href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt" data-size="normal" data-show-count="true" aria-label="Star planethouki/nem2-unsafe-wallet-nuxt on GitHub">Star</a>
+          <script async defer src="https://buttons.github.io/buttons.js" />
+        </div>
+      </v-flex>
+    </v-layout>
   </v-navigation-drawer>
 </template>
 
@@ -44,9 +52,6 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
     drawer: {
       get() {
         return this.$store.getters.drawer

@@ -2,37 +2,48 @@
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title.pb-0
-        span.title Unconfirmed
+        span.title Transactions
       v-card-text
-        v-layout(justify-space-between)
-          v-flex: strong Hash
-          v-flex(text-xs-right): strong Type
-        v-layout(v-for="t in unconfirmedTransactions" :key="t.transactionInfo.id" justify-space-between)
-          v-flex
-            a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
-          v-flex(text-xs-right) {{ typeToName(t.type) }}
-      v-card-title.pb-0
-        span.title Aggregate Bonded
+        span.subheading Unconfirmed
+        table(style="width:100%;")
+          thead
+            tr
+              th.text-xs-left Hash
+              th.text-xs-left Type
+          tbody
+            template(v-for="t in unconfirmedTransactions")
+              tr(:key="t.transactionInfo.id")
+                td
+                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
+                td {{ typeToName(t.type) }}
       v-card-text
-        v-layout(justify-space-between)
-          v-flex: strong Hash
-          v-flex(text-xs-right): strong Type
-        v-layout(v-for="t in aggregateBondedTransactions" :key="t.transactionInfo.id" justify-space-between)
-          v-flex
-            a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
-          v-flex(text-xs-right) {{ typeToName(t.type) }}
-      v-card-title.pb-0
-        span.title Confirmed
+        span.subheading Aggregate Bonded
+        table(style="width:100%;")
+          thead
+            tr
+              th.text-xs-left Hash
+              th.text-xs-left Type
+          tbody
+            template(v-for="t in aggregateBondedTransactions")
+              tr(:key="t.transactionInfo.id")
+                td
+                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
+                td {{ typeToName(t.type) }}
       v-card-text
-        v-layout(justify-space-between)
-          v-flex: strong Height
-          v-flex: strong Hash
-          v-flex(text-xs-right): strong Type
-        v-layout(v-for="t in confirmedTransactions" :key="t.transactionInfo.id" justify-space-between)
-          v-flex {{ t.transactionInfo.height.compact() }}
-          v-flex
-            a(:href="endpoint + '/transaction/' + t.transactionInfo.hash" target="_blank") {{ t.transactionInfo.hash }}
-          v-flex(text-xs-right) {{ typeToName(t.type) }}
+        span.subheading Confirmed
+        table(style="width:100%;")
+          thead
+            tr
+              th.text-xs-left Height
+              th.text-xs-left Hash
+              th.text-xs-left Type
+          tbody
+            template(v-for="t in confirmedTransactions")
+              tr(:key="t.transactionInfo.id")
+                td {{ t.transactionInfo.height.compact() }}
+                td
+                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
+                td {{ typeToName(t.type) }}
 </template>
 
 <script>

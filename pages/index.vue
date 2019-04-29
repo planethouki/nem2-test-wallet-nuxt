@@ -1,34 +1,31 @@
 <template lang="pug">
-  v-content
-    v-container.pa-0(fluid)
-      v-layout
-        v-flex#content.pt-3.px-3(xs12 sm12 md10 lg9 xl8)
-          Login(navTargetId="login")
-          WalletInfo(navTargetId="wallet")
-          Balance(navTargetId="balance")
-          Transfer(navTargetId="transfer")
-          Namespace(navTargetId="namespace")
-          SubNamespace(navTargetId="subnamespace")
-          MosaicDefinition(navTargetId="mosaic")
-          SecretLock(navTargetId="secretlock")
-          SecretProof(navTargetId="secretproof")
-          ConvertMultisig(navTargetId="multisig")
-          ModifyMultisig(navTargetId="modifymultisig")
-          Escrow(navTargetId="escrow")
-          Cosignature(navTargetId="cosignature")
-          CosignatureMultisig(navTargetId="cosignaturemultisig")
-          AliasInfo(navTargetId="aliasInfo")
-          MosaicAlias(navTargetId="mosaicAlias")
-          AddressAlias(navTargetId="addressAlias")
-          AccountPropertyInfo(navTargetId="accountPropertyInfo")
-          AccountPropertyAddress(navTargetId="accountPropertyAddress")
-          AccountPropertyMosaic(navTargetId="accountPropertyMosaic")
-          AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
-          AccountLinkInfo(navTargetId="accountLinkInfo")
-          AccountLink(navTargetId="accountLink")
-        v-flex#sidebar(hidden-sm-and-down md2 lg3 xl4 pl-1 style="position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
-          Sidebar(:nav="nav" :active="navActive")
-    Footer
+  v-layout(row)
+    v-flex#content.pt-3.px-3
+      Login(navTargetId="login")
+      WalletInfo(navTargetId="wallet")
+      Balance(navTargetId="balance")
+      Transfer(navTargetId="transfer")
+      Namespace(navTargetId="namespace")
+      SubNamespace(navTargetId="subnamespace")
+      MosaicDefinition(navTargetId="mosaic")
+      SecretLock(navTargetId="secretlock")
+      SecretProof(navTargetId="secretproof")
+      ConvertMultisig(navTargetId="multisig")
+      ModifyMultisig(navTargetId="modifymultisig")
+      Escrow(navTargetId="escrow")
+      Cosignature(navTargetId="cosignature")
+      CosignatureMultisig(navTargetId="cosignaturemultisig")
+      AliasInfo(navTargetId="aliasInfo")
+      MosaicAlias(navTargetId="mosaicAlias")
+      AddressAlias(navTargetId="addressAlias")
+      AccountPropertyInfo(navTargetId="accountPropertyInfo")
+      AccountPropertyAddress(navTargetId="accountPropertyAddress")
+      AccountPropertyMosaic(navTargetId="accountPropertyMosaic")
+      AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
+      AccountLinkInfo(navTargetId="accountLinkInfo")
+      AccountLink(navTargetId="accountLink")
+    v-flex#sidebar(hidden-sm-and-down style="max-width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
+      Sidebar(:nav="nav" :active="navActive")
 </template>
 
 <script>
@@ -57,15 +54,11 @@ import AccountPropertyEntityType from '~/components/AccountPropertyEntityType.vu
 import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
 import AccountLink from '~/components/AccountLink.vue'
 
-import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
-import Footer from '~/components/Footer.vue'
 
 export default {
   components: {
     Sidebar,
-    Footer,
-    NemFoundation,
     Login,
     WalletInfo,
     Balance,
@@ -93,6 +86,17 @@ export default {
   computed: {
     existsAccount() {
       return this.$store.getters['wallet/existsAccount']
+    },
+    breakPoint() {
+      return this.$vuetify.breakpoint.name
+    }
+  },
+  watch: {
+    breakPoint: {
+      handler(newVal) {
+        // eslint-disable-next-line
+        console.log(newVal)
+      }
     }
   },
   asyncData(context) {

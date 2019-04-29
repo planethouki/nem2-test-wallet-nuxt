@@ -1,16 +1,15 @@
 <template lang="pug">
-  v-content
-    v-container.pa-0(fluid fill-height="true")
-      v-layout
-        v-flex#content.pt-3.px-3(xs12 sm12 md10 lg9 xl8)
-          Login(navTargetId="login")
-          WalletInfo(navTargetId="wallet")
-          TransactionInfo(navTargetId="transactionInfo")
-          Balance(navTargetId="balance")
-          AliasInfo(navTargetId="aliasInfo")
-          AccountPropertyInfo(navTargetId="accountPropertyInfo")
-          AccountLinkInfo(navTargetId="accountLinkInfo")
-    Footer
+  v-layout(row)
+    v-flex#content.pt-3.px-3
+      Login(navTargetId="login")
+      WalletInfo(navTargetId="wallet")
+      TransactionInfo(navTargetId="transactionInfo")
+      Balance(navTargetId="balance")
+      AliasInfo(navTargetId="aliasInfo")
+      AccountPropertyInfo(navTargetId="accountPropertyInfo")
+      AccountLinkInfo(navTargetId="accountLinkInfo")
+    v-flex#sidebar(hidden-sm-and-down style="max-width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
+      Sidebar(:nav="nav" :active="navActive")
 </template>
 
 <script>
@@ -24,11 +23,11 @@ import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
 import TransactionInfo from '~/components/TransactionInfo.vue'
 
 import NemFoundation from '~/components/NemFoundation.vue'
-import Footer from '~/components/Footer.vue'
+import Sidebar from '~/components/Sidebar.vue'
 
 export default {
   components: {
-    Footer,
+    Sidebar,
     NemFoundation,
     Login,
     WalletInfo,
@@ -46,25 +45,12 @@ export default {
   asyncData(context) {
     return {
       nav: [
-        { icon: 'home', title: 'Home', target: 0, offset: 0, active: true },
-        { icon: 'star', title: 'Wallet', target: '#wallet', offset: -80 },
-        { icon: 'arrow_forward', title: 'Transfer Tx', target: '#transfer', offset: -80 },
-        { icon: 'domain', title: 'Namespace', target: '#namespace', offset: -80 },
-        { icon: 'domain', title: 'SubNamespace', target: '#subnamespace', offset: -80 },
-        { icon: 'web_asset', title: 'Mosaic', target: '#mosaic', offset: -80 },
-        { icon: 'lock', title: 'Secret Lock Tx', target: '#secretlock', offset: -80 },
-        { icon: 'lock_open', title: 'Secret proof Tx', target: '#secretproof', offset: -80 },
-        { icon: 'menu', title: 'Multisig', target: '#multisig', offset: -80 },
-        { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: -80 },
-        { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: -80 },
-        { icon: 'edit', title: 'Cosignature', target: '#cosignature', offset: -80 },
-        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: -80 },
-        { icon: 'text_rotation_none', title: 'Mosaic Alias', target: '#mosaicAlias', offset: -80 },
-        { icon: 'text_rotation_none', title: 'Address Alias', target: '#addressAlias', offset: -80 },
-        { icon: 'person_add', title: 'Account Property Address', target: '#accountPropertyAddress', offset: -80 },
-        { icon: 'person_add', title: 'Account Property Mosaic', target: '#accountPropertyMosaic', offset: -80 },
-        { icon: 'person_add', title: 'Account Property Entity', target: '#accountPropertyEntityType', offset: -80 },
-        { icon: 'people', title: 'Account Link', target: '#accountLink', offset: -80 }
+        { icon: 'star', title: 'Wallet', target: '#wallet', offset: 48 },
+        { icon: 'star', title: 'Transaction', target: '#transactionInfo', offset: 48 },
+        { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
+        { icon: 'star', title: 'Current Alias', target: '#aliasInfo', offset: 48 },
+        { icon: 'star', title: 'Current Account Property', target: '#accountPropertyInfo', offset: 48 },
+        { icon: 'star', title: 'Current Account Link', target: '#accountLinkInfo', offset: 48 }
       ],
       navActive: ''
     }
