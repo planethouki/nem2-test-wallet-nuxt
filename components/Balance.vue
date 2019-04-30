@@ -93,7 +93,7 @@ export default {
       const currencyNamespaceName = this.currencyNamespaceName
       const harvestNamespaceName = this.harvestNamespaceName
       if (this.isBalanceLoading === false && this.mosaicAmountViews.length === 0) {
-        return ['none']
+        return []
       }
       return this.mosaicAmountViews.filter(function (mosaicAmountView) {
         if (mosaicAmountView.mosaicInfo.duration.compact() === 0) {
