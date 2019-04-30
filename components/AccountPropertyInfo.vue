@@ -1,16 +1,16 @@
 <template lang="pug">
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
+      v-card-title
+        span.title Current Account Property
       v-card-text
         v-layout(align-baseline)
-          span.title Current Account Property
-          v-btn(
-          fab
-          small
-          flat
-          @click="reloadAccount")
-            v-icon cached
         v-treeview(:items="propertiesTree")
+        span(v-if="propertiesTree.length === 0") None
+      v-card-actions
+        v-btn(
+          @click="reloadAccount")
+          v-icon cached
 </template>
 
 <script>
@@ -45,7 +45,7 @@ export default {
     walletMutateCount() {
       return this.$store.getters['wallet/getMutateCount']
     },
-    propertiesTree: function () {
+    propertiesTree() {
       return this.properties.map((property) => {
         return {
           id: property.propertyType,

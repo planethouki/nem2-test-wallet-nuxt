@@ -5,6 +5,8 @@
       WalletInfo(navTargetId="wallet")
       TransactionInfo(navTargetId="transactionInfo")
       Balance(navTargetId="balance")
+      NamespaceInfo(navTargetId="namespaceInfo")
+      MosaicInfo(navTargetId="mosaicInfo")
       AliasInfo(navTargetId="aliasInfo")
       AccountPropertyInfo(navTargetId="accountPropertyInfo")
       AccountLinkInfo(navTargetId="accountLinkInfo")
@@ -17,6 +19,8 @@ import Login from '~/components/Login.vue'
 
 import WalletInfo from '~/components/WalletInfo.vue'
 import Balance from '~/components/Balance.vue'
+import NamespaceInfo from '~/components/NamespaceInfo.vue'
+import MosaicInfo from '~/components/MosaicInfo.vue'
 import AliasInfo from '~/components/AliasInfo.vue'
 import AccountPropertyInfo from '~/components/AccountPropertyInfo.vue'
 import AccountLinkInfo from '~/components/AccountLinkInfo.vue'
@@ -32,6 +36,8 @@ export default {
     Login,
     WalletInfo,
     Balance,
+    NamespaceInfo,
+    MosaicInfo,
     AliasInfo,
     AccountPropertyInfo,
     AccountLinkInfo,
@@ -48,9 +54,11 @@ export default {
         { icon: 'star', title: 'Wallet', target: '#wallet', offset: 48 },
         { icon: 'star', title: 'Transaction', target: '#transactionInfo', offset: 48 },
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
-        { icon: 'star', title: 'Current Alias', target: '#aliasInfo', offset: 48 },
-        { icon: 'star', title: 'Current Account Property', target: '#accountPropertyInfo', offset: 48 },
-        { icon: 'star', title: 'Current Account Link', target: '#accountLinkInfo', offset: 48 }
+        { icon: 'star', title: 'Namespace', target: '#namespaceInfo', offset: 48 },
+        { icon: 'star', title: 'Mosaic', target: '#mosaicInfo', offset: 48 },
+        { icon: 'star', title: 'Alias', target: '#aliasInfo', offset: 48 },
+        { icon: 'star', title: 'Account Property', target: '#accountPropertyInfo', offset: 48 },
+        { icon: 'star', title: 'Account Link', target: '#accountLinkInfo', offset: 48 }
       ],
       navActive: ''
     }

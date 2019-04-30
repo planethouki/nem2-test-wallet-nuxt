@@ -5,8 +5,10 @@
       WalletInfo(navTargetId="wallet")
       Balance(navTargetId="balance")
       Transfer(navTargetId="transfer")
+      NamespaceInfo(navTargetId="namespaceInfo")
       Namespace(navTargetId="namespace")
       SubNamespace(navTargetId="subnamespace")
+      MosaicInfo(navTargetId="mosaicInfo")
       MosaicDefinition(navTargetId="mosaic")
       SecretLock(navTargetId="secretlock")
       SecretProof(navTargetId="secretproof")
@@ -34,8 +36,10 @@ import Login from '~/components/Login.vue'
 import WalletInfo from '~/components/WalletInfo.vue'
 import Balance from '~/components/Balance.vue'
 import Transfer from '~/components/Transfer.vue'
+import NamespaceInfo from '~/components/NamespaceInfo.vue'
 import Namespace from '~/components/Namespace.vue'
 import SubNamespace from '~/components/SubNamespace.vue'
+import MosaicInfo from '~/components/MosaicInfo.vue'
 import MosaicDefinition from '~/components/MosaicDefinition.vue'
 import SecretLock from '~/components/SecretLock.vue'
 import SecretProof from '~/components/SecretProof.vue'
@@ -63,8 +67,10 @@ export default {
     WalletInfo,
     Balance,
     Transfer,
+    NamespaceInfo,
     Namespace,
     SubNamespace,
+    MosaicInfo,
     MosaicDefinition,
     SecretLock,
     SecretProof,
@@ -92,12 +98,6 @@ export default {
     }
   },
   watch: {
-    breakPoint: {
-      handler(newVal) {
-        // eslint-disable-next-line
-        console.log(newVal)
-      }
-    }
   },
   asyncData(context) {
     return {
@@ -105,8 +105,10 @@ export default {
         { icon: 'star', title: 'Wallet', target: '#wallet', offset: 48 },
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
         { icon: 'arrow_forward', title: 'Transfer Tx', target: '#transfer', offset: 48 },
+        { icon: 'star', title: 'Current Namespace', target: '#namespaceInfo', offset: 48 },
         { icon: 'domain', title: 'Namespace', target: '#namespace', offset: 48 },
         { icon: 'domain', title: 'SubNamespace', target: '#subnamespace', offset: 48 },
+        { icon: 'star', title: 'Current Mosaic', target: '#mosaicInfo', offset: 48 },
         { icon: 'web_asset', title: 'Mosaic', target: '#mosaic', offset: 48 },
         { icon: 'lock', title: 'Secret Lock Tx', target: '#secretlock', offset: 48 },
         { icon: 'lock_open', title: 'Secret proof Tx', target: '#secretproof', offset: 48 },

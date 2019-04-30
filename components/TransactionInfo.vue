@@ -1,11 +1,11 @@
 <template lang="pug">
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
-      v-card-title.pb-0
-        span.title Transactions
+      v-card-title
+        span.title Recent Transactions
       v-card-text
         span.subheading Unconfirmed
-        table(style="width:100%;")
+        table.pl-3(style="width:100%;")
           thead
             tr
               th.text-xs-left Hash
@@ -14,11 +14,14 @@
             template(v-for="t in unconfirmedTransactions")
               tr(:key="t.transactionInfo.id")
                 td
-                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
+                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank")
+                    span.hidden-sm-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...
+                    span.hidden-xs-only.hidden-md-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...{{ t.transactionInfo.hash.substr(-8) }}
+                    span.hidden-sm-and-down {{ t.transactionInfo.hash }}
                 td {{ typeToName(t.type) }}
       v-card-text
         span.subheading Aggregate Bonded
-        table(style="width:100%;")
+        table.ml-3(style="width:100%;")
           thead
             tr
               th.text-xs-left Hash
@@ -27,11 +30,14 @@
             template(v-for="t in aggregateBondedTransactions")
               tr(:key="t.transactionInfo.id")
                 td
-                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
+                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank")
+                    span.hidden-sm-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...
+                    span.hidden-xs-only.hidden-md-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...{{ t.transactionInfo.hash.substr(-8) }}
+                    span.hidden-sm-and-down {{ t.transactionInfo.hash }}
                 td {{ typeToName(t.type) }}
       v-card-text
         span.subheading Confirmed
-        table(style="width:100%;")
+        table.ml-3(style="width:100%;")
           thead
             tr
               th.text-xs-left Height
@@ -42,7 +48,10 @@
               tr(:key="t.transactionInfo.id")
                 td {{ t.transactionInfo.height.compact() }}
                 td
-                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank") {{ t.transactionInfo.hash }}
+                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank")
+                    span.hidden-sm-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...
+                    span.hidden-xs-only.hidden-md-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...{{ t.transactionInfo.hash.substr(-8) }}
+                    span.hidden-sm-and-down {{ t.transactionInfo.hash }}
                 td {{ typeToName(t.type) }}
 </template>
 
@@ -208,5 +217,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

@@ -3,64 +3,69 @@
     v-card
       v-card-title
         v-layout(align-baseline)
-          span.title Current Alias
+          span.title Owned Namespaces
           v-spacer
           small (max 100 namespaces)
       v-card-text
-        v-data-table(
-        :headers="headers"
-        :items="namespaceTable"
-        class="elevation-1")
-          template(v-slot:items="props")
-            td {{ props.item.name }}
-            td {{ props.item.hexId }}
-            td {{ props.item.type }}
-            td {{ props.item.alias }}
+        v-layout(column)
+          div(v-for="m in namespaceTexts" v-bind:key="m.link").ml-3
+            div {{ m.text }}
+              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
+                v-icon(small) info
+          span(v-if="namespaceTexts.length === 0 && isNamespaceLoading === false") None
       v-card-actions
         v-btn(
-          @click="reloadAccount")
+          :disabled="isNamespaceLoading"
+          @click="reload")
           v-icon cached
+        v-progress-circular(indeterminate v-if="isNamespaceLoading").ml-3
 </template>
 
 <script>
-import { NamespaceHttp, UInt64, Address, QueryParams } from 'nem2-sdk'
+import { MosaicId, NamespaceHttp, BlockchainHttp, QueryParams } from 'nem2-sdk'
 import { mergeMap } from 'rxjs/operators'
 
 export default {
-  name: 'AliasInfo',
+  name: 'NamespaceInfo',
   props: {
     navTargetId: {
       type: String,
       default() {
-        return 'aliasInfo'
+        return 'namespaceInfo'
       }
     }
   },
   data() {
     return {
-      namespaces: [],
-      headers: [
-        { text: 'Namespace', value: 'name' },
-        { text: 'ID', value: 'hexId' },
-        { text: 'Type', value: 'type' },
-        { text: 'Alias', value: 'alias' }
-      ]
+      blockHeight: 0,
+      isNamespaceLoading: true,
+      alert: '',
+      currencyMosaicId: new MosaicId('0000000000000000'),
+      harvestMosaicId: new MosaicId('0000000000000000'),
+      currencyNamespaceName: 'cat.currency',
+      harvestNamespaceName: 'cat.harvest',
+      namespaces: []
     }
   },
   computed: {
     existsAccount() {
       return this.$store.getters['wallet/existsAccount']
     },
-    endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
+    walletMutateCount() {
+      return this.$store.getters['wallet/getMutateCount']
     },
     address() {
       return this.$store.getters['wallet/getAddress']
     },
-    walletMutateCount() {
-      return this.$store.getters['wallet/getMutateCount']
+    endpoint() {
+      return this.$store.getters['wallet/getEndpoint']
     },
-    namespaceTable: function () {
+    namespaceTexts() {
+      const blockHeight = this.blockHeight
+      const endpoint = this.endpoint
+      if (this.isNamespaceLoading === false && this.namespaces.length === 0) {
+        return [{ text: 'none', link: '' }]
+      }
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
           if (ns === namespaces[i]) return false
@@ -77,27 +82,13 @@ export default {
         }
         return 0
       }).map((ns, index, original) => {
-        let aliasText
-        let aliasType
-        switch (ns.namespaceInfo.alias.type) {
-          case 0:
-            aliasText = 'no alias'
-            aliasType = '-'
-            break
-          case 1:
-            aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase()
-            aliasType = 'mosaic'
-            break
-          case 2:
-            aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).plain()
-            aliasType = 'address'
-            break
-        }
+        const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.')
+        const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
+        const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight
+        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
         return {
-          name: ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.'),
-          hexId: ns.namespaceInfo.id.toHex().toUpperCase(),
-          type: aliasType,
-          alias: aliasText
+          text: name + ', ' + hexId + ', ' + expireText,
+          link: `${endpoint}/namespace/${hexId}`
         }
       })
     }
@@ -105,23 +96,28 @@ export default {
   watch: {
     walletMutateCount: {
       handler: function () {
-        this.reloadAccount()
+        this.reload()
       }
     }
   },
   mounted() {
-    this.reloadAccount()
+    this.reload()
   },
   methods: {
-    reloadAccount: async function (event) {
+    reload: function () {
       if (!this.existsAccount) return
+      this.reloadNamespaces()
+    },
+    reloadNamespaces: async function (event) {
+      this.isNamespaceLoading = true
+      this.blockHeight = 0
+      const blockChainHttp = new BlockchainHttp(this.endpoint)
+      this.blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact()
       this.namespaces = []
-      const address = this.address
-      const endpoint = this.endpoint
-      const namespaceHttp = new NamespaceHttp(endpoint)
+      const namespaceHttp = new NamespaceHttp(this.endpoint)
       let metaId
       for (let i = 0; i < 10; i++) {
-        const result = await this.getNamespaces(namespaceHttp, address, new QueryParams(10, metaId))
+        const result = await this.getNamespaces(namespaceHttp, this.address, new QueryParams(10, metaId))
         if (result.length > 0) {
           metaId = result[result.length - 1].namespaceInfo.metaId
           result.map(x => this.namespaces.push(x))
@@ -129,6 +125,7 @@ export default {
           break
         }
       }
+      this.isNamespaceLoading = false
     },
     getNamespaces: function (namespaceHttp, address, query) {
       return new Promise((resolve, reject) => {

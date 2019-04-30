@@ -1,53 +1,56 @@
 <template lang="pug">
   v-flex(mb-5 v-if="isShow" v-bind:id="navTargetId")
     v-card
-      v-card-title.pb-0
+      v-card-title
         v-layout(align-baseline)
-          span.title Address
-          v-btn(
-          fab
-          small
-          flat
-          @click="copyAddressHandler")
-            v-icon filter_none
-      v-card-text.pt-0
-        v-layout(overflow-hidden)
-          v-list
-            v-list-tile
-              v-list-tile-content
-                v-list-tile-title(ref="address") {{ address.pretty() }}
-                v-list-tile-sub-title {{ address.plain() }}
-      v-card-title.pb-0
-        v-layout(align-baseline)
-          span.title Public Key
-          v-btn(
-          fab
-          small
-          flat
-          @click="copyPublicKeyHandler")
-            v-icon filter_none
-      v-card-text.pt-0
-        v-layout(overflow-hidden)
-          v-list-tile
+          span.title Wallet
+      v-card-text
+        v-layout(column)
+          div.subheading Endpoint
+          v-layout(overflow-hidden align-center justify-space-between)
             v-list
-              v-list-tile-content
-                v-list-tile-sub-title(ref="publicKey") {{ publicKey }}
+              v-list-tile
+                v-list-tile-content
+                  v-list-tile-title(ref="endpoint") {{ endpoint }}
+            v-btn(
+              fab
+              small
+              flat
+              @click="copyEndpointHandler")
+              v-icon filter_none
+        v-layout.mb-2(column)
+          div.subheading Address
+          v-layout(overflow-hidden align-center justify-space-between)
+            v-list
+              v-list-tile
+                v-list-tile-content
+                  v-list-tile-title(ref="address") {{ address.pretty() }}
+                  v-list-tile-sub-title {{ address.plain() }}
+            v-btn(
+              fab
+              small
+              flat
+              @click="copyAddressHandler")
+              v-icon filter_none
+        v-layout(column)
+          div.subheading Public Key
+          v-layout(overflow-hidden align-center justify-space-between)
+            v-list-tile
+              v-list
+                v-list-tile-content
+                  v-list-tile-title(ref="publicKey") {{ publicKey }}
+            v-btn(
+              fab
+              small
+              flat
+              @click="copyPublicKeyHandler")
+              v-icon filter_none
       v-card-actions
         v-btn(
         color="pink"
         class="white--text"
         @click="logoutWallet") logout
         v-spacer
-        v-menu(offset-y)
-          template(v-slot:activator="{ on }")
-            v-btn(v-on="on") Links
-          v-list
-            v-list-tile(v-show="faucetUrl")
-              v-list-tile-title
-                a(v-bind:href="faucetUrl" target="_blank") Faucet
-            v-list-tile
-              v-list-tile-title
-                a(v-bind:href="endpoint + '/account/' + address.plain() + '/multisig'" target="_blank") Multisig
       v-card-text(v-show="alert")
         v-alert(type="error" :value="alert") {{ alert }}
 </template>
@@ -91,6 +94,15 @@ export default {
   methods: {
     logoutWallet: function (event) {
       this.$store.commit('wallet/logout')
+    },
+    copyEndpointHandler: function (event) {
+      const target = this.$refs.endpoint
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
     },
     copyAddressHandler: function (event) {
       const target = this.$refs.address

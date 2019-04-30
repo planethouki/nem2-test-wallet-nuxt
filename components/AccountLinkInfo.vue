@@ -1,16 +1,15 @@
 <template lang="pug">
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
+      v-card-title
+        span.title Current Linked Public Key
       v-card-text
         v-layout(align-baseline)
-          span.title Current Linked Public Key
-          v-btn(
-          fab
-          small
-          flat
-          @click="reloadAccount")
-            v-icon cached
         p {{ remoteAccountKey }}
+      v-card-actions
+        v-btn(
+          @click="reloadAccount")
+          v-icon cached
 </template>
 
 <script>
@@ -57,17 +56,20 @@ export default {
     this.reloadAccount()
   },
   methods: {
-    reloadAccount: async function (event) {
+    reloadAccount: function (event) {
       if (!this.existsAccount) return
       this.remoteAccountKey = ''
       const rp = require('request-promise-native')
-      const account = await rp(`${this.endpoint}/account/${this.address.plain()}`)
-      const linkedAccountKey = this.$convert.base64ToHex(JSON.parse(account).account.linkedAccountKey).toUpperCase()
-      if (linkedAccountKey === '0000000000000000000000000000000000000000000000000000000000000000') {
-        this.remoteAccountKey = 'none'
-      } else {
-        this.remoteAccountKey = linkedAccountKey
-      }
+      rp(`${this.endpoint}/account/${this.address.plain()}`).then((res) => {
+        const linkedAccountKey = this.$convert.base64ToHex(JSON.parse(res).account.linkedAccountKey).toUpperCase()
+        if (linkedAccountKey === '0000000000000000000000000000000000000000000000000000000000000000') {
+          this.remoteAccountKey = 'None'
+        } else {
+          this.remoteAccountKey = linkedAccountKey
+        }
+      }).catch(() => {
+        this.remoteAccountKey = 'None'
+      })
     }
   }
 }

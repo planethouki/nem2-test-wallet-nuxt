@@ -1,55 +1,34 @@
 <template lang="pug">
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
-      v-card-text.pb-0
+      v-card-title
         v-layout(align-baseline)
           span.title Balance
-          v-btn(
-          fab
-          small
-          flat
-          @click="reload")
-            v-icon cached
-          v-progress-circular(indeterminate v-if="isBalanceLoading").ml-3
           v-spacer
           small resolve only cat.currency and cat.harvest
-        v-layout(column)
-          v-list-tile(v-for="m in balanceTexts" v-bind:key="m")
-            v-list-tile-content
-              v-list-tile-title
-                span {{ m }}
-      v-card-text.pb-0
-        v-layout(align-baseline)
-          span.title Owned Namespaces
-          v-btn(
-          fab
-          small
-          flat
-          @click="reload")
-            v-icon cached
-          v-progress-circular(indeterminate v-if="isNamespaceLoading").ml-3
-        v-layout(column)
-          div(v-for="m in namespaceTexts" v-bind:key="m.link").ml-3
-            div {{ m.text }}
-              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                v-icon(small) info
       v-card-text
-        v-layout(align-baseline)
-          span.title Owned Mosaics
-          v-btn(
-          fab
-          small
-          flat
+        v-layout.mb-3(column)
+          span.mb-3.subheading cat.currency
+          div(v-for="m in currencyBalance" v-bind:key="m.id")
+            span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
+          span.ml-3(v-if="currencyBalance.length === 0 && isBalanceLoading === false") None
+        v-layout.mb-3(column)
+          span.mb-3.subheading cat.harvest
+          div(v-for="m in harvestBalance" v-bind:key="m.id")
+            span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
+          span.ml-3(v-if="harvestBalance.length === 0 && isBalanceLoading === false") None
+        v-layout.mb-3(column)
+          span.mb-3.subheading mosaics
+          div(v-for="m in mosaicBalance" v-bind:key="m.id")
+            span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
+          span.ml-3(v-if="mosaicBalance.length === 0 && isBalanceLoading === false") None
+      v-card-actions
+        v-btn(
+          :disabled="isBalanceLoading"
           @click="reload")
-            v-icon cached
-          v-progress-circular(indeterminate v-if="isBalanceLoading").ml-3
-          v-spacer
-          small show only with balance
-        v-layout(column)
-          div(v-for="m in mosaicTexts" v-bind:key="m.link").ml-3
-            div {{ m.text }}
-              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                v-icon(small) info
+          v-icon cached
+        v-progress-circular(indeterminate v-if="isBalanceLoading").ml-3
+
 </template>
 
 <script>
@@ -72,14 +51,11 @@ export default {
       mosaicAmountViews: [],
       blockHeight: 0,
       isBalanceLoading: true,
-      isNamespaceLoading: true,
       alert: '',
       currencyMosaicId: new MosaicId('0000000000000000'),
       harvestMosaicId: new MosaicId('0000000000000000'),
       currencyNamespaceName: 'cat.currency',
-      harvestNamespaceName: 'cat.harvest',
-      namespaces: [],
-      mosaics: []
+      harvestNamespaceName: 'cat.harvest'
     }
   },
   computed: {
@@ -95,7 +71,22 @@ export default {
     endpoint() {
       return this.$store.getters['wallet/getEndpoint']
     },
-    balanceTexts() {
+    currencyBalance() {
+      return this.allMosaicsBalance.filter((m) => {
+        return m.alias === this.currencyNamespaceName
+      })
+    },
+    harvestBalance() {
+      return this.allMosaicsBalance.filter((m) => {
+        return m.alias === this.harvestNamespaceName
+      })
+    },
+    mosaicBalance() {
+      return this.allMosaicsBalance.filter((m) => {
+        return m.alias !== this.currencyNamespaceName && m.alias !== this.harvestNamespaceName
+      })
+    },
+    allMosaicsBalance() {
       const blockHeight = this.blockHeight
       const currencyMosaicId = this.currencyMosaicId
       const harvestMosaicId = this.harvestMosaicId
@@ -105,9 +96,7 @@ export default {
         return ['none']
       }
       return this.mosaicAmountViews.filter(function (mosaicAmountView) {
-        if (blockHeight === 0) {
-          return true
-        } else if (mosaicAmountView.mosaicInfo.duration.compact() === 0) {
+        if (mosaicAmountView.mosaicInfo.duration.compact() === 0) {
           return true
         } else {
           const endHeight = mosaicAmountView.mosaicInfo.height.compact() + mosaicAmountView.mosaicInfo.duration.compact()
@@ -124,89 +113,23 @@ export default {
         }
         return 0
       }).map(function (mosaicAmountView) {
-        const divisibility = mosaicAmountView.mosaicInfo.properties.divisibility
         const amount = mosaicAmountView.amount.compact()
-        const relAmount = amount / (10 ** divisibility)
-        let mosaicName
+        const relAmount = mosaicAmountView.relativeAmount()
+        const ret = {
+          absoluteAmount: amount.toString(10),
+          relativeAmount: relAmount.toString(10)
+        }
         if (mosaicAmountView.mosaicInfo.mosaicId.equals(currencyMosaicId)) {
-          mosaicName = `${mosaicAmountView.fullName().toUpperCase()}@${currencyNamespaceName}`
+          ret.id = `${mosaicAmountView.fullName().toUpperCase()}`
+          ret.alias = `${currencyNamespaceName}`
         } else if (mosaicAmountView.mosaicInfo.mosaicId.equals(harvestMosaicId)) {
-          mosaicName = `${mosaicAmountView.fullName().toUpperCase()}@${harvestNamespaceName}`
+          ret.id = `${mosaicAmountView.fullName().toUpperCase()}`
+          ret.alias = `${harvestNamespaceName}`
         } else {
-          mosaicName = mosaicAmountView.fullName().toUpperCase()
+          ret.id = mosaicAmountView.fullName().toUpperCase()
         }
-        return mosaicName +
-          '::' +
-          amount.toString(10) +
-          ' (' +
-          relAmount.toString(10) +
-          ') '
+        return ret
       })
-    },
-    namespaceTexts() {
-      const blockHeight = this.blockHeight
-      const endpoint = this.endpoint
-      if (this.isNamespaceLoading === false && this.namespaces.length === 0) {
-        return [{ text: 'none', link: '' }]
-      }
-      return this.namespaces.filter((ns, index, namespaces) => {
-        for (let i = 0; i < index; i++) {
-          if (ns === namespaces[i]) return false
-        }
-        return true
-      }).sort(function (a, b) {
-        const nameA = a.namespaceInfo.metaId
-        const nameB = b.namespaceInfo.metaId
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      }).map((ns, index, original) => {
-        const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.')
-        const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
-        const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight
-        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
-        return {
-          text: name + ', ' + hexId + ', ' + expireText,
-          link: `${endpoint}/namespace/${hexId}`
-        }
-      })
-    },
-    mosaicTexts() {
-      const blockHeight = this.blockHeight
-      const endpoint = this.endpoint
-      const address = this.address
-      if (this.isBalanceLoading === false && this.mosaicAmountViews.length === 0) {
-        return [{ text: 'none', link: '' }]
-      }
-      const emptyOrMosaicTexts = this.mosaicAmountViews.filter(function (mosaicAmountView) {
-        return mosaicAmountView.mosaicInfo.owner.address.equals(address)
-      }).sort(function (a, b) {
-        const nameA = a.mosaicInfo.metaId
-        const nameB = b.mosaicInfo.metaId
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      }).map(function (mosaicAmountView) {
-        const hexId = mosaicAmountView.fullName().toUpperCase()
-        const duration = mosaicAmountView.mosaicInfo.duration.compact()
-        const startHeight = mosaicAmountView.mosaicInfo.height.compact()
-        const endHeight = startHeight + duration
-        const expireWithin = endHeight - blockHeight
-        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
-        return {
-          text: hexId + ', ' + expireText,
-          link: `${endpoint}/mosaic/${hexId}`
-        }
-      })
-      return emptyOrMosaicTexts.length === 0 ? [{ text: 'none', link: '' }] : emptyOrMosaicTexts
     }
   },
   watch: {
@@ -222,10 +145,9 @@ export default {
   methods: {
     reload: function () {
       if (!this.existsAccount) return
-      this.reloadBalance()
-      this.reloadNamespaces()
+      this.reloadMosaics()
     },
-    reloadBalance: async function (event) {
+    reloadMosaics: async function (event) {
       this.isBalanceLoading = true
       this.blockHeight = 0
       this.mosaicAmountViews = []
@@ -252,28 +174,6 @@ export default {
         this.isBalanceLoading = false
       }, () => {
         this.isBalanceLoading = false
-      })
-    },
-    reloadNamespaces: function (event) {
-      this.isNamespaceLoading = true
-      this.namespaces = []
-      const namespaces = {}
-      const namespaceHttp = new NamespaceHttp(this.endpoint)
-      namespaceHttp.getNamespacesFromAccount(this.address).pipe(
-        mergeMap((mosaicsInfo) => {
-          const mosaicIds = mosaicsInfo.map((x) => {
-            namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x }
-            return x.id
-          })
-          return namespaceHttp.getNamespacesName(mosaicIds)
-        })
-      ).subscribe((namespacesName) => {
-        this.namespaces = namespacesName.map((namespaceName) => {
-          const namespace = namespaces[namespaceName.namespaceId.toHex().toUpperCase()]
-          namespace.namespaceName = namespaceName
-          return namespace
-        })
-        this.isNamespaceLoading = false
       })
     }
   }
