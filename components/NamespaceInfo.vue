@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import { MosaicId, NamespaceHttp, BlockchainHttp, QueryParams } from 'nem2-sdk'
-import { mergeMap } from 'rxjs/operators'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'NamespaceInfo',
@@ -37,34 +36,29 @@ export default {
   },
   data() {
     return {
-      blockHeight: 0,
-      isNamespaceLoading: true,
-      alert: '',
-      currencyMosaicId: new MosaicId('0000000000000000'),
-      harvestMosaicId: new MosaicId('0000000000000000'),
-      currencyNamespaceName: 'cat.currency',
-      harvestNamespaceName: 'cat.harvest',
-      namespaces: []
+      isNamespaceLoading: null,
+      alert: ''
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    walletMutateCount() {
-      return this.$store.getters['wallet/mutateCount']
-    },
-    address() {
-      return this.$store.getters['wallet/address']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    },
+    ...mapGetters('wallet', {
+      existsAccount: 'existsAccount',
+      address: 'address',
+      endpoint: 'endpoint'
+    }),
+    ...mapGetters('env', [
+      'currencyNamespaceName',
+      'harvestNamespaceName'
+    ]),
+    ...mapGetters('chain', [
+      'blockHeight',
+      'namespaces'
+    ]),
     namespaceTexts() {
       const blockHeight = this.blockHeight
       const endpoint = this.endpoint
       if (this.isNamespaceLoading === false && this.namespaces.length === 0) {
-        return [{ text: 'none', link: '' }]
+        return [{ text: 'None', link: '' }]
       }
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
@@ -93,65 +87,14 @@ export default {
       })
     }
   },
-  watch: {
-    walletMutateCount: {
-      handler: function () {
-        this.reload()
-      }
-    }
-  },
-  mounted() {
-    this.reload()
-  },
   methods: {
-    reload: function () {
-      if (!this.existsAccount) return
-      this.reloadNamespaces()
-    },
-    reloadNamespaces: async function (event) {
+    reload: async function (event) {
       this.isNamespaceLoading = true
-      this.blockHeight = 0
-      const blockChainHttp = new BlockchainHttp(this.endpoint)
-      this.blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact()
-      this.namespaces = []
-      const namespaceHttp = new NamespaceHttp(this.endpoint)
-      let metaId
-      for (let i = 0; i < 10; i++) {
-        const result = await this.getNamespaces(namespaceHttp, this.address, new QueryParams(10, metaId))
-        if (result.length > 0) {
-          metaId = result[result.length - 1].namespaceInfo.metaId
-          result.map(x => this.namespaces.push(x))
-        } else {
-          break
-        }
-      }
-      this.isNamespaceLoading = false
-    },
-    getNamespaces: function (namespaceHttp, address, query) {
-      return new Promise((resolve, reject) => {
-        const namespacesInfoTemporary = []
-        namespaceHttp.getNamespacesFromAccount(address, query).pipe(
-          mergeMap((namespacesInfo) => {
-            namespacesInfo.map((x) => {
-              namespacesInfoTemporary.push(x)
-            })
-            return namespaceHttp.getNamespacesName(namespacesInfo.map(x => x.id))
-          })
-        ).subscribe((namespacesName) => {
-          const nameAndInfo = namespacesInfoTemporary.map((namespaceInfo) => {
-            const namespaceName = namespacesName.find((namespaceName) => {
-              return namespaceName.namespaceId.equals(namespaceInfo.id)
-            })
-            return {
-              namespaceInfo,
-              namespaceName
-            }
-          })
-          resolve(nameAndInfo)
-        }, (e) => {
-          reject(e)
-        })
+      await this.$store.dispatch('chain/updateNamespaces', {
+        endpoint: this.endpoint,
+        address: this.address
       })
+      this.isNamespaceLoading = false
     }
   }
 }

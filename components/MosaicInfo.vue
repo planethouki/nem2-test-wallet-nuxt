@@ -42,10 +42,6 @@ export default {
       address: 'address',
       endpoint: 'endpoint'
     }),
-    ...mapGetters('env', [
-      'currencyNamespaceName',
-      'harvestNamespaceName'
-    ]),
     ...mapGetters('chain', [
       'blockHeight',
       'currencyMosaicId',
@@ -88,13 +84,6 @@ export default {
   methods: {
     reloadMosaics: async function (event) {
       this.isBalanceLoading = true
-      if (!(this.currencyMosaicId || this.harvestMosaicId)) {
-        await this.$store.dispatch('chain/init', {
-          endpoint: this.endpoint,
-          currencyNamespaceName: this.currencyNamespaceName,
-          harvestNamespaceName: this.harvestNamespaceName
-        })
-      }
       await this.$store.dispatch('chain/updateBlockHeight', {
         endpoint: this.endpoint
       })

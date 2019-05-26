@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { AccountHttp, Listener } from 'nem2-sdk'
 
 export default {
@@ -64,7 +65,7 @@ export default {
     navTargetId: {
       type: String,
       default() {
-        return 'wallet'
+        return 'transactionInfo'
       }
     }
   },
@@ -82,18 +83,12 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    address() {
-      return this.$store.getters['wallet/address']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    },
-    publicAccount() {
-      return this.$store.getters['wallet/publicAccount']
-    }
+    ...mapGetters('wallet', {
+      existsAccount: 'existsAccount',
+      address: 'address',
+      endpoint: 'endpoint',
+      publicAccount: 'publicAccount'
+    })
   },
   watch: {
     endpoint(newVal) {

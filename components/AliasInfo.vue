@@ -18,13 +18,13 @@
             td {{ props.item.alias }}
       v-card-actions
         v-btn(
-          @click="reloadAccount")
+          @click="reload")
           v-icon cached
 </template>
 
 <script>
-import { NamespaceHttp, UInt64, Address, QueryParams } from 'nem2-sdk'
-import { mergeMap } from 'rxjs/operators'
+import { mapGetters } from 'vuex'
+import { UInt64, Address } from 'nem2-sdk'
 
 export default {
   name: 'AliasInfo',
@@ -38,7 +38,6 @@ export default {
   },
   data() {
     return {
-      namespaces: [],
       headers: [
         { text: 'Namespace', value: 'name' },
         { text: 'ID', value: 'hexId' },
@@ -48,18 +47,14 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    },
-    address() {
-      return this.$store.getters['wallet/address']
-    },
-    walletMutateCount() {
-      return this.$store.getters['wallet/mutateCount']
-    },
+    ...mapGetters('wallet', {
+      existsAccount: 'existsAccount',
+      address: 'address',
+      endpoint: 'endpoint'
+    }),
+    ...mapGetters('chain', [
+      'namespaces'
+    ]),
     namespaceTable: function () {
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
@@ -102,59 +97,14 @@ export default {
       })
     }
   },
-  watch: {
-    walletMutateCount: {
-      handler: function () {
-        this.reloadAccount()
-      }
-    }
-  },
-  mounted() {
-    this.reloadAccount()
-  },
   methods: {
-    reloadAccount: async function (event) {
-      if (!this.existsAccount) return
-      this.namespaces = []
-      const address = this.address
-      const endpoint = this.endpoint
-      const namespaceHttp = new NamespaceHttp(endpoint)
-      let metaId
-      for (let i = 0; i < 10; i++) {
-        const result = await this.getNamespaces(namespaceHttp, address, new QueryParams(10, metaId))
-        if (result.length > 0) {
-          metaId = result[result.length - 1].namespaceInfo.metaId
-          result.map(x => this.namespaces.push(x))
-        } else {
-          break
-        }
-      }
-    },
-    getNamespaces: function (namespaceHttp, address, query) {
-      return new Promise((resolve, reject) => {
-        const namespacesInfoTemporary = []
-        namespaceHttp.getNamespacesFromAccount(address, query).pipe(
-          mergeMap((namespacesInfo) => {
-            namespacesInfo.map((x) => {
-              namespacesInfoTemporary.push(x)
-            })
-            return namespaceHttp.getNamespacesName(namespacesInfo.map(x => x.id))
-          })
-        ).subscribe((namespacesName) => {
-          const nameAndInfo = namespacesInfoTemporary.map((namespaceInfo) => {
-            const namespaceName = namespacesName.find((namespaceName) => {
-              return namespaceName.namespaceId.equals(namespaceInfo.id)
-            })
-            return {
-              namespaceInfo,
-              namespaceName
-            }
-          })
-          resolve(nameAndInfo)
-        }, (e) => {
-          reject(e)
-        })
+    reload: async function (event) {
+      this.isNamespaceLoading = true
+      await this.$store.dispatch('chain/updateNamespaces', {
+        endpoint: this.endpoint,
+        address: this.address
       })
+      this.isNamespaceLoading = false
     }
   }
 }

@@ -9,11 +9,12 @@
         span(v-if="propertiesTree.length === 0") None
       v-card-actions
         v-btn(
-          @click="reloadAccount")
+          @click="reload")
           v-icon cached
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { AccountHttp, PropertyType, Address } from 'nem2-sdk'
 import { mergeMap } from 'rxjs/operators'
 
@@ -29,22 +30,17 @@ export default {
   },
   data() {
     return {
-      properties: []
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    },
-    address() {
-      return this.$store.getters['wallet/address']
-    },
-    walletMutateCount() {
-      return this.$store.getters['wallet/mutateCount']
-    },
+    ...mapGetters('wallet', {
+      existsAccount: 'existsAccount',
+      address: 'address',
+      endpoint: 'endpoint'
+    }),
+    ...mapGetters('chain', [
+      'properties'
+    ]),
     propertiesTree() {
       return this.properties.map((property) => {
         return {
@@ -67,19 +63,8 @@ export default {
       })
     }
   },
-  watch: {
-    walletMutateCount: {
-      handler: function () {
-        this.reloadAccount()
-      }
-    }
-  },
-  mounted() {
-    this.reloadAccount()
-  },
   methods: {
-    reloadAccount: function (event) {
-      if (!this.existsAccount) return
+    reload: function (event) {
       this.properties = []
       const accountHttp = new AccountHttp(this.endpoint)
       accountHttp.getAccountInfo(this.address).pipe(
