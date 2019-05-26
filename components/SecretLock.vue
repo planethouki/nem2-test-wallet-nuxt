@@ -98,8 +98,8 @@ export default {
   },
   methods: {
     l_announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const duration = this.l_duration
       const secret = this.l_secret
       const recipient = this.$parser.parseAddressSecretLock(this.l_recipient)

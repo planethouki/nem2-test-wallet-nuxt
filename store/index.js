@@ -1,5 +1,5 @@
 export const state = () => ({
-  drawer: true
+  drawer: null
 })
 
 export const getters = {

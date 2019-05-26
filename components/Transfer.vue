@@ -83,12 +83,12 @@ export default {
       return this.$store.getters['wallet/existsAccount']
     },
     endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
+      return this.$store.getters['wallet/endpoint']
     }
   },
   methods: {
     t_announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
+      const account = this.$store.getters['wallet/account']
       const endpoint = this.endpoint
       const recipient = this.$parser.parseAddress(this.t_recipientAddress)
       const mosaics = this.$parser.parseMosaics(this.t_mosaics)

@@ -115,10 +115,10 @@ export default {
   },
   methods: {
     e_announceHandler: async function (event) {
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const wsEndpoint = endpoint.replace('http', 'ws')
       const listener = new Listener(wsEndpoint, WebSocket)
-      const account = this.$store.getters['wallet/getAccount']
+      const account = this.$store.getters['wallet/account']
       const network = account.address.networkType
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)

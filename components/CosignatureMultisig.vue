@@ -58,8 +58,8 @@ export default {
   },
   methods: {
     g_announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const network = account.address.networkType
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.g_multisigPublicKey, network)
       const hash = this.g_hash

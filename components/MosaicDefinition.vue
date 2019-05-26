@@ -82,8 +82,8 @@ export default {
   },
   methods: {
     m_announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const networkType = account.address.networkType
       const nonce = Number(this.m_nonce)
       const mosaicNonce = new MosaicNonce(this.$convert.numberToUint8_4(nonce))

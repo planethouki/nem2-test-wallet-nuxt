@@ -125,8 +125,8 @@ export default {
       this.additionalModification.rawAddress = '4152'
     },
     announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const modifyAccountPropertyEntityTypeTransaction = ModifyAccountPropertyEntityTypeTransaction.create(
         Deadline.create(),
         this.propertyType,

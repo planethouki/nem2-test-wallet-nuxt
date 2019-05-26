@@ -102,13 +102,13 @@ export default {
       return this.$store.getters['wallet/existsAccount']
     },
     walletMutateCount() {
-      return this.$store.getters['wallet/getMutateCount']
+      return this.$store.getters['wallet/mutateCount']
     },
     account() {
-      return this.$store.getters['wallet/getAccount']
+      return this.$store.getters['wallet/account']
     },
     endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
+      return this.$store.getters['wallet/endpoint']
     }
   },
   watch: {

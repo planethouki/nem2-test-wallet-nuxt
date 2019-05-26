@@ -86,16 +86,13 @@ export default {
       return this.$store.getters['wallet/existsAccount']
     },
     address() {
-      return this.$store.getters['wallet/getAddress']
+      return this.$store.getters['wallet/address']
     },
     endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
-    },
-    faucetUrl() {
-      return this.$store.getters['wallet/getFaucet']
+      return this.$store.getters['wallet/endpoint']
     },
     publicAccount() {
-      return this.$store.getters['wallet/getPublicAccount']
+      return this.$store.getters['wallet/publicAccount']
     }
   },
   watch: {

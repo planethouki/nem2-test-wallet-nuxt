@@ -1,61 +1,68 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="isShow" v-bind:id="navTargetId")
-    v-card
-      v-card-title
-        v-layout(align-baseline)
-          span.title Wallet
-      v-card-text
-        v-layout(column)
-          div.subheading Endpoint
-          v-layout(overflow-hidden align-center justify-space-between)
-            v-list
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title(ref="endpoint") {{ endpoint }}
-            v-btn(
-              fab
-              small
-              flat
-              @click="copyEndpointHandler")
-              v-icon filter_none
-        v-layout.mb-2(column)
-          div.subheading Address
-          v-layout(overflow-hidden align-center justify-space-between)
-            v-list
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title(ref="address") {{ address.pretty() }}
-                  v-list-tile-sub-title {{ address.plain() }}
-            v-btn(
-              fab
-              small
-              flat
-              @click="copyAddressHandler")
-              v-icon filter_none
-        v-layout(column)
-          div.subheading Public Key
-          v-layout(overflow-hidden align-center justify-space-between)
-            v-list-tile
+  v-list(dense three-line v-if="isShow").py-3
+    v-list-tile
+      v-list-tile-content
+        v-list-tile-title Endpoint
+        v-list-tile-sub-title(ref="endpoint") {{ endpoint }}
+    v-list-tile
+      v-list-tile-content
+        v-list-tile-title Address
+        v-list-tile-sub-title(ref="address") {{ address.pretty() }}
+    v-list-tile
+      v-list-tile-content
+        v-list-tile-title Public Key
+        v-list-tile-sub-title(ref="publicKey") {{ publicKey }}
+
+  //-
+    v-flex(mb-5 v-if="isShow" v-bind:id="navTargetId")
+      v-card
+        v-card-text
+          v-layout(column)
+            div.subheading Endpoint
+            v-layout(overflow-hidden align-center justify-space-between)
               v-list
-                v-list-tile-content
-                  v-list-tile-title(ref="publicKey") {{ publicKey }}
-            v-btn(
-              fab
-              small
-              flat
-              @click="copyPublicKeyHandler")
-              v-icon filter_none
-      v-card-actions
-        v-btn(
-        color="pink"
-        class="white--text"
-        @click="logoutWallet") logout
-        v-spacer
-      v-card-text(v-show="alert")
-        v-alert(type="error" :value="alert") {{ alert }}
+                v-list-tile
+                  v-list-tile-content
+                    v-list-tile-title(ref="endpoint") {{ endpoint }}
+              v-btn(
+                fab
+                small
+                flat
+                @click="copyEndpointHandler")
+                v-icon filter_none
+          v-layout.mb-2(column)
+            div.subheading Address
+            v-layout(overflow-hidden align-center justify-space-between)
+              v-list
+                v-list-tile
+                  v-list-tile-content
+                    v-list-tile-title(ref="address") {{ address.pretty() }}
+                    v-list-tile-sub-title {{ address.plain() }}
+              v-btn(
+                fab
+                small
+                flat
+                @click="copyAddressHandler")
+                v-icon filter_none
+          v-layout(column)
+            div.subheading Public Key
+            v-layout(overflow-hidden align-center justify-space-between)
+              v-list-tile
+                v-list
+                  v-list-tile-content
+                    v-list-tile-title(ref="publicKey") {{ publicKey }}
+              v-btn(
+                fab
+                small
+                flat
+                @click="copyPublicKeyHandler")
+                v-icon filter_none
+        v-card-text(v-show="alert")
+          v-alert(type="error" :value="alert") {{ alert }}
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'WalletInfo',
@@ -73,28 +80,19 @@ export default {
     }
   },
   computed: {
-    isShow() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    address() {
-      return this.$store.getters['wallet/getAddress']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
-    },
-    faucetUrl() {
-      return this.$store.getters['wallet/getFaucet']
-    },
+    ...mapGetters('wallet', {
+      isShow: 'existsAccount',
+      address: 'address',
+      endpoint: 'endpoint',
+      publicAccount: 'publicAccount'
+    }),
     publicKey() {
-      return this.$store.getters['wallet/getPublicAccount'].publicKey
+      return this.publicAccount.publicKey
     }
   },
   watch: {
   },
   methods: {
-    logoutWallet: function (event) {
-      this.$store.commit('wallet/logout')
-    },
     copyEndpointHandler: function (event) {
       const target = this.$refs.endpoint
       const range = document.createRange()

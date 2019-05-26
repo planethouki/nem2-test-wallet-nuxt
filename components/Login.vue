@@ -1,11 +1,11 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="isShow" v-bind:id="navTargetId")
+  v-flex(mb-5 v-bind:id="navTargetId")
     v-card
       v-form
         v-card-text
           v-radio-group(label="Select Endpoint" v-model="predefinedEndpoint")
             v-radio(
-              v-for="ep in endpoints"
+              v-for="ep in endpointList"
               :key="ep.url"
               :label="ep.label"
               :value="ep.url")
@@ -42,9 +42,7 @@
 </template>
 
 <script>
-
-import { NetworkType } from 'nem2-sdk'
-const rp = require('request-promise-native')
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Login',
@@ -61,20 +59,24 @@ export default {
       predefinedEndpoint: '',
       userEndpoint: '',
       privateKey: '',
-      loginDisabled: false,
-      endpoints: [
-        { url: 'http://54.178.241.129:3000', label: 'cow (54.178.241.129)' },
-        { url: 'http://13.114.36.139:3000', label: 'cow with fee (13.114.36.139)' }
-      ],
-      defaultEndpoint: 'http://54.178.241.129:3000',
-      defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
-      defaultNetworkType: NetworkType.MIJIN_TEST
+      loginDisabled: false
     }
   },
   computed: {
-    isShow() {
-      return !this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', [
+      'existsAccount',
+      'networkType',
+      'address',
+      'endpoint'
+    ]),
+    ...mapGetters('env', [
+      'endpointList',
+      'defaultEndpoint',
+      'defaultPrivateKey',
+      'defaultNetworkType',
+      'currencyNamespaceName',
+      'harvestNamespaceName'
+    ])
   },
   watch: {
   },
@@ -88,7 +90,6 @@ export default {
     },
     createWallet: async function (event) {
       this.loginDisabled = true
-      const privateKey = this.privateKey
       let endpoint = this.predefinedEndpoint || this.userEndpoint
       if (endpoint.match(/:\d+$/) === null) {
         endpoint = `${endpoint}:3000`
@@ -96,16 +97,21 @@ export default {
       if (!endpoint.startsWith('http')) {
         endpoint = `http://${endpoint}`
       }
-      let networkType = NetworkType.MIJIN_TEST
-      try {
-        const nodeInfo = JSON.parse(await rp(`${endpoint}/node/info`))
-        networkType = nodeInfo.networkIdentifier
-      } catch (e) {
-        // eslint-disable-next-line
-        console.log("failed to get NetworkType. MIJIN_TEST assumed.")
-      }
-      this.$store.commit('wallet/login', { privateKey, endpoint, networkType })
+      await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint })
+      await this.$store.dispatch('chain/init', {
+        endpoint,
+        currencyNamespaceName: this.currencyNamespaceName,
+        harvestNamespaceName: this.harvestNamespaceName
+      })
+      await this.$store.dispatch('chain/updateBlockHeight', {
+        endpoint: this.endpoint
+      })
+      await this.$store.dispatch('chain/updateMosaicAmountVies', {
+        endpoint: this.endpoint,
+        address: this.address
+      })
       this.loginDisabled = false
+      this.$router.push('/info')
     }
   }
 }

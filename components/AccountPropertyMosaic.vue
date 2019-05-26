@@ -114,8 +114,8 @@ export default {
       this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
     announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const modifyAccountPropertyMosaicTransaction = ModifyAccountPropertyMosaicTransaction.create(
         Deadline.create(),
         this.propertyType,

@@ -104,10 +104,10 @@ export default {
       return this.$store.getters['wallet/existsAccount']
     },
     endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
+      return this.$store.getters['wallet/endpoint']
     },
     address() {
-      return this.$store.getters['wallet/getAddress']
+      return this.$store.getters['wallet/address']
     }
   },
   watch: {
@@ -156,8 +156,8 @@ export default {
       this.u_addedCosignatory = ''
     },
     u_announceHandler: function (event) {
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const networkType = account.address.networkType
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta

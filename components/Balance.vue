@@ -5,15 +5,15 @@
         v-layout(align-baseline)
           span.title Balance
           v-spacer
-          small resolve only cat.currency and cat.harvest
+          small resolve only {{ currencyNamespaceName }} and {{ harvestNamespaceName }}
       v-card-text
         v-layout.mb-3(column)
-          span.mb-3.subheading cat.currency
+          span.mb-3.subheading {{ currencyNamespaceName }}
           div(v-for="m in currencyBalance" v-bind:key="m.id")
             span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
           span.ml-3(v-if="currencyBalance.length === 0 && isBalanceLoading === false") None
         v-layout.mb-3(column)
-          span.mb-3.subheading cat.harvest
+          span.mb-3.subheading {{ harvestNamespaceName }}
           div(v-for="m in harvestBalance" v-bind:key="m.id")
             span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
           span.ml-3(v-if="harvestBalance.length === 0 && isBalanceLoading === false") None
@@ -25,16 +25,14 @@
       v-card-actions
         v-btn(
           :disabled="isBalanceLoading"
-          @click="reload")
+          @click="reloadMosaics")
           v-icon cached
         v-progress-circular(indeterminate v-if="isBalanceLoading").ml-3
 
 </template>
 
 <script>
-import { MosaicId, MosaicService, NetworkCurrencyMosaic, NamespaceId,
-  AccountHttp, MosaicHttp, BlockchainHttp, NamespaceHttp } from 'nem2-sdk'
-import { mergeMap } from 'rxjs/operators'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Balance',
@@ -48,29 +46,26 @@ export default {
   },
   data() {
     return {
-      mosaicAmountViews: [],
-      blockHeight: 0,
-      isBalanceLoading: true,
-      alert: '',
-      currencyMosaicId: new MosaicId('0000000000000000'),
-      harvestMosaicId: new MosaicId('0000000000000000'),
-      currencyNamespaceName: 'cat.currency',
-      harvestNamespaceName: 'cat.harvest'
+      isBalanceLoading: null,
+      alert: ''
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    walletMutateCount() {
-      return this.$store.getters['wallet/getMutateCount']
-    },
-    address() {
-      return this.$store.getters['wallet/getAddress']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
-    },
+    ...mapGetters('wallet', {
+      existsAccount: 'existsAccount',
+      address: 'address',
+      endpoint: 'endpoint'
+    }),
+    ...mapGetters('env', [
+      'currencyNamespaceName',
+      'harvestNamespaceName'
+    ]),
+    ...mapGetters('chain', [
+      'blockHeight',
+      'currencyMosaicId',
+      'harvestMosaicId',
+      'mosaicAmountViews'
+    ]),
     currencyBalance() {
       return this.allMosaicsBalance.filter((m) => {
         return m.alias === this.currencyNamespaceName
@@ -132,49 +127,24 @@ export default {
       })
     }
   },
-  watch: {
-    walletMutateCount: {
-      handler: function () {
-        this.reload()
-      }
-    }
-  },
-  mounted() {
-    this.reload()
-  },
   methods: {
-    reload: function () {
-      if (!this.existsAccount) return
-      this.reloadMosaics()
-    },
     reloadMosaics: async function (event) {
       this.isBalanceLoading = true
-      this.blockHeight = 0
-      this.mosaicAmountViews = []
-      this.currencyMosaicId = new MosaicId('0000000000000000')
-      this.harvestMosaicId = new MosaicId('0000000000000000')
-      const blockChainHttp = new BlockchainHttp(this.endpoint)
-      this.blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact()
-      const namespaceHttp = new NamespaceHttp(this.endpoint)
-      this.currencyMosaicId = await namespaceHttp.getLinkedMosaicId(new NamespaceId(this.currencyNamespaceName)).toPromise()
-      this.harvestMosaicId = await namespaceHttp.getLinkedMosaicId(new NamespaceId(this.harvestNamespaceName)).toPromise()
-      const endpoint = this.endpoint
-      const accountHttp = new AccountHttp(endpoint)
-      const mosaicHttp = new MosaicHttp(endpoint)
-      const mosaicService = new MosaicService(accountHttp, mosaicHttp)
-      accountHttp.getAccountInfo(this.address).pipe(
-        mergeMap((accountInfo) => {
-          const mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [NetworkCurrencyMosaic.createAbsolute(0)]
-          return mosaicService.mosaicsAmountView(mosaics)
+      if (!(this.currencyMosaicId || this.harvestMosaicId)) {
+        await this.$store.dispatch('chain/init', {
+          endpoint: this.endpoint,
+          currencyNamespaceName: this.currencyNamespaceName,
+          harvestNamespaceName: this.harvestNamespaceName
         })
-      ).subscribe((mosaicAmountViews) => {
-        mosaicAmountViews.map((x) => {
-          this.mosaicAmountViews.push(x)
-        })
-        this.isBalanceLoading = false
-      }, () => {
-        this.isBalanceLoading = false
+      }
+      await this.$store.dispatch('chain/updateBlockHeight', {
+        endpoint: this.endpoint
       })
+      await this.$store.dispatch('chain/updateMosaicAmountVies', {
+        endpoint: this.endpoint,
+        address: this.address
+      })
+      this.isBalanceLoading = false
     }
   }
 }

@@ -52,13 +52,13 @@ export default {
       return this.$store.getters['wallet/existsAccount']
     },
     walletMutateCount() {
-      return this.$store.getters['wallet/getMutateCount']
+      return this.$store.getters['wallet/mutateCount']
     },
     address() {
-      return this.$store.getters['wallet/getAddress']
+      return this.$store.getters['wallet/address']
     },
     endpoint() {
-      return this.$store.getters['wallet/getEndpoint']
+      return this.$store.getters['wallet/endpoint']
     },
     namespaceTexts() {
       const blockHeight = this.blockHeight

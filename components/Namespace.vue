@@ -60,8 +60,8 @@ export default {
   methods: {
     n_announceHandler: function (event) {
       const namespaceName = this.n_name
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
         Deadline.create(),
         namespaceName,

@@ -60,8 +60,8 @@ export default {
     s_announceHandler: function (event) {
       const namespaceName = this.s_name
       const parentNamespaceName = this.s_parentNamespace
-      const account = this.$store.getters['wallet/getAccount']
-      const endpoint = this.$store.getters['wallet/getEndpoint']
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const registerNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
         Deadline.create(),
         namespaceName,

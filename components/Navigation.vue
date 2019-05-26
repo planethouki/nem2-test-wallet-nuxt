@@ -1,50 +1,41 @@
-<template>
-  <v-navigation-drawer v-model="drawer" app>
-    <v-toolbar flat>
-      <v-list>
-        <v-list-tile>
-          <v-list-tile-title class="title">
-            Pages
-          </v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-toolbar>
-    <v-list dense>
-      <v-list-tile
-        to="/info"
-      >
-        <v-list-tile-action>
-          <v-icon>offline_bolt</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>Account Info</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile
-        to="/"
-      >
-        <v-list-tile-action>
-          <v-icon>offline_bolt</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>Send Transaction</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-    <v-layout>
-      <v-flex justify-center>
-        <div class="text-xs-center pt-5">
-          <a class="github-button" href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt" data-size="normal" data-show-count="true" aria-label="Star planethouki/nem2-unsafe-wallet-nuxt on GitHub">Star</a>
-          <script async defer src="https://buttons.github.io/buttons.js" />
-        </div>
-      </v-flex>
-    </v-layout>
-  </v-navigation-drawer>
+<template lang="pug">
+  v-navigation-drawer(v-model="drawer" app)
+    v-toolbar(flat)
+      v-list
+        v-list-tile
+          v-list-tile-title.title Menu
+    v-list(dense)
+      v-list-tile(to="/info")
+        v-list-tile-action
+          v-icon offline_bolt
+        v-list-tile-content
+          v-list-tile-title Account Info
+      v-list-tile(to="/transaction")
+        v-list-tile-action
+          v-icon offline_bolt
+        v-list-tile-content
+          v-list-tile-title Send Transaction
+    v-divider
+    WalletInfo
+    v-layout(justify-center).mt-3
+      Logout
+    v-layout.mt-3
+      v-flex(justify-center)
+        .text-xs-center
+          a.github-button(href="https://github.com/planethouki/nem2-unsafe-wallet-nuxt" data-size="normal" data-show-count="true" aria-label="Star planethouki/nem2-unsafe-wallet-nuxt on GitHub") Star
+          script(async defer src="https://buttons.github.io/buttons.js")
 </template>
 
 <script>
+import Logout from '~/components/Logout.vue'
+import WalletInfo from '~/components/WalletInfo.vue'
+
 export default {
   name: 'Navigation',
+  components: {
+    Logout,
+    WalletInfo
+  },
   props: {
   },
   data() {
