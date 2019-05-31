@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         v-layout(align-baseline)
@@ -8,17 +8,19 @@
           small (max 100 namespaces)
       v-card-text
         v-layout(column)
-          div(v-for="m in namespaceTexts" v-bind:key="m.link").ml-3
-            div {{ m.text }}
-              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                v-icon(small) info
-          span(v-if="namespaceTexts.length === 0 && isNamespaceLoading === false") None
+          span(v-if="namespaces === null")
+          span(v-else-if="namespaceTexts.length === 0 && !isLoading") None
+          template(v-else)
+            div(v-for="m in namespaceTexts" v-bind:key="m.link").ml-3
+              div {{ m.text }}
+                a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
+                  v-icon(small) info
       v-card-actions
         v-btn(
-          :disabled="isNamespaceLoading"
+          :disabled="isLoading"
           @click="reload")
           v-icon cached
-        v-progress-circular(indeterminate v-if="isNamespaceLoading").ml-3
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 </template>
 
 <script>
@@ -36,29 +38,24 @@ export default {
   },
   data() {
     return {
-      isNamespaceLoading: null,
-      alert: ''
+      isLoading: null
     }
   },
   computed: {
-    ...mapGetters('wallet', {
-      existsAccount: 'existsAccount',
-      address: 'address',
-      endpoint: 'endpoint'
-    }),
+    ...mapGetters('wallet', [
+      'existsAddress'
+    ]),
     ...mapGetters('env', [
       'currencyNamespaceName',
       'harvestNamespaceName'
     ]),
-    ...mapGetters('chain', [
-      'blockHeight',
+    ...mapGetters('namespaces', [
       'namespaces'
     ]),
     namespaceTexts() {
-      const blockHeight = this.blockHeight
       const endpoint = this.endpoint
-      if (this.isNamespaceLoading === false && this.namespaces.length === 0) {
-        return [{ text: 'None', link: '' }]
+      if (!this.isLoading && this.namespaces.length === 0) {
+        return []
       }
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
@@ -78,8 +75,7 @@ export default {
       }).map((ns, index, original) => {
         const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.')
         const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
-        const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight
-        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
+        const expireText = `expire ${ns.namespaceInfo.endHeight.compact()}`
         return {
           text: name + ', ' + hexId + ', ' + expireText,
           link: `${endpoint}/namespace/${hexId}`
@@ -89,12 +85,9 @@ export default {
   },
   methods: {
     reload: async function (event) {
-      this.isNamespaceLoading = true
-      await this.$store.dispatch('chain/updateNamespaces', {
-        endpoint: this.endpoint,
-        address: this.address
-      })
-      this.isNamespaceLoading = false
+      this.isLoading = true
+      await this.$store.dispatch('namespaces/update')
+      this.isLoading = false
     }
   }
 }

@@ -98,18 +98,13 @@ export default {
         endpoint = `http://${endpoint}`
       }
       await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint })
-      await this.$store.dispatch('chain/init', {
-        endpoint,
-        currencyNamespaceName: this.currencyNamespaceName,
-        harvestNamespaceName: this.harvestNamespaceName
-      })
-      await this.$store.dispatch('chain/updateBlockHeight', {
-        endpoint: this.endpoint
-      })
-      await this.$store.dispatch('chain/updateMosaicAmountVies', {
-        endpoint: this.endpoint,
-        address: this.address
-      })
+      await this.$store.dispatch('chain/init')
+      await this.$store.dispatch('mosaicAmountViews/update')
+      await this.$store.dispatch('multisigGraph/update')
+      await this.$store.dispatch('namespaces/update')
+      await this.$store.dispatch('accountProperties/update')
+      await this.$store.dispatch('accountLink/update')
+      await this.$store.dispatch('transactions/update')
       this.loginDisabled = false
       this.$router.push('/info')
     }

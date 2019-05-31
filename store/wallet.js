@@ -8,7 +8,9 @@ export const state = () => ({
   address: null,
   account: null,
   publicAccount: null,
-  mutateCount: 0
+  mutateCount: 0,
+  currencyNamespaceName: 'cat.currency',
+  harvestNamespaceName: 'cat.harvest'
 })
 
 export const getters = {
@@ -25,13 +27,22 @@ export const getters = {
     return state.endpoint
   },
   existsAccount(state) {
-    return state.privateKey !== null
+    return state.account !== null
+  },
+  existsAddress(state) {
+    return state.address !== null
   },
   mutateCount(state) {
     return state.mutateCount
   },
   networkType(state) {
     return state.networkType
+  },
+  currencyNamespaceName(state) {
+    return state.currencyNamespaceName
+  },
+  harvestNamespaceName(state) {
+    return state.harvestNamespaceName
   }
 }
 

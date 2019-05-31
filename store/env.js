@@ -7,9 +7,7 @@ export const state = () => ({
   ],
   defaultEndpoint: 'http://54.178.241.129:3000',
   defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
-  defaultNetworkType: NetworkType.MIJIN_TEST,
-  currencyNamespaceName: 'cat.currency',
-  harvestNamespaceName: 'cat.harvest'
+  defaultNetworkType: NetworkType.MIJIN_TEST
 })
 
 export const getters = {
@@ -24,11 +22,5 @@ export const getters = {
   },
   endpointList(state) {
     return state.endpointList
-  },
-  currencyNamespaceName(state) {
-    return state.currencyNamespaceName
-  },
-  harvestNamespaceName(state) {
-    return state.harvestNamespaceName
   }
 }

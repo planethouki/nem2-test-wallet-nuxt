@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         v-layout(align-baseline)
@@ -18,8 +18,10 @@
             td {{ props.item.alias }}
       v-card-actions
         v-btn(
-          @click="reload")
+          @click="reload"
+          :disabled="isLoading")
           v-icon cached
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 </template>
 
 <script>
@@ -43,16 +45,13 @@ export default {
         { text: 'ID', value: 'hexId' },
         { text: 'Type', value: 'type' },
         { text: 'Alias', value: 'alias' }
-      ]
+      ],
+      isLoading: null
     }
   },
   computed: {
-    ...mapGetters('wallet', {
-      existsAccount: 'existsAccount',
-      address: 'address',
-      endpoint: 'endpoint'
-    }),
-    ...mapGetters('chain', [
+    ...mapGetters('wallet', ['existsAddress']),
+    ...mapGetters('namespaces', [
       'namespaces'
     ]),
     namespaceTable: function () {
@@ -99,12 +98,9 @@ export default {
   },
   methods: {
     reload: async function (event) {
-      this.isNamespaceLoading = true
-      await this.$store.dispatch('chain/updateNamespaces', {
-        endpoint: this.endpoint,
-        address: this.address
-      })
-      this.isNamespaceLoading = false
+      this.isLoading = true
+      await this.$store.dispatch('namespaces/update')
+      this.isLoading = false
     }
   }
 }

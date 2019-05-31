@@ -1,18 +1,21 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         span.title Current Linked Public Key
       v-card-text
-        v-layout(align-baseline)
-        p {{ remoteAccountKey }}
+        p(v-if="linkedAccountKey === null")
+        p(v-else) {{ linkedAccountKey }}
       v-card-actions
         v-btn(
-          @click="reloadAccount")
+          @click="reload"
+          :disabled="isLoading")
           v-icon cached
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'AccountLinkInfo',
@@ -26,50 +29,22 @@ export default {
   },
   data() {
     return {
-      remoteAccountKey: '',
-      fee: 0,
-      history: []
+      isLoading: null
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    },
-    address() {
-      return this.$store.getters['wallet/address']
-    },
-    walletMutateCount() {
-      return this.$store.getters['wallet/mutateCount']
-    }
-  },
-  watch: {
-    walletMutateCount: {
-      handler: function () {
-        this.reloadAccount()
-      }
-    }
-  },
-  mounted() {
-    this.reloadAccount()
+    ...mapGetters('wallet', [
+      'existsAddress'
+    ]),
+    ...mapGetters('accountLink', [
+      'linkedAccountKey'
+    ])
   },
   methods: {
-    reloadAccount: function (event) {
-      if (!this.existsAccount) return
-      this.remoteAccountKey = ''
-      const rp = require('request-promise-native')
-      rp(`${this.endpoint}/account/${this.address.plain()}`).then((res) => {
-        const linkedAccountKey = this.$convert.base64ToHex(JSON.parse(res).account.linkedAccountKey).toUpperCase()
-        if (linkedAccountKey === '0000000000000000000000000000000000000000000000000000000000000000') {
-          this.remoteAccountKey = 'None'
-        } else {
-          this.remoteAccountKey = linkedAccountKey
-        }
-      }).catch(() => {
-        this.remoteAccountKey = 'None'
-      })
+    reload: async function (event) {
+      this.isLoading = true
+      await this.$store.dispatch('accountLink/update')
+      this.isLoading = false
     }
   }
 }

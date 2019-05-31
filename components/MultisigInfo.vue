@@ -1,18 +1,25 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         span.title Current Multisig Graph
       v-card-text
-        v-layout(column)
+        v-layout(column).mb-3
           span.subheading Cosignatories
           template(v-if="isMultisig")
             div(v-for="c in multisigAccountInfo.cosignatories" :key="c.address.plain()") {{ c.address.pretty() }}
           span(v-else) Not Multisig
+        v-layout(column)
+          span.subheading Multisig Accounts
+          template(v-if="isCosigner")
+            div(v-for="c in multisigAccountGraphInfo" :key="c.address.plain()") {{ c.address.pretty() }}
+          span(v-else) Not Cosigner
       v-card-actions
         v-btn(
-          @click="reload")
+          @click="reload"
+          :disabled="isLoading")
           v-icon cached
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 </template>
 
 <script>
@@ -30,26 +37,23 @@ export default {
   },
   data() {
     return {
+      isLoading: null
     }
   },
   computed: {
-    ...mapGetters('wallet', {
-      existsAccount: 'existsAccount',
-      address: 'address',
-      endpoint: 'endpoint'
-    }),
-    ...mapGetters('chain', [
-      'multisigAccountGraphInfo',
+    ...mapGetters('wallet', ['existsAddress']),
+    ...mapGetters('multisigGraph', [
       'multisigAccountInfo',
-      'isMultisig'
+      'multisigAccountGraphInfo',
+      'isMultisig',
+      'isCosigner'
     ])
   },
   methods: {
-    reload: function (event) {
-      this.$store.dispatch('chain/getMultisig', {
-        endpoint: this.endpoint,
-        address: this.address
-      })
+    reload: async function (event) {
+      this.isLoading = true
+      await this.$store.dispatch('multisigGraph/update')
+      this.isLoading = false
     }
   }
 }

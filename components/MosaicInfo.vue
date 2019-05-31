@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         span.title Owned Mosaics
@@ -11,10 +11,10 @@
                 v-icon(small) info
       v-card-actions
         v-btn(
-          :disabled="isBalanceLoading"
+          :disabled="isLoading"
           @click="reloadMosaics")
           v-icon cached
-        v-progress-circular(indeterminate v-if="isBalanceLoading").ml-3
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 </template>
 
 <script>
@@ -32,27 +32,23 @@ export default {
   },
   data() {
     return {
-      isBalanceLoading: null,
+      isLoading: null,
       alert: ''
     }
   },
   computed: {
-    ...mapGetters('wallet', {
-      existsAccount: 'existsAccount',
-      address: 'address',
-      endpoint: 'endpoint'
-    }),
-    ...mapGetters('chain', [
-      'blockHeight',
-      'currencyMosaicId',
-      'harvestMosaicId',
+    ...mapGetters('wallet', [
+      'existsAddress',
+      'address',
+      'endpoint'
+    ]),
+    ...mapGetters('mosaicAmountViews', [
       'mosaicAmountViews'
     ]),
     mosaicTexts() {
-      const blockHeight = this.blockHeight
       const endpoint = this.endpoint
       const address = this.address
-      if (this.isBalanceLoading === false && this.mosaicAmountViews.length === 0) {
+      if (!this.isLoading && this.mosaicAmountViews.length === 0) {
         return [{ text: 'None', link: '' }]
       }
       return this.mosaicAmountViews.filter(function (mosaicAmountView) {
@@ -72,8 +68,7 @@ export default {
         const duration = mosaicAmountView.mosaicInfo.duration.compact()
         const startHeight = mosaicAmountView.mosaicInfo.height.compact()
         const endHeight = startHeight + duration
-        const expireWithin = endHeight - blockHeight
-        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`
+        const expireText = `expire ${endHeight}`
         return {
           text: hexId + ', ' + expireText,
           link: `${endpoint}/mosaic/${hexId}`
@@ -83,15 +78,9 @@ export default {
   },
   methods: {
     reloadMosaics: async function (event) {
-      this.isBalanceLoading = true
-      await this.$store.dispatch('chain/updateBlockHeight', {
-        endpoint: this.endpoint
-      })
-      await this.$store.dispatch('chain/updateMosaicAmountVies', {
-        endpoint: this.endpoint,
-        address: this.address
-      })
-      this.isBalanceLoading = false
+      this.isLoading = true
+      await this.$store.dispatch('mosaicAmountViews/update')
+      this.isLoading = false
     }
   }
 }

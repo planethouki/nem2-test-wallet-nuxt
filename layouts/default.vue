@@ -10,15 +10,18 @@
         <nuxt />
       </v-container>
     </v-content>
+    <TransactionListener />
   </v-app>
 </template>
 
 <script>
-import Navigation from '~/components/Navigation.vue'
+import Navigation from '~/components/TheNavigation.vue'
+import TransactionListener from '~/components/TheTransactionListener.vue'
 
 export default {
   components: {
-    Navigation
+    Navigation,
+    TransactionListener
   },
   data: () => ({
 

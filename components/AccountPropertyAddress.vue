@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { Address, Account, Deadline, UInt64, PropertyType, TransactionHttp,
+import { Address, Deadline, UInt64, PropertyType, TransactionHttp,
   PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -101,25 +101,8 @@ export default {
     existsAccount() {
       return this.$store.getters['wallet/existsAccount']
     },
-    walletMutateCount() {
-      return this.$store.getters['wallet/mutateCount']
-    },
-    account() {
-      return this.$store.getters['wallet/account']
-    },
     endpoint() {
       return this.$store.getters['wallet/endpoint']
-    }
-  },
-  watch: {
-    walletMutateCount: {
-      handler: function () {
-        if (this.existsAccount) {
-          const network = this.account.address.networkType
-          this.additionalModification.rawAddress = Account.generateNewAccount(network).address.pretty()
-          this.modifications[0].rawAddress = Account.generateNewAccount(network).address.pretty()
-        }
-      }
     }
   },
   methods: {

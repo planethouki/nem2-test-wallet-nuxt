@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         v-layout(align-baseline)
@@ -9,31 +9,31 @@
       v-card-text
         v-layout.mb-3(column)
           span.mb-3.subheading {{ currencyNamespaceName }}
-          span.ml-3(v-if="isBalanceLoading")
+          span.ml-3(v-if="isLoading")
           template(v-else-if="currencyBalance.length")
             div(v-for="m in currencyBalance" v-bind:key="m.id")
               span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
           span.ml-3(v-else) None
         v-layout.mb-3(column)
           span.mb-3.subheading {{ harvestNamespaceName }}
-          span.ml-3(v-if="isBalanceLoading")
+          span.ml-3(v-if="isLoading")
           template(v-else-if="harvestBalance.length")
             div(v-for="m in harvestBalance" v-bind:key="m.id")
               span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
           span.ml-3(v-else) None
         v-layout.mb-3(column)
           span.mb-3.subheading mosaics
-          span.ml-3(v-if="isBalanceLoading")
+          span.ml-3(v-if="isLoading")
           template(v-else-if="mosaicBalance.length")
             div(v-for="m in mosaicBalance" v-bind:key="m.id")
               span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
           span.ml-3(v-else) None
       v-card-actions
         v-btn(
-          :disabled="isBalanceLoading"
-          @click="reloadMosaics")
+          :disabled="isLoading"
+          @click="reload")
           v-icon cached
-        v-progress-circular(indeterminate v-if="isBalanceLoading").ml-3
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 
 </template>
 
@@ -52,24 +52,23 @@ export default {
   },
   data() {
     return {
-      isBalanceLoading: null,
-      alert: ''
+      isLoading: null
     }
   },
   computed: {
-    ...mapGetters('wallet', {
-      existsAccount: 'existsAccount',
-      address: 'address',
-      endpoint: 'endpoint'
-    }),
-    ...mapGetters('env', [
+    ...mapGetters('wallet', [
+      'existsAddress',
+      'address',
+      'endpoint',
       'currencyNamespaceName',
       'harvestNamespaceName'
     ]),
     ...mapGetters('chain', [
       'blockHeight',
       'currencyMosaicId',
-      'harvestMosaicId',
+      'harvestMosaicId'
+    ]),
+    ...mapGetters('mosaicAmountViews', [
       'mosaicAmountViews'
     ]),
     currencyBalance() {
@@ -93,7 +92,9 @@ export default {
       const harvestMosaicId = this.harvestMosaicId
       const currencyNamespaceName = this.currencyNamespaceName
       const harvestNamespaceName = this.harvestNamespaceName
-      if (this.isBalanceLoading === false && this.mosaicAmountViews.length === 0) {
+      if (this.isLoading === false && this.mosaicAmountViews.length === 0) {
+        return []
+      } else if (this.mosaicAmountViews === null) {
         return []
       }
       return this.mosaicAmountViews.filter(function (mosaicAmountView) {
@@ -134,23 +135,16 @@ export default {
     }
   },
   methods: {
-    reloadMosaics: async function (event) {
-      this.isBalanceLoading = true
+    reload: async function (event) {
+      this.isLoading = true
       if (!(this.currencyMosaicId || this.harvestMosaicId)) {
-        await this.$store.dispatch('chain/init', {
-          endpoint: this.endpoint,
-          currencyNamespaceName: this.currencyNamespaceName,
-          harvestNamespaceName: this.harvestNamespaceName
-        })
+        await this.$store.dispatch('chain/init')
       }
       await this.$store.dispatch('chain/updateBlockHeight', {
         endpoint: this.endpoint
       })
-      await this.$store.dispatch('chain/updateMosaicAmountVies', {
-        endpoint: this.endpoint,
-        address: this.address
-      })
-      this.isBalanceLoading = false
+      await this.$store.dispatch('mosaicAmountViews/update')
+      this.isLoading = false
     }
   }
 }

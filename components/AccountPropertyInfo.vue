@@ -1,22 +1,24 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
         span.title Current Account Property
       v-card-text
         v-layout(align-baseline)
-        v-treeview(:items="propertiesTree")
-        span(v-if="propertiesTree.length === 0") None
+          span(v-if="properties === null")
+          span(v-if="propertiesTree.length === 0") None
+          v-treeview(v-else :items="propertiesTree")
       v-card-actions
         v-btn(
-          @click="reload")
+          @click="reload"
+          :disabled="isLoading")
           v-icon cached
+        v-progress-circular(indeterminate v-if="isLoading").ml-3
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { AccountHttp, PropertyType, Address } from 'nem2-sdk'
-import { mergeMap } from 'rxjs/operators'
+import { PropertyType, Address } from 'nem2-sdk'
 
 export default {
   name: 'AccountPropertyInfo',
@@ -30,15 +32,14 @@ export default {
   },
   data() {
     return {
+      isLoading: null
     }
   },
   computed: {
     ...mapGetters('wallet', {
-      existsAccount: 'existsAccount',
-      address: 'address',
-      endpoint: 'endpoint'
+      existsAddress: 'existsAddress'
     }),
-    ...mapGetters('chain', [
+    ...mapGetters('accountProperties', [
       'properties'
     ]),
     propertiesTree() {
@@ -64,18 +65,10 @@ export default {
     }
   },
   methods: {
-    reload: function (event) {
-      this.properties = []
-      const accountHttp = new AccountHttp(this.endpoint)
-      accountHttp.getAccountInfo(this.address).pipe(
-        mergeMap((accountInfo) => {
-          return accountHttp.getAccountProperty(accountInfo.publicAccount)
-        })
-      ).subscribe((accountPropertiesInfo) => {
-        this.properties = accountPropertiesInfo.accountProperties.properties
-      }, () => {
-        this.properties = []
-      })
+    reload: async function (event) {
+      this.isLoading = true
+      await this.$store.dispatch('accountProperties/update')
+      this.isLoading = false
     },
     propertyTypeToName: function (propertyType) {
       switch (propertyType) {
