@@ -1,17 +1,50 @@
 <template lang="pug">
-  v-list(dense three-line).py-3
-    v-list-tile(v-if="endpoint")
-      v-list-tile-content
-        v-list-tile-title Endpoint
-        v-list-tile-sub-title(ref="endpoint") {{ endpoint }}
-    v-list-tile(v-if="address")
-      v-list-tile-content
-        v-list-tile-title Address
-        v-list-tile-sub-title(ref="address") {{ address.pretty() }}
-    v-list-tile(v-if="publicAccount")
-      v-list-tile-content
-        v-list-tile-title Public Key
-        v-list-tile-sub-title(ref="publicAccount") {{ publicAccount.publicKey }}
+  v-flex(mb-5 v-bind:id="navTargetId")
+    v-card
+      v-card-title
+        v-layout(align-baseline)
+          span.title Wallet
+      v-card-text
+        v-layout(column v-if="endpoint")
+          div.subheading Endpoint
+          v-layout(overflow-hidden align-center justify-space-between)
+            v-list
+              v-list-tile
+                v-list-tile-content
+                  v-list-tile-title(ref="endpoint") {{ endpoint }}
+            v-btn(
+              fab
+              small
+              flat
+              @click="copyEndpointHandler")
+              v-icon filter_none
+        v-layout.mb-2(column v-if="address")
+          div.subheading Address
+          v-layout(overflow-hidden align-center justify-space-between)
+            v-list
+              v-list-tile
+                v-list-tile-content
+                  v-list-tile-title(ref="address") {{ address.pretty() }}
+                  v-list-tile-sub-title {{ address.plain() }}
+            v-btn(
+              fab
+              small
+              flat
+              @click="copyAddressHandler")
+              v-icon filter_none
+        v-layout(column v-if="publicAccount")
+          div.subheading Public Key
+          v-layout(overflow-hidden align-center justify-space-between)
+            v-list-tile
+              v-list
+                v-list-tile-content
+                  v-list-tile-title(ref="publicKey") {{ publicAccount.publicKey }}
+            v-btn(
+              fab
+              small
+              flat
+              @click="copyPublicKeyHandler")
+              v-icon filter_none
 </template>
 
 <script>
@@ -23,13 +56,12 @@ export default {
     navTargetId: {
       type: String,
       default() {
-        return 'wallet'
+        return 'walletInfo'
       }
     }
   },
   data() {
     return {
-      alert: ''
     }
   },
   computed: {

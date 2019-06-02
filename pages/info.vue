@@ -1,6 +1,7 @@
 <template lang="pug">
   v-layout(row)
-    v-flex#content.pt-3.px-3
+    v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
+      WalletInfo(navTargetId="walletInfo")
       Balance(navTargetId="balance")
       TransactionInfo(navTargetId="transactionInfo")
       NamespaceInfo(navTargetId="namespaceInfo")
@@ -9,7 +10,7 @@
       AliasInfo(navTargetId="aliasInfo")
       AccountPropertyInfo(navTargetId="accountPropertyInfo")
       AccountLinkInfo(navTargetId="accountLinkInfo")
-    v-flex#sidebar(hidden-sm-and-down style="flex-shrink: 0; flex-grow: 0; width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
+    v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
       Sidebar(:nav="nav" :active="navActive")
 </template>
 
@@ -55,6 +56,7 @@ export default {
     }
     return {
       nav: [
+        { icon: 'star', title: 'WalletInfo', target: '#walletInfo', offset: 48 },
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
         { icon: 'star', title: 'Transaction', target: '#transactionInfo', offset: 48 },
         { icon: 'star', title: 'Namespace', target: '#namespaceInfo', offset: 48 },

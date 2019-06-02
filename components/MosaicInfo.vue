@@ -4,11 +4,20 @@
       v-card-title
         span.title Owned Mosaics
       v-card-text
-        v-layout(column)
-          div(v-for="m in mosaicTexts" v-bind:key="m.text").ml-3
-            div {{ m.text }}
-              a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                v-icon(small) info
+        v-data-table(
+          :headers="headers"
+          :items="mosaicTexts")
+          template(v-slot:items="props")
+            td
+              a(:href="props.item.mosaicLink" target="_blank" style="text-decoration:none;" v-if="props.item.mosaicLink")
+                span {{ props.item.hexId }}
+            td
+              a(:href="props.item.blockLink" target="_blank" style="text-decoration:none;" v-if="props.item.blockLink")
+                span {{ props.item.height }}
+            td {{ props.item.duration }}
+            td {{ props.item.supply }}
+            td {{ props.item.isTransferable }}
+            td {{ props.item.isSupplyMutable}}
       v-card-actions
         v-btn(
           :disabled="isLoading"
@@ -33,7 +42,14 @@ export default {
   data() {
     return {
       isLoading: null,
-      alert: ''
+      headers: [
+        { text: 'ID', value: 'hexId' },
+        { text: 'CreateHeight', value: 'height' },
+        { text: 'Duration', value: 'duration' },
+        { text: 'Supply', value: 'supply' },
+        { text: 'Transferable', value: 'isTransferable' },
+        { text: 'SupplyMutable', value: 'isSupplyMutable' }
+      ]
     }
   },
   computed: {
@@ -49,7 +65,7 @@ export default {
       const endpoint = this.endpoint
       const address = this.address
       if (!this.isLoading && this.mosaicAmountViews.length === 0) {
-        return [{ text: 'None', link: '' }]
+        return []
       }
       return this.mosaicAmountViews.filter(function (mosaicAmountView) {
         return mosaicAmountView.mosaicInfo.owner.address.equals(address)
@@ -68,10 +84,17 @@ export default {
         const duration = mosaicAmountView.mosaicInfo.duration.compact()
         const startHeight = mosaicAmountView.mosaicInfo.height.compact()
         const endHeight = startHeight + duration
-        const expireText = `expire ${endHeight}`
         return {
-          text: hexId + ', ' + expireText,
-          link: `${endpoint}/mosaic/${hexId}`
+          hexId: hexId,
+          expire: endHeight,
+          mosaicLink: `${endpoint}/mosaic/${hexId}`,
+          blockLink: `${endpoint}/block/${startHeight}`,
+          height: startHeight,
+          duration: duration,
+          supply: mosaicAmountView.mosaicInfo.supply.compact(),
+          divisibility: mosaicAmountView.mosaicInfo.divisibility,
+          isSupplyMutable: mosaicAmountView.mosaicInfo.isSupplyMutable(),
+          isTransferable: mosaicAmountView.mosaicInfo.isTransferable()
         }
       })
     }

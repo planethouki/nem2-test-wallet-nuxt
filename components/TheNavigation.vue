@@ -21,14 +21,35 @@
         v-list-tile-content
           v-list-tile-title Endpoint
           v-list-tile-sub-title(ref="endpoint") {{ endpoint }}
+        v-list-tile-action
+          v-btn(
+            fab
+            small
+            flat
+            @click="copyEndpointHandler")
+            v-icon filter_none
       v-list-tile(v-if="address")
         v-list-tile-content
           v-list-tile-title Address
           v-list-tile-sub-title(ref="address") {{ address.pretty() }}
+        v-list-tile-action
+          v-btn(
+            fab
+            small
+            flat
+            @click="copyAddressHandler")
+            v-icon filter_none
       v-list-tile(v-if="publicAccount")
         v-list-tile-content
           v-list-tile-title Public Key
-          v-list-tile-sub-title(ref="publicAccount") {{ publicAccount.publicKey }}
+          v-list-tile-sub-title(ref="publicKey") {{ publicAccount.publicKey }}
+        v-list-tile-action
+          v-btn(
+            fab
+            small
+            flat
+            @click="copyPublicKeyHandler")
+            v-icon filter_none
     v-divider
     v-layout(column).py-1
       div.pl-3.mb-2
@@ -84,6 +105,35 @@ export default {
         this.$store.commit('setDrawer', value)
       }
     }
+  },
+  methods: {
+    copyEndpointHandler: function (event) {
+      const target = this.$refs.endpoint
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
+    },
+    copyAddressHandler: function (event) {
+      const target = this.$refs.address
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
+    },
+    copyPublicKeyHandler: function (event) {
+      const target = this.$refs.publicKey
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
+    }
   }
 }
 </script>
@@ -93,5 +143,8 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.break {
+  word-break: break-all;
 }
 </style>

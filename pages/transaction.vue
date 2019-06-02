@@ -1,6 +1,6 @@
 <template lang="pug">
   v-layout(row)
-    v-flex#content.pt-3.px-3
+    v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
       Balance(navTargetId="balance")
       Transfer(navTargetId="transfer")
       NamespaceInfo(navTargetId="namespaceInfo")
@@ -24,7 +24,7 @@
       AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
       AccountLinkInfo(navTargetId="accountLinkInfo")
       AccountLink(navTargetId="accountLink")
-    v-flex#sidebar(hidden-sm-and-down style="flex-shrink: 0; flex-grow: 0; width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
+    v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
       Sidebar(:nav="nav" :active="navActive")
 </template>
 

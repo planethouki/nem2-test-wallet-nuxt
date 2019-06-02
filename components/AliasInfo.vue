@@ -9,8 +9,7 @@
       v-card-text
         v-data-table(
         :headers="headers"
-        :items="namespaceTable"
-        class="elevation-1")
+        :items="namespaceTable")
           template(v-slot:items="props")
             td {{ props.item.name }}
             td {{ props.item.hexId }}
@@ -41,9 +40,9 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Namespace', value: 'name' },
-        { text: 'ID', value: 'hexId' },
-        { text: 'Type', value: 'type' },
+        { text: 'NamespaceName', value: 'name' },
+        { text: 'NamespaceID', value: 'hexId' },
+        { text: 'AliasType', value: 'type' },
         { text: 'Alias', value: 'alias' }
       ],
       isLoading: null

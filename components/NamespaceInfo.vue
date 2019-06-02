@@ -7,14 +7,21 @@
           v-spacer
           small (max 100 namespaces)
       v-card-text
-        v-layout(column)
-          span(v-if="namespaces === null")
-          span(v-else-if="namespaceTexts.length === 0 && !isLoading") None
-          template(v-else)
-            div(v-for="m in namespaceTexts" v-bind:key="m.link").ml-3
-              div {{ m.text }}
-                a.ml-2(:href="m.link" target="_blank" style="text-decoration:none;" v-if="m.link")
-                  v-icon(small) info
+        v-data-table(
+          :headers="headers"
+          :items="namespaceTexts")
+          template(v-slot:items="props")
+            td {{ props.item.name }}
+            td
+              a(:href="props.item.namespaceLink" target="_blank" style="text-decoration:none;" v-if="props.item.namespaceLink")
+                span {{ props.item.hexId }}
+            td
+              a(:href="props.item.startHeightLink" target="_blank" style="text-decoration:none;" v-if="props.item.startHeightLink")
+                span {{ props.item.startHeight }}
+            td
+              a(:href="props.item.endHeightLink" target="_blank" style="text-decoration:none;" v-if="props.item.endHeightLink")
+                span {{ props.item.endHeight }}
+            td {{ props.item.hasAlias }}
       v-card-actions
         v-btn(
           :disabled="isLoading"
@@ -38,12 +45,20 @@ export default {
   },
   data() {
     return {
-      isLoading: null
+      isLoading: null,
+      headers: [
+        { text: 'Name', value: 'name' },
+        { text: 'ID', value: 'hexId' },
+        { text: 'StartHeight', value: 'startHeight' },
+        { text: 'EndHeight', value: 'endHeight' },
+        { text: 'HasAlias', value: 'hasAlias' }
+      ]
     }
   },
   computed: {
     ...mapGetters('wallet', [
-      'existsAddress'
+      'existsAddress',
+      'endpoint'
     ]),
     ...mapGetters('env', [
       'currencyNamespaceName',
@@ -75,10 +90,15 @@ export default {
       }).map((ns, index, original) => {
         const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.')
         const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
-        const expireText = `expire ${ns.namespaceInfo.endHeight.compact()}`
         return {
-          text: name + ', ' + hexId + ', ' + expireText,
-          link: `${endpoint}/namespace/${hexId}`
+          hexId: hexId,
+          name: name,
+          startHeight: ns.namespaceInfo.startHeight.compact(),
+          endHeight: ns.namespaceInfo.endHeight.compact(),
+          hasAlias: ns.namespaceInfo.hasAlias(),
+          namespaceLink: `${endpoint}/namespace/${hexId}`,
+          startHeightLink: `${endpoint}/block/${ns.namespaceInfo.startHeight.compact()}`,
+          endHeightLink: `${endpoint}/block/${ns.namespaceInfo.endHeight.compact()}`
         }
       })
     }

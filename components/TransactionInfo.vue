@@ -4,22 +4,17 @@
       v-card-title
         span.title Recent Transactions
       v-card-text
-        table.pl-3(style="width:100%;")
-          thead
-            tr
-              th.text-xs-left Height
-              th.text-xs-left Hash
-              th.text-xs-left Type
-          tbody
-            template(v-for="t in confirmedTransactions")
-              tr(:key="t.transactionInfo.id")
-                td {{ t.transactionInfo.height.compact() }}
-                td
-                  a(:href="endpoint + '/transaction/' + t.transactionInfo.hash" target="_blank")
-                    span.hidden-sm-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...
-                    span.hidden-xs-only.hidden-md-and-up {{ t.transactionInfo.hash.substr(0, 8) }}...{{ t.transactionInfo.hash.substr(-8) }}
-                    span.hidden-sm-and-down {{ t.transactionInfo.hash }}
-                td {{ typeToName(t.type) }}
+        v-data-table(
+          :headers="headers"
+          :items="confirmedTransactions")
+          template(v-slot:items="props")
+            td
+              a(:href="endpoint + '/block/' + props.item.transactionInfo.height.compact()" target="_blank")
+                span {{ props.item.transactionInfo.height.compact() }}
+            td
+              a(:href="endpoint + '/transaction/' + props.item.transactionInfo.hash" target="_blank")
+                span {{ props.item.transactionInfo.hash }}
+            td {{ typeToName(props.item.type) }}
 </template>
 
 <script>
@@ -37,6 +32,11 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: 'Height', value: 'height' },
+        { text: 'Hash', value: 'hash' },
+        { text: 'Type', value: 'type' }
+      ]
     }
   },
   computed: {
