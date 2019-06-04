@@ -74,9 +74,9 @@
           {icon:"edit",title:"Cosignature Multisig",target:'#cosignaturemultisig',offset:-80},
         ],
         endpoints: [
-          { url: "http://54.238.216.37:3000", label: "54.238.216.37" },
+          { url: "http://bison.48gh23s.xyz:3000", label: "bison.48gh23s.xyz" },
         ],
-        defaultEndpoint: "http://54.238.216.37:3000",
+        defaultEndpoint: "http://bison.48gh23s.xyz:3000",
         defaultPrivateKey: "25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E",
         walletPassword: {},
         endpoint: "",
