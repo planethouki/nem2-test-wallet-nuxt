@@ -21,6 +21,11 @@
           v-model="p_secret"
           disabled)
         v-text-field(
+          label="Recipient"
+          v-model="p_recipient"
+          required
+          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
+        v-text-field(
           label="Max Fee"
           v-model="p_fee"
           required
@@ -36,7 +41,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, SecretProofTransaction, HashType, UInt64 } from 'nem2-sdk'
+import { Deadline, SecretProofTransaction, HashType, UInt64, TransactionHttp } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -62,6 +67,7 @@ export default {
         { type: HashType.Op_Hash_160, label: 'Hash160' }
       ],
       p_proof: '',
+      p_recipient: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       p_fee: 0,
       p_history: []
     }
@@ -91,38 +97,23 @@ export default {
     p_announceHandler: function (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
+      const recipient = this.$parser.parseAddressSecretLock(this.p_recipient)
       const secretProofTransaction = SecretProofTransaction.create(
         Deadline.create(),
         this.p_hashType,
         this.p_secret,
+        recipient,
         this.p_proof,
         account.address.networkType,
         UInt64.fromUint(this.p_fee)
       )
-      const preSignedTxPayload = account.sign(secretProofTransaction, this.generationHash).payload
-      let signedTxPayload
-      if (this.p_hashType === HashType.Op_Hash_160) {
-        const sizeDec = 155 + (this.p_proof.length) / 2
-        const size = this.$convert.endian('00000000'.concat(sizeDec.toString(16).toUpperCase()).substr(-8))
-        const unsignedPayload = size + preSignedTxPayload.substring(8, 282) +
-          '000000000000000000000000' + preSignedTxPayload.substr(282)
-        signedTxPayload = this.$crypto.signTx(unsignedPayload, account)
-      } else {
-        signedTxPayload = preSignedTxPayload
-      }
-      const hash = this.$hash.getSinedTxHash(signedTxPayload)
-      const request = require('request')
-      request({
-        url: `${endpoint}/transaction`,
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        json: { 'payload': signedTxPayload }
+      const signedTx = account.sign(secretProofTransaction, this.generationHash)
+      const txHttp = new TransactionHttp(endpoint)
+      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
       })
       const historyData = {
-        hash: hash,
-        apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+        hash: signedTx.hash,
+        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
       }
       this.p_history.push(historyData)
     }
