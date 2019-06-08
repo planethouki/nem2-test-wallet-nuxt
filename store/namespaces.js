@@ -16,8 +16,7 @@ export const mutations = {
     state.namespaces = []
   },
   concatNamespaces(state, { namespaces }) {
-    const oldVal = state.namespaces.slice()
-    state.namespaces = oldVal.concat(namespaces)
+    state.namespaces = state.namespaces.concat(namespaces)
   }
 }
 

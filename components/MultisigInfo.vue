@@ -7,12 +7,12 @@
         v-layout(column).mb-3
           span.subheading Cosignatories
           template(v-if="isMultisig")
-            div(v-for="c in multisigAccountInfo.cosignatories" :key="c.address.plain()") {{ c.address.pretty() }}
+            div(v-for="c in multisigAccountInfo.cosignatories" :key="c.publicKey") {{ c.publicKey }}
           span(v-else) Not Multisig
         v-layout(column)
           span.subheading Multisig Accounts
           template(v-if="isCosigner")
-            div(v-for="c in multisigAccountGraphInfo" :key="c.address.plain()") {{ c.address.pretty() }}
+            div(v-for="c in multisigAccountGraphInfo" :key="c.publicKey") {{ c.publicKey }}
           span(v-else) Not Cosigner
       v-card-actions
         v-btn(

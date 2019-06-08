@@ -5,7 +5,7 @@
         span.title Current Linked Public Key
       v-card-text
         p(v-if="linkedAccountKey === null")
-        p(v-else) {{ linkedAccountKey }}
+        p(v-else).ellipsis {{ linkedAccountKey }}
       v-card-actions
         v-btn(
           @click="reload"
@@ -51,5 +51,9 @@ export default {
 </script>
 
 <style scoped>
-
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>

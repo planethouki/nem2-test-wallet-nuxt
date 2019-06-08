@@ -7,44 +7,44 @@
       v-card-text
         v-layout(column v-if="endpoint")
           div.subheading Endpoint
-          v-layout(overflow-hidden align-center justify-space-between)
-            v-list
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title(ref="endpoint") {{ endpoint }}
-            v-btn(
-              fab
-              small
-              flat
-              @click="copyEndpointHandler")
-              v-icon filter_none
+          v-list
+            v-list-tile
+              v-list-tile-content
+                v-list-tile-title(ref="endpoint") {{ endpoint }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyEndpointHandler")
+                  v-icon filter_none
         v-layout.mb-2(column v-if="address")
           div.subheading Address
-          v-layout(overflow-hidden align-center justify-space-between)
-            v-list
-              v-list-tile
-                v-list-tile-content
-                  v-list-tile-title(ref="address") {{ address.pretty() }}
-                  v-list-tile-sub-title {{ address.plain() }}
-            v-btn(
-              fab
-              small
-              flat
-              @click="copyAddressHandler")
-              v-icon filter_none
+          v-list
+            v-list-tile
+              v-list-tile-content
+                v-list-tile-title(ref="address") {{ address.pretty() }}
+                v-list-tile-sub-title {{ address.plain() }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyAddressHandler")
+                  v-icon filter_none
         v-layout(column v-if="publicAccount")
           div.subheading Public Key
-          v-layout(overflow-hidden align-center justify-space-between)
+          v-list(subheader)
             v-list-tile
-              v-list
-                v-list-tile-content
-                  v-list-tile-title(ref="publicKey") {{ publicAccount.publicKey }}
-            v-btn(
-              fab
-              small
-              flat
-              @click="copyPublicKeyHandler")
-              v-icon filter_none
+              v-list-tile-content
+                v-list-tile-title(ref="publicKey") {{ publicAccount.publicKey }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyPublicKeyHandler")
+                  v-icon filter_none
 </template>
 
 <script>
@@ -106,5 +106,9 @@ export default {
 </script>
 
 <style scoped>
-
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>
