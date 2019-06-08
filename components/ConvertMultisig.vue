@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   Deadline, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
   MultisigCosignatoryModificationType, PublicAccount, AccountHttp, UInt64 } from 'nem2-sdk'
@@ -100,15 +101,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    },
-    address() {
-      return this.$store.getters['wallet/address']
-    }
+    ...mapGetters('wallet', ['existsAccount', 'endpoint']),
+    ...mapGetters('chain', ['generationHash'])
   },
   watch: {
     address: {
@@ -175,7 +169,7 @@ export default {
         networkType,
         UInt64.fromUint(this.u_fee)
       )
-      const signedTx = account.sign(tx)
+      const signedTx = account.sign(tx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

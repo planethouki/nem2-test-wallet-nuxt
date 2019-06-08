@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { Address, Deadline, UInt64, PropertyType, TransactionHttp,
   PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -98,12 +99,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    }
+    ...mapGetters('wallet', ['existsAccount', 'endpoint']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     deleteModification: function (index) {
@@ -131,7 +128,7 @@ export default {
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(modifyAccountPropertyAddressTransaction)
+      const signedTx = account.sign(modifyAccountPropertyAddressTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

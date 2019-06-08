@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { Deadline, SecretProofTransaction, HashType, UInt64 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -80,9 +81,8 @@ export default {
           return 'error'
       }
     },
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   created: function () {
     this.p_proof = this.$crypto.random10()
@@ -99,7 +99,7 @@ export default {
         account.address.networkType,
         UInt64.fromUint(this.p_fee)
       )
-      const preSignedTxPayload = account.sign(secretProofTransaction).payload
+      const preSignedTxPayload = account.sign(secretProofTransaction, this.generationHash).payload
       let signedTxPayload
       if (this.p_hashType === HashType.Op_Hash_160) {
         const sizeDec = 155 + (this.p_proof.length) / 2

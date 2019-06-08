@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
   MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, NamespaceHttp
@@ -131,9 +132,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     d_deleteModification: function (index) {
@@ -178,7 +178,7 @@ export default {
         [],
         UInt64.fromUint(this.d_fee)
       )
-      const signedAggregateTx = account.sign(aggregateTx)
+      const signedAggregateTx = account.sign(aggregateTx, this.generationHash)
       let lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
       const namespaceHttp = new NamespaceHttp(endpoint)
       lockMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockMosaic)
@@ -190,7 +190,7 @@ export default {
         network,
         UInt64.fromUint(this.d_lockFee)
       )
-      const signedLockFundsTx = account.sign(lockFundsTx)
+      const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       listener.open().then(() => {
         return txHttp.announce(signedLockFundsTx).toPromise()

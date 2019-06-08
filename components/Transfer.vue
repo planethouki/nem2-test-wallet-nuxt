@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp, EncryptedMessage, PublicAccount
@@ -79,12 +80,13 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    endpoint() {
-      return this.$store.getters['wallet/endpoint']
-    }
+    ...mapGetters('wallet', [
+      'existsAccount',
+      'endpoint'
+    ]),
+    ...mapGetters('chain', [
+      'generationHash'
+    ])
   },
   methods: {
     t_announceHandler: function (event) {
@@ -110,7 +112,7 @@ export default {
         account.address.networkType,
         UInt64.fromUint(this.t_fee)
       )
-      const signedTx = account.sign(tx)
+      const signedTx = account.sign(tx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
       })

@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { Deadline, TransactionHttp, RegisterNamespaceTransaction, UInt64 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -52,9 +53,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     s_announceHandler: function (event) {
@@ -69,7 +69,7 @@ export default {
         account.address.networkType,
         UInt64.fromUint(this.s_fee)
       )
-      const signedTx = account.sign(registerNamespaceTransaction)
+      const signedTx = account.sign(registerNamespaceTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
@@ -76,9 +77,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     m_announceHandler: function (event) {
@@ -119,7 +119,7 @@ export default {
         [],
         UInt64.fromUint(this.m_fee)
       )
-      const signedTx = account.sign(aggregateTransaction)
+      const signedTx = account.sign(aggregateTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

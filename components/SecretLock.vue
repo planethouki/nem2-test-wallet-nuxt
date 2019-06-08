@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, SecretLockTransaction, HashType } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -81,9 +82,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   watch: {
     l_hashType: {
@@ -114,7 +114,7 @@ export default {
         account.address.networkType,
         UInt64.fromUint(this.l_fee)
       )
-      const preSignedTx = account.sign(secretLockTransaction)
+      const preSignedTx = account.sign(secretLockTransaction, this.generationHash)
       const preSignedTxPayload = preSignedTx.payload
       let signedTxPayload
       if (this.l_hashType === HashType.Op_Hash_160) {

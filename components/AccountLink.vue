@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import { LinkAction, AccountLinkTransaction, Deadline, UInt64 } from 'nem2-sdk'
+import { mapGetters } from 'vuex'
+import { LinkAction, AccountLinkTransaction, Deadline, UInt64, TransactionHttp } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -57,9 +58,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     announceHandler: function (event) {
@@ -72,17 +72,9 @@ export default {
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(accountLinkTransaction)
-      const preSignedTxPayload = signedTx.payload
-      const signedTxPayload = '99000000' + preSignedTxPayload.substr(8)
-      const request = require('request')
-      request({
-        url: `${endpoint}/transaction`,
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        json: { 'payload': signedTxPayload }
+      const signedTx = account.sign(accountLinkTransaction, this.generationHash)
+      const txHttp = new TransactionHttp(endpoint)
+      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
       })
 
       const historyData = {

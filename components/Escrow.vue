@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener,
@@ -109,9 +110,8 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
-      return this.$store.getters['wallet/existsAccount']
-    }
+    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     e_announceHandler: async function (event) {
@@ -149,7 +149,7 @@ export default {
         [],
         UInt64.fromUint(this.e_fee)
       )
-      const signedAggregateTx = account.sign(aggregateTx)
+      const signedAggregateTx = account.sign(aggregateTx, this.generationHash)
       const lockFundsTx = new LockFundsTransaction(
         Deadline.create(),
         lockFundsMosaic,
@@ -158,7 +158,7 @@ export default {
         network,
         UInt64.fromUint(this.e_fee3)
       )
-      const signedLockFundsTx = account.sign(lockFundsTx)
+      const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       listener.open().then(() => {
         return txHttp.announce(signedLockFundsTx).toPromise()
