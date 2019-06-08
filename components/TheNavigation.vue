@@ -16,55 +16,6 @@
         v-list-tile-content
           v-list-tile-title Send Transaction
     v-divider
-    v-list(dense two-line)
-      v-list-tile(v-if="endpoint")
-        v-list-tile-content
-          v-list-tile-title Endpoint
-          v-list-tile-sub-title(ref="endpoint") {{ endpoint }}
-        v-list-tile-action
-          v-btn(
-            fab
-            small
-            flat
-            @click="copyEndpointHandler")
-            v-icon filter_none
-      v-list-tile(v-if="address")
-        v-list-tile-content
-          v-list-tile-title Address
-          v-list-tile-sub-title(ref="address") {{ address.pretty() }}
-        v-list-tile-action
-          v-btn(
-            fab
-            small
-            flat
-            @click="copyAddressHandler")
-            v-icon filter_none
-      v-list-tile(v-if="publicAccount")
-        v-list-tile-content
-          v-list-tile-title Public Key
-          v-list-tile-sub-title(ref="publicKey") {{ publicAccount.publicKey }}
-        v-list-tile-action
-          v-btn(
-            fab
-            small
-            flat
-            @click="copyPublicKeyHandler")
-            v-icon filter_none
-    v-divider
-    v-layout(column).py-1
-      div.pl-3.mb-2
-        div.body-2 Unconfirmed
-        div(v-for="t in unconfirmedTransactions").ellipsis
-          a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank")
-            span.caption {{ t.transactionInfo.hash }}
-      div.pl-3.mb-2
-        div.body-2 AggregateBonded
-        div(v-for="t in aggregateBondedTransactions").ellipsis
-          a(:href="endpoint + '/transaction/' + t.transactionInfo.hash + '/status'" target="_blank")
-            span.caption {{ t.transactionInfo.hash }}
-    v-divider
-    v-layout(justify-center).mt-3
-      Logout
     v-layout.mt-3
       v-flex(justify-center)
         .text-xs-center
@@ -73,13 +24,9 @@
 </template>
 
 <script>
-import Logout from '~/components/Logout.vue'
-import { mapGetters } from 'vuex'
-
 export default {
   name: 'Navigation',
   components: {
-    Logout
   },
   props: {
   },
@@ -88,15 +35,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('wallet', [
-      'address',
-      'endpoint',
-      'publicAccount'
-    ]),
-    ...mapGetters('transactions', [
-      'unconfirmedTransactions',
-      'aggregateBondedTransactions'
-    ]),
     drawer: {
       get() {
         return this.$store.getters.drawer
@@ -107,33 +45,6 @@ export default {
     }
   },
   methods: {
-    copyEndpointHandler: function (event) {
-      const target = this.$refs.endpoint
-      const range = document.createRange()
-      range.selectNode(target)
-      window.getSelection().removeAllRanges()
-      window.getSelection().addRange(range)
-      document.execCommand('copy')
-      window.getSelection().removeAllRanges()
-    },
-    copyAddressHandler: function (event) {
-      const target = this.$refs.address
-      const range = document.createRange()
-      range.selectNode(target)
-      window.getSelection().removeAllRanges()
-      window.getSelection().addRange(range)
-      document.execCommand('copy')
-      window.getSelection().removeAllRanges()
-    },
-    copyPublicKeyHandler: function (event) {
-      const target = this.$refs.publicKey
-      const range = document.createRange()
-      range.selectNode(target)
-      window.getSelection().removeAllRanges()
-      window.getSelection().addRange(range)
-      document.execCommand('copy')
-      window.getSelection().removeAllRanges()
-    }
   }
 }
 </script>

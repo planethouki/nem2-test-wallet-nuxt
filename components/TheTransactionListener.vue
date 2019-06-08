@@ -43,7 +43,8 @@ export default {
       'unconfirmedAdded',
       'unconfirmedRemoved',
       'aggregateBondedAdded',
-      'aggregateBondedRemoved'
+      'aggregateBondedRemoved',
+      'confirmedAdded'
     ]),
     closeListener() {
       if (this.listener) {
@@ -66,6 +67,7 @@ export default {
       await this.listener.open()
       this.getUnconfirmedTransactions()
       this.getAggregateBondedTransactions()
+      this.getConfirmedTransactions()
     },
     getUnconfirmedTransactions() {
       if (this.subscriptions.unconfirmedAdded) {
@@ -97,6 +99,15 @@ export default {
       })
       this.subscriptions.aggregateBondedRemoved = this.listener.aggregateBondedRemoved(this.address).subscribe((transaction) => {
         this.aggregateBondedRemoved({ transaction })
+      })
+    },
+    getConfirmedTransactions() {
+      if (this.subscriptions.confirmed) {
+        this.subscriptions.confirmed.unsubscribe()
+        this.subscriptions.confirmed = null
+      }
+      this.subscriptions.confirmed = this.listener.confirmed(this.address).subscribe((transaction) => {
+        this.confirmedAdded({ transaction })
       })
     }
   }

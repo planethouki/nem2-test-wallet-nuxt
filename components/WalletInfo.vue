@@ -45,6 +45,21 @@
                   flat
                   @click="copyPublicKeyHandler")
                   v-icon filter_none
+        v-layout(column v-if="account")
+          div.subheading Private Key
+          v-list(subheader)
+            v-list-tile
+              v-list-tile-content
+                v-list-tile-title
+                  span ********
+                  span(style="opacity: 0;" ref="privateKey") {{ privateKey }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyPrivateKeyHandler")
+                  v-icon filter_none
 </template>
 
 <script>
@@ -62,13 +77,15 @@ export default {
   },
   data() {
     return {
+      privateKey: null
     }
   },
   computed: {
     ...mapGetters('wallet', {
       address: 'address',
       endpoint: 'endpoint',
-      publicAccount: 'publicAccount'
+      publicAccount: 'publicAccount',
+      account: 'account'
     })
   },
   watch: {
@@ -100,6 +117,19 @@ export default {
       window.getSelection().addRange(range)
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
+    },
+    copyPrivateKeyHandler: function (event) {
+      this.privateKey = this.account.privateKey
+      this.$nextTick(() => {
+        const target = this.$refs.privateKey
+        const range = document.createRange()
+        range.selectNode(target)
+        window.getSelection().removeAllRanges()
+        window.getSelection().addRange(range)
+        document.execCommand('copy')
+        window.getSelection().removeAllRanges()
+        this.privateKey = null
+      })
     }
   }
 }

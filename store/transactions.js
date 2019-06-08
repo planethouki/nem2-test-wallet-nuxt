@@ -84,7 +84,7 @@ export const actions = {
   },
   confirmedAdded({ state, commit }, { transaction }) {
     const confirmed = state.confirmedTransactions.slice()
-    confirmed.push(transaction)
+    confirmed.splice(0, 0, transaction)
     commit('confirmedTransactions', { confirmedTransactions: confirmed })
   }
 }
