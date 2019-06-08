@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Account Property Address
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { Address, Account, Deadline, UInt64, PropertyType, TransactionHttp,
+import { Address, Deadline, UInt64, PropertyType, TransactionHttp,
   PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -68,12 +68,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'accountPropertyAddress'
+      }
+    }
+  },
   data() {
     return {
       propertyType: PropertyType.AllowAddress,
@@ -84,7 +86,7 @@ export default {
       modifications: [
         {
           isAdd: true,
-          rawAddress: ''
+          rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
         }
       ],
       additionalModification: {
@@ -95,9 +97,13 @@ export default {
       history: []
     }
   },
-  mounted: function () {
-    this.additionalModification.rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
-    this.modifications[0].rawAddress = Account.generateNewAccount(this.wallet.network).address.pretty()
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/endpoint']
+    }
   },
   methods: {
     deleteModification: function (index) {
@@ -108,23 +114,22 @@ export default {
         rawAddress: this.additionalModification.rawAddress,
         isAdd: this.additionalModification.isAdd
       })
-      this.additionalModification.rawAddress = 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
+      this.additionalModification.rawAddress = ''
     },
     announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
+      const account = this.account
       const endpoint = this.endpoint
-      const modifyAccountPropertyAddressTransaction = new ModifyAccountPropertyAddressTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.MODIFY_ACCOUNT_PROPERTY_ADDRESS,
+      const modifyAccountPropertyAddressTransaction = ModifyAccountPropertyAddressTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.propertyType,
         this.modifications.map((modification) => {
           return AccountPropertyTransaction.createAddressFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             Address.createFromRawAddress(modification.rawAddress)
           )
-        })
+        }),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(modifyAccountPropertyAddressTransaction)
       const txHttp = new TransactionHttp(endpoint)

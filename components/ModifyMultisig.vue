@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Modify Multisig
@@ -69,8 +69,8 @@
             type="number")
         v-flex.pt-4
           v-text-field(
-            label="Lock Funds Mosaic (hexMosaicId::absoluteAmount)"
-            placeholder="ex). 85BBEA6CC462B244::10000000"
+            label="Lock Funds Mosaic"
+            placeholder="ex). @cat.currency::10000000"
             v-model="d_lockMosaic"
             required)
           v-text-field(
@@ -95,7 +95,7 @@
 <script>
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, TransactionType
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, NamespaceHttp
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from './AggregatetxHistory.vue'
@@ -105,12 +105,14 @@ export default {
   components: {
     AggregatetxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'modifymultisig'
+      }
+    }
+  },
   data() {
     return {
       d_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
@@ -124,8 +126,13 @@ export default {
       d_history: [],
       d_fee: 0,
       d_lockFee: 0,
-      d_lockMosaic: '85BBEA6CC462B244::10000000',
+      d_lockMosaic: '@cat.currency::10000000',
       d_lockDuration: 480
+    }
+  },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
     }
   },
   methods: {
@@ -140,7 +147,7 @@ export default {
       this.d_additionalModificationPubkey = ''
       this.d_additionalModificationType = false
     },
-    d_announceHandler: function (event) {
+    d_announceHandler: async function (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
@@ -162,26 +169,26 @@ export default {
         }),
         network
       )
-      const aggregateTx = new AggregateTransaction(
-        network,
-        TransactionType.AGGREGATE_BONDED,
-        this.$TransactionVersion.AGGREGATE_BONDED,
+      const aggregateTx = AggregateTransaction.createBonded(
         Deadline.create(23),
-        UInt64.fromUint(this.d_fee),
         [
           modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
-        ]
+        ],
+        network,
+        [],
+        UInt64.fromUint(this.d_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx)
-      const lockMosaic = this.$parser.parseMosaics(this.d_lockMosaic)[0]
-      const lockFundsTx = new LockFundsTransaction(
-        network,
-        this.$TransactionVersion.LOCK,
-        Deadline.create(23),
-        UInt64.fromUint(this.d_lockFee),
+      let lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
+      const namespaceHttp = new NamespaceHttp(endpoint)
+      lockMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockMosaic)
+      const lockFundsTx = LockFundsTransaction.create(
+        Deadline.create(),
         lockMosaic,
         UInt64.fromUint(this.d_lockDuration),
-        signedAggregateTx
+        signedAggregateTx,
+        network,
+        UInt64.fromUint(this.d_lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx)
       const txHttp = new TransactionHttp(endpoint)

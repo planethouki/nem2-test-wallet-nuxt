@@ -1,121 +1,89 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-bind:id="navTargetId")
     v-card
-      v-card-title.pb-0
+      v-card-title
         v-layout(align-baseline)
-          span.title Address
-          v-btn(
-          fab
-          small
-          flat
-          @click="copyWalletAddressHandler")
-            v-icon filter_none
-      v-card-text.pt-0
-        v-layout(overflow-hidden)
+          span.title Wallet
+      v-card-text
+        v-layout(column v-if="endpoint")
+          div.subheading Endpoint
           v-list
             v-list-tile
               v-list-tile-content
-                v-list-tile-title(ref="address") {{ wallet.address.pretty() }}
-                v-list-tile-sub-title {{ wallet.address.plain() }}
-      v-card-title.pb-0
-        v-layout(align-baseline)
-          span.title Public Key
-          v-btn(
-          fab
-          small
-          flat
-          @click="reloadAccount")
-            v-icon cached
-      v-card-text.pt-0
-        v-layout(overflow-hidden)
-          v-list-tile
-            v-list
-              v-list-tile-content
-                v-list-tile-sub-title {{ publicKey }}
-      v-card-title.pb-0
-        v-layout(align-baseline)
-          span.title Mosaics
-          v-btn(
-          fab
-          small
-          flat
-          @click="reloadAccount")
-            v-icon cached
-      v-card-text.pt-0
-        v-layout(column)
-          v-list-tile(v-for="m in mosaicTexts" v-bind:key="m")
-            v-list-tile-content
-              v-list-tile-title
-                span {{ m }}
-      v-card-actions
-        v-menu(offset-y)
-          template(v-slot:activator="{ on }")
-            v-btn(v-on="on") Links
+                v-list-tile-title(ref="endpoint") {{ endpoint }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyEndpointHandler")
+                  v-icon filter_none
+        v-layout.mb-2(column v-if="address")
+          div.subheading Address
           v-list
             v-list-tile
-              v-list-tile-title
-                a(v-bind:href="faucetUrl" v-show="faucetUrl" target="_blank") Faucet
+              v-list-tile-content
+                v-list-tile-title(ref="address") {{ address.pretty() }}
+                v-list-tile-sub-title {{ address.plain() }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyAddressHandler")
+                  v-icon filter_none
+        v-layout(column v-if="publicAccount")
+          div.subheading Public Key
+          v-list(subheader)
             v-list-tile
-              v-list-tile-title
-                a(v-bind:href="endpoint + '/account/properties/' + wallet.address.plain()" target="_blank") Properties
-            v-list-tile
-              v-list-tile-title
-                a(v-bind:href="endpoint + '/account/' + wallet.address.plain() + '/multisig'" target="_blank") Multisig
-        v-spacer
-        v-btn(
-        color="pink"
-        class="white--text"
-        @click="logoutWallet") logout
-      v-card-text(v-show="alert")
-        v-alert(type="error" :value="alert") {{ alert }}
+              v-list-tile-content
+                v-list-tile-title(ref="publicKey") {{ publicAccount.publicKey }}
+              v-list-tile-action
+                v-btn(
+                  fab
+                  small
+                  flat
+                  @click="copyPublicKeyHandler")
+                  v-icon filter_none
 </template>
 
 <script>
-/* eslint-disable */
-
-import { AccountHttp, XEM, MosaicHttp, NamespaceHttp, MosaicService } from 'nem2-sdk'
-import { flatMap } from 'rxjs/operators'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'WalletInfo',
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId',
-    'faucetUrl'
-  ],
-  data() {
-    return {
-      mosaics: [],
-      publicKey: '',
-      alert: ''
-    }
-  },
-  computed: {
-    mosaicTexts: function () {
-      return this.mosaics.length === 0 ? ["empty"] : this.mosaics.map(function (mosaic) {
-        return mosaic.id.id.toHex().toUpperCase() +
-            '::' +
-            mosaic.amount.compact()
-      })
-    }
-  },
-  watch: {
-    wallet: {
-      handler: function () {
-        if (this.wallet.address) {
-          this.alert = ''
-          this.reloadAccount()
-        }
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'walletInfo'
       }
     }
   },
+  data() {
+    return {
+    }
+  },
+  computed: {
+    ...mapGetters('wallet', {
+      address: 'address',
+      endpoint: 'endpoint',
+      publicAccount: 'publicAccount'
+    })
+  },
+  watch: {
+  },
   methods: {
-    logoutWallet: function (event) {
-      this.$emit('logoutWallet')
+    copyEndpointHandler: function (event) {
+      const target = this.$refs.endpoint
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
     },
-    copyWalletAddressHandler: function (event) {
+    copyAddressHandler: function (event) {
       const target = this.$refs.address
       const range = document.createRange()
       range.selectNode(target)
@@ -124,33 +92,23 @@ export default {
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
     },
-    reloadAccount: function (event) {
-      if (this.wallet.address) {
-        this.mosaics = []
-        this.publicKey = ""
-        const endpoint = this.endpoint
-        const address = this.wallet.address
-        const accountHttp = new AccountHttp(endpoint)
-        accountHttp.getAccountInfo(address).subscribe(
-          (accountInfo) => {
-            this.publicKey = accountInfo.publicKey
-            this.mosaics = accountInfo.mosaics
-          },
-          (error) => {
-            if (error.toString().includes("Error: Not Found")) {
-              this.publicKey = "0000000000000000000000000000000000000000000000000000000000000000"
-              this.mosaics = []
-            } else {
-              this.alert = error
-            }
-          }
-        )
-      }
+    copyPublicKeyHandler: function (event) {
+      const target = this.$refs.publicKey
+      const range = document.createRange()
+      range.selectNode(target)
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(range)
+      document.execCommand('copy')
+      window.getSelection().removeAllRanges()
     }
   }
 }
 </script>
 
 <style scoped>
-
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>

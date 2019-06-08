@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Account Property Mosaic
@@ -68,12 +68,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'accountPropertyMosaic'
+      }
+    }
+  },
   data() {
     return {
       propertyType: PropertyType.AllowMosaic,
@@ -95,6 +97,11 @@ export default {
       history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     deleteModification: function (index) {
       this.modifications.splice(index, 1)
@@ -107,20 +114,19 @@ export default {
       this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
     announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
-      const modifyAccountPropertyMosaicTransaction = new ModifyAccountPropertyMosaicTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.MODIFY_ACCOUNT_PROPERTY_MOSAIC,
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const modifyAccountPropertyMosaicTransaction = ModifyAccountPropertyMosaicTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.propertyType,
         this.modifications.map((modification) => {
           return AccountPropertyTransaction.createMosaicFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             new MosaicId(modification.hexMosaicId)
           )
-        })
+        }),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(modifyAccountPropertyMosaicTransaction)
       const txHttp = new TransactionHttp(endpoint)

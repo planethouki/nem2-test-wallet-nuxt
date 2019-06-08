@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Secret Proof Transaction
@@ -11,12 +11,13 @@
           :label="ht.label"
           :value="ht.type")
         v-text-field(
-          label="Proof (Hex value for unlock)"
+          label="Proof"
           v-model="p_proof"
           required
+          counter
           placeholder="ex). 095B4FCD1F88F1785E59")
         v-text-field(
-          label="Secret (Hash for Proof)"
+          label="Hash"
           v-model="p_secret"
           disabled)
         v-text-field(
@@ -42,12 +43,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'secretproof'
+      }
+    }
+  },
   data() {
     return {
       p_hashType: 0,
@@ -76,6 +79,9 @@ export default {
         default:
           return 'error'
       }
+    },
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
     }
   },
   created: function () {
@@ -83,16 +89,15 @@ export default {
   },
   methods: {
     p_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
-      const secretProofTransaction = new SecretProofTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.SECRET_PROOF,
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const secretProofTransaction = SecretProofTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.p_fee),
         this.p_hashType,
         this.p_secret,
-        this.p_proof
+        this.p_proof,
+        account.address.networkType,
+        UInt64.fromUint(this.p_fee)
       )
       const preSignedTxPayload = account.sign(secretProofTransaction).payload
       let signedTxPayload

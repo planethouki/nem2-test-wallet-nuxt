@@ -1,4 +1,4 @@
-# nem2-unsafe-wallet-nuxt
+# nem2-test-wallet-nuxt
 
 > Do NOT use on main net
 

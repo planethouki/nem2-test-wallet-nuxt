@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Secret Lock Transaction
@@ -11,18 +11,19 @@
           :label="ht.label"
           :value="ht.type")
         v-text-field(
-          label="Secret (Hash for Random)"
+          label="Hash"
+          :counter="l_hashStrLen"
           v-model="l_secret")
         v-text-field(
-          label="Mosaic for Lock (hexMosaicId::absoluteAmount)"
+          label="Mosaic"
           v-model="l_mosaic"
           required
-          placeholder="ex). 85BBEA6CC462B244::1000000")
+          placeholder="ex). @cat.currency::1000000")
         v-text-field(
           label="To Address"
           v-model="l_recipient"
           required
-          placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
+          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
         v-text-field(
           label="Duration In Blocks"
           v-model="l_duration"
@@ -45,7 +46,7 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, Mosaic, MosaicId, SecretLockTransaction, HashType } from 'nem2-sdk'
+  Deadline, UInt64, SecretLockTransaction, HashType } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -53,48 +54,65 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'secretlock'
+      }
+    }
+  },
   data() {
     return {
       l_hashType: HashType.Op_Sha3_256,
+      l_hashStrLen: '64',
       l_hashTypes: [
-        { type: HashType.Op_Sha3_256, label: 'Sha3-256' },
-        { type: HashType.Op_Keccak_256, label: 'Keccak256' },
-        { type: HashType.Op_Hash_256, label: 'Hash256' },
-        { type: HashType.Op_Hash_160, label: 'Hash160' }
+        { type: HashType.Op_Sha3_256, label: 'Sha3-256', strLen: '64' },
+        { type: HashType.Op_Keccak_256, label: 'Keccak256', strLen: '64' },
+        { type: HashType.Op_Hash_256, label: 'Hash256', strLen: '64' },
+        { type: HashType.Op_Hash_160, label: 'Hash160', strLen: '40' }
       ],
-      l_mosaic: '85BBEA6CC462B244::10000000',
-      l_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
+      l_mosaic: '@cat.currency::10000000',
+      l_recipient: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       l_duration: 240,
       l_history: [],
       l_secret: '2B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D',
       l_fee: 0
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
+  watch: {
+    l_hashType: {
+      handler: function () {
+        for (let i = 0; i < this.l_hashTypes.length; i++) {
+          if (this.l_hashType === this.l_hashTypes[i].type) {
+            this.l_hashStrLen = this.l_hashTypes[i].strLen
+          }
+        }
+      }
+    }
+  },
   methods: {
     l_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const duration = this.l_duration
       const secret = this.l_secret
-      const recipient = this.l_recipient
-      const nameAndAmount = this.l_mosaic.split('::')
-      const mosaic = new Mosaic(new MosaicId(nameAndAmount[0]), UInt64.fromUint(nameAndAmount[1]))
-      const secretLockTransaction = new SecretLockTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.SECRET_LOCK,
+      const recipient = this.$parser.parseAddressSecretLock(this.l_recipient)
+      const mosaic = this.$parser.parseMosaic(this.l_mosaic)
+      const secretLockTransaction = SecretLockTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.l_fee),
         mosaic,
         UInt64.fromUint(duration),
         this.l_hashType,
         secret,
-        Address.createFromRawAddress(recipient)
+        recipient,
+        account.address.networkType,
+        UInt64.fromUint(this.l_fee)
       )
       const preSignedTx = account.sign(secretLockTransaction)
       const preSignedTxPayload = preSignedTx.payload

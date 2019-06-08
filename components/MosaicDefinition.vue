@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Create Mosaic
@@ -44,7 +44,7 @@
 
 <script>
 import {
-  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce, TransactionType,
+  Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
   AggregateTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
@@ -54,12 +54,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'mosaic'
+      }
+    }
+  },
   data() {
     return {
       m_nonce: '0',
@@ -73,15 +75,20 @@ export default {
       m_history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     m_announceHandler: function (event) {
-      const networkType = this.wallet.network
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const networkType = account.address.networkType
       const nonce = Number(this.m_nonce)
       const mosaicNonce = new MosaicNonce(this.$convert.numberToUint8_4(nonce))
       const duration = this.m_duration
       const delta = this.m_delta
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
       const mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
         Deadline.create(),
         mosaicNonce,
@@ -102,17 +109,15 @@ export default {
         UInt64.fromUint(delta),
         networkType
       )
-      const aggregateTransaction = new AggregateTransaction(
-        networkType,
-        TransactionType.AGGREGATE_COMPLETE,
-        this.$TransactionVersion.AGGREGATE_COMPLETE,
+      const aggregateTransaction = AggregateTransaction.createComplete(
         Deadline.create(),
-        UInt64.fromUint(this.m_fee),
         [
           mosaicDefinitionTransaction.toAggregate(account.publicAccount),
           mosaicSupplyChangeTransaction.toAggregate(account.publicAccount)
         ],
-        []
+        networkType,
+        [],
+        UInt64.fromUint(this.m_fee)
       )
       const signedTx = account.sign(aggregateTransaction)
       const txHttp = new TransactionHttp(endpoint)

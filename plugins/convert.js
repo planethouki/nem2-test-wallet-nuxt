@@ -10,5 +10,9 @@ Vue.prototype.$convert = {
   endian: function (hex) {
     const uint8arr = convert.hexToUint8(hex)
     return convert.uint8ToHex(uint8arr.reverse())
+  },
+  base64ToHex: function (base64Str) {
+    const buffer = Buffer.from(base64Str, 'base64')
+    return buffer.toString('hex')
   }
 }

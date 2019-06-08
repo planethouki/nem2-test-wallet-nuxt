@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Convert to Multisig
@@ -57,9 +57,9 @@
           color="blue"
           class="white--text"
           @click="u_announceHandler"
-          :disabled="u_isMultisig") announce
+          :disabled="u_isMultisig || u_forbidMultisig") announce
         v-flex
-          div(v-if="u_isMultisig") &nbsp; {{ u_announceDisabledMessage }}
+          div(v-if="u_isMultisig || u_forbidMultisig") &nbsp; {{ u_announceDisabledMessage }}
       v-card-text
         tx-history(v-bind:history="u_history")
 </template>
@@ -75,15 +75,16 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'multisig'
+      }
+    }
+  },
   data() {
     return {
-      u_isMultisig: false,
       u_cosignatories: [
         '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
         '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57'
@@ -92,40 +93,61 @@ export default {
       u_minApprovalDelta: 2,
       u_minRemovalDelta: 2,
       u_history: [],
-      u_announceDisabledMessage: '',
-      u_fee: 0
+      u_fee: 0,
+      u_isMultisig: false,
+      u_forbidMultisig: false,
+      u_announceDisabledMessage: ''
+    }
+  },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/endpoint']
+    },
+    address() {
+      return this.$store.getters['wallet/address']
     }
   },
   watch: {
-    wallet: {
-      handler: function (newVal, oldVal) {
-        if (!this.wallet.address) {
-          return
-        }
-        if (this.wallet.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2') {
-          this.u_isMultisig = true
+    address: {
+      handler: function (newVal) {
+        if (newVal && newVal.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2') {
+          this.u_forbidMultisig = true
           this.u_announceDisabledMessage = 'Please try another account.'
-          return
+        } else {
+          this.u_forbidMultisig = false
+          this.$nextTick(() => {
+            this.u_checkIsMultisig()
+          })
         }
-        const accountHttp = new AccountHttp(this.endpoint)
-        accountHttp.getMultisigAccountInfo(this.wallet.address).subscribe(
-          (result) => {
-            this.u_isMultisig = result.isMultisig()
-            if (result.isMultisig()) {
-              this.u_announceDisabledMessage = 'This account is already converted to multisig.'
-            } else {
-              this.u_announceDisabledMessage = ''
-            }
-          },
-          () => {
-            this.u_isMultisig = false
-            this.u_announceDisabledMessage = ''
-          }
-        )
+      }
+    },
+    endpoint: {
+      handler: function (newVal) {
+        if (newVal) {
+          this.$nextTick(() => {
+            this.u_checkIsMultisig()
+          })
+        }
       }
     }
   },
   methods: {
+    u_checkIsMultisig: async function () {
+      if (!this.address) return
+      if (!this.endpoint) return
+      if (this.u_forbidMultisig) return
+      const accountHttp = new AccountHttp(this.endpoint)
+      const multisigInfo = await accountHttp.getMultisigAccountInfo(this.address).toPromise()
+      if (multisigInfo.isMultisig()) {
+        this.u_announceDisabledMessage = 'This account is already converted to multisig.'
+        this.u_isMultisig = true
+      } else {
+        this.u_isMultisig = false
+      }
+    },
     u_deleteCosignatory: function (index) {
       this.u_cosignatories.splice(index, 1)
     },
@@ -134,17 +156,14 @@ export default {
       this.u_addedCosignatory = ''
     },
     u_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
-      const networkType = this.wallet.network
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const networkType = account.address.networkType
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta
       const cosignatories = this.u_cosignatories
-      const tx = new ModifyMultisigAccountTransaction(
-        networkType,
-        this.$TransactionVersion.MODIFY_MULTISIG_ACCOUNT,
+      const tx = ModifyMultisigAccountTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.u_fee),
         minApprovalDelta,
         minRemovalDelta,
         cosignatories.map((co) => {
@@ -152,7 +171,9 @@ export default {
             MultisigCosignatoryModificationType.Add,
             PublicAccount.createFromPublicKey(co, networkType)
           )
-        })
+        }),
+        networkType,
+        UInt64.fromUint(this.u_fee)
       )
       const signedTx = account.sign(tx)
       const txHttp = new TransactionHttp(endpoint)

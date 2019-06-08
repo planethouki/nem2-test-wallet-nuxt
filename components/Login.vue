@@ -1,11 +1,11 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="!createdWallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-bind:id="navTargetId")
     v-card
       v-form
         v-card-text
           v-radio-group(label="Select Endpoint" v-model="predefinedEndpoint")
             v-radio(
-              v-for="ep in endpoints"
+              v-for="ep in endpointList"
               :key="ep.url"
               :label="ep.label"
               :value="ep.url")
@@ -13,7 +13,7 @@
               label="other"
               value="")
           v-text-field(
-            v-show="predefinedEndpoint.length == 0"
+            v-show="predefinedEndpoint.length === 0"
             label="Endpoint"
             v-model="userEndpoint"
             name="Endpoint"
@@ -42,22 +42,18 @@
 </template>
 
 <script>
-
-import { Password, SimpleWallet } from 'nem2-sdk'
-const generator = require('generate-password')
-const rp = require('request-promise-native')
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Login',
-  props: [
-    'navTargetId',
-    'endpoints',
-    'defaultEndpoint',
-    'defaultPrivateKey',
-    'createdWallet',
-    'createdWalletPassword',
-    'defaultNetworkType'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'login'
+      }
+    }
+  },
   data() {
     return {
       predefinedEndpoint: '',
@@ -66,15 +62,23 @@ export default {
       loginDisabled: false
     }
   },
+  computed: {
+    ...mapGetters('wallet', [
+      'existsAccount',
+      'networkType',
+      'address',
+      'endpoint'
+    ]),
+    ...mapGetters('env', [
+      'endpointList',
+      'defaultEndpoint',
+      'defaultPrivateKey',
+      'defaultNetworkType',
+      'currencyNamespaceName',
+      'harvestNamespaceName'
+    ])
+  },
   watch: {
-    createdWallet: {
-      handler: function (newVal, oldVal) {
-        if (oldVal.address && !newVal.address) {
-          this.privateKey = oldVal.open(this.createdWalletPassword).privateKey
-          this.$emit('deletePassword')
-        }
-      }
-    }
   },
   created: function () {
     this.predefinedEndpoint = this.defaultEndpoint
@@ -86,31 +90,23 @@ export default {
     },
     createWallet: async function (event) {
       this.loginDisabled = true
-      const endpoint = this.predefinedEndpoint || this.userEndpoint
-      let network
-      try {
-        const nodeInfo = JSON.parse(await rp(`${endpoint}/node/info`))
-        network = nodeInfo.networkIdentifier
-      } catch (e) {
-        network = this.defaultNetworkType
+      let endpoint = this.predefinedEndpoint || this.userEndpoint
+      if (endpoint.match(/:\d+$/) === null) {
+        endpoint = `${endpoint}:3000`
       }
-      const password = new Password(
-        generator.generate({
-          length: 50,
-          numbers: true,
-          symbols: true
-        })
-      )
-      const name = 'myWallet'
-      const wallet = SimpleWallet.createFromPrivateKey(
-        name,
-        password,
-        this.privateKey,
-        network
-      )
-      this.privateKey = ''
+      if (!endpoint.startsWith('http')) {
+        endpoint = `http://${endpoint}`
+      }
+      await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint })
+      await this.$store.dispatch('chain/init')
+      await this.$store.dispatch('mosaicAmountViews/update')
+      await this.$store.dispatch('multisigGraph/update')
+      await this.$store.dispatch('namespaces/update')
+      await this.$store.dispatch('accountProperties/update')
+      await this.$store.dispatch('accountLink/update')
+      await this.$store.dispatch('transactions/update')
       this.loginDisabled = false
-      this.$emit('walletCreated', { wallet, password, endpoint })
+      this.$router.push('/info')
     }
   }
 }

@@ -1,22 +1,35 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Transfer Transaction
       v-card-text
         v-text-field(
           label="To Address"
-          v-model="t_recipient"
+          v-model="t_recipientAddress"
           required
-          placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
+          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
         v-text-field(
-          label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
+          label="Mosaics"
           v-model="t_mosaics"
-          required)
+          required
+          placeholder="ex). @cat.currency::0, 941299B2B7E1291C::0")
+        v-radio-group(label="Message Type" v-model="t_messageType" row)
+          v-radio(
+            v-for="mt in t_messageTypes"
+            :key="mt.type"
+            :label="mt.label"
+            :value="mt.type")
+        v-text-field(
+          label="Recipient Public Key"
+          v-model="t_recipientPublicKey"
+          v-if="t_messageType === 1"
+          required
+          placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")
         v-text-field(
           label="Message"
           v-model="t_message"
-          :counter="1023"
+          :counter="t_messageType === 0 ? 1023 : 447"
           placeholder="ex) Thank you.")
         v-text-field(
           label="Max Fee"
@@ -32,8 +45,8 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, PlainMessage, TransferTransaction,
-  TransactionHttp
+  Deadline, UInt64, PlainMessage, TransferTransaction,
+  TransactionHttp, EncryptedMessage, PublicAccount
 } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
@@ -42,34 +55,60 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'transfer'
+      }
+    }
+  },
   data() {
     return {
-      t_recipient: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
-      t_mosaics: '85BBEA6CC462B244::0',
+      t_recipientAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
+      t_recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      t_mosaics: '@cat.currency::0, 941299B2B7E1291C::0',
+      t_messageType: 0,
+      t_messageTypes: [
+        { type: 0, label: 'Plain' },
+        { type: 1, label: 'Encrypted' }
+      ],
       t_message: 'Hello Nem2!',
       t_fee: 0,
       t_history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    endpoint() {
+      return this.$store.getters['wallet/endpoint']
+    }
+  },
   methods: {
     t_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
+      const account = this.$store.getters['wallet/account']
       const endpoint = this.endpoint
+      const recipient = this.$parser.parseAddress(this.t_recipientAddress)
       const mosaics = this.$parser.parseMosaics(this.t_mosaics)
-      const tx = new TransferTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.TRANSFER,
+      const message = (() => {
+        if (this.t_messageType === 0) {
+          return PlainMessage.create(this.t_message)
+        } else {
+          const recipientPublicAccount = PublicAccount.createFromPublicKey(
+            this.t_recipientPublicKey,
+            account.address.networkType)
+          return EncryptedMessage.create(this.t_message, recipientPublicAccount, account.privateKey)
+        }
+      })()
+      const tx = TransferTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.t_fee),
-        Address.createFromRawAddress(this.t_recipient),
+        recipient,
         mosaics,
-        PlainMessage.create(this.t_message)
+        message,
+        account.address.networkType,
+        UInt64.fromUint(this.t_fee)
       )
       const signedTx = account.sign(tx)
       const txHttp = new TransactionHttp(endpoint)

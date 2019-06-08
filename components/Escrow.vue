@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Escrow with Aggregate Bonded Transaction
@@ -13,12 +13,12 @@
                 label="To Address"
                 v-model="e_recipient1"
                 required
-                placeholder="ex). SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ")
+                placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
               v-text-field(
-                label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                label="Mosaics"
                 v-model="e_mosaics1"
                 required
-                placeholder="ex). 85BBEA6CC462B244::1000000")
+                placeholder="ex). @cat.currency::0, 941299B2B7E1291C::0")
               v-text-field(
                 label="Message"
                 v-model="e_message1"
@@ -36,10 +36,10 @@
                 :counter="64"
                 placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993")
               v-text-field(
-                label="Mosaics (namespace:mosaic::absoluteAmount) (comma separated)"
+                label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
                 v-model="e_mosaics2"
                 required
-                placeholder="ex). 85BBEA6CC462B244::1000000")
+                placeholder="ex). 85BBEA6CC462B244::0, @cat.harvest::0")
               v-text-field(
                 label="Message"
                 v-model="e_message2"
@@ -48,13 +48,12 @@
         v-flex.pt-3
           v-text-field(
             label="Max Fee"
-            v-model="e_fee"
-            placeholder="ex). 85BBEA6CC462B244::1000000")
+            v-model="e_fee")
         v-flex.pt-3
           v-text-field(
             label="Lock Funds Mosaic"
             v-model="e_mosaic3"
-            placeholder="ex). nem:xem::10000000")
+            placeholder="ex). @cat.currency::10000000")
           v-text-field(
             label="Lock Funds Duration In Blocks"
             v-model="e_duration3"
@@ -62,8 +61,7 @@
             placeholder="ex). 480")
           v-text-field(
             label="Lock Funds Max Fee"
-            v-model="e_fee3"
-            placeholder="ex). 85BBEA6CC462B244::1000000")
+            v-model="e_fee3")
       v-card-actions
         v-btn(
           color="blue"
@@ -75,8 +73,9 @@
 
 <script>
 import {
-  Address, Deadline, UInt64, PlainMessage, TransferTransaction, TransactionType,
-  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener
+  Deadline, UInt64, PlainMessage, TransferTransaction,
+  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener,
+  NamespaceHttp
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from './AggregatetxHistory.vue'
@@ -86,40 +85,49 @@ export default {
   components: {
     AggregatetxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'escrow'
+      }
+    }
+  },
   data() {
     return {
-      e_recipient1: 'SAJC2D-OC76EA-TVJF65-KE6U2T-VGIN3F-NQZRJO-EWNZ',
-      e_mosaics1: '85BBEA6CC462B244::1000000',
+      e_recipient1: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
+      e_mosaics1: '@cat.currency::0, 941299B2B7E1291C::0',
       e_message1: 'escrow payment',
       e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
-      e_mosaics2: '85BBEA6CC462B244::1000000',
+      e_mosaics2: '85BBEA6CC462B244::0, @cat.harvest::0',
       e_message2: 'escrow invoice',
-      e_mosaic3: '85BBEA6CC462B244::10000000',
+      e_mosaic3: '@cat.currency::10000000',
       e_duration3: 480,
       e_history: [],
       e_fee: 0,
       e_fee3: 0
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
-    e_announceHandler: function (event) {
-      const endpoint = this.endpoint
+    e_announceHandler: async function (event) {
+      const endpoint = this.$store.getters['wallet/endpoint']
       const wsEndpoint = endpoint.replace('http', 'ws')
       const listener = new Listener(wsEndpoint, WebSocket)
-      const account = this.wallet.open(this.walletPassword)
-      const network = this.wallet.network
+      const account = this.$store.getters['wallet/account']
+      const network = account.address.networkType
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
-      const lockFundsMosaic = this.$parser.parseMosaics(this.e_mosaic3)[0]
+      let lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
+      const namespaceHttp = new NamespaceHttp(endpoint)
+      lockFundsMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockFundsMosaic)
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
-        Address.createFromRawAddress(this.e_recipient1),
+        this.$parser.parseAddress(this.e_recipient1),
         this.$parser.parseMosaics(this.e_mosaics1),
         PlainMessage.create(this.e_message1),
         network
@@ -131,27 +139,24 @@ export default {
         PlainMessage.create(this.e_message2),
         network
       )
-      const aggregateTx = new AggregateTransaction(
-        network,
-        TransactionType.AGGREGATE_BONDED,
-        this.$TransactionVersion.AGGREGATE_BONDED,
+      const aggregateTx = AggregateTransaction.createBonded(
         Deadline.create(23),
-        UInt64.fromUint(this.e_fee),
         [
           paymentTx.toAggregate(paySender),
           invoiceTx.toAggregate(invSender)
         ],
-        []
+        network,
+        [],
+        UInt64.fromUint(this.e_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx)
       const lockFundsTx = new LockFundsTransaction(
-        network,
-        this.$TransactionVersion.LOCK,
-        Deadline.create(23),
-        UInt64.fromUint(this.e_fee3),
+        Deadline.create(),
         lockFundsMosaic,
         UInt64.fromUint(this.e_duration3),
-        signedAggregateTx
+        signedAggregateTx,
+        network,
+        UInt64.fromUint(this.e_fee3)
       )
       const signedLockFundsTx = account.sign(lockFundsTx)
       const txHttp = new TransactionHttp(endpoint)

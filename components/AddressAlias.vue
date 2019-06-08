@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Address Alias
@@ -41,12 +41,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'addressAlias'
+      }
+    }
+  },
   data() {
     return {
       actionType: AliasActionType.Link,
@@ -60,18 +62,22 @@ export default {
       history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
-      const addressAliasTransaction = new AddressAliasTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.MOSAIC_ALIAS,
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const addressAliasTransaction = AddressAliasTransaction.create(
         Deadline.create(),
-        UInt64.fromUint(this.fee),
         this.actionType,
         new NamespaceId(this.namespaceName),
-        Address.createFromRawAddress(this.rawAddress)
+        Address.createFromRawAddress(this.rawAddress),
+        account.address.networkType,
+        UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(addressAliasTransaction)
       const txHttp = new TransactionHttp(endpoint)

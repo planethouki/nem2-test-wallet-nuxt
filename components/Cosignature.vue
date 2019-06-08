@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Cosignature Transaction
@@ -30,23 +30,30 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'cosignature'
+      }
+    }
+  },
   data() {
     return {
       c_hash: '',
       c_history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     c_announceHandler: function (event) {
-      const account = this.wallet.open(this.walletPassword)
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
       const hash = this.c_hash
-      const endpoint = this.endpoint
       const txHttp = new TransactionHttp(endpoint)
       const accountHttp = new AccountHttp(endpoint)
       accountHttp.aggregateBondedTransactions(account.publicAccount).pipe(

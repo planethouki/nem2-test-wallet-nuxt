@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-flex(mb-5 v-if="wallet.address" v-bind:id="navTargetId")
+  v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
         div.title Register Namespace
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Deadline, UInt64, NamespaceId, NamespaceType, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
 import TxHistory from './TxHistory.vue'
 
 export default {
@@ -36,12 +36,14 @@ export default {
   components: {
     TxHistory
   },
-  props: [
-    'endpoint',
-    'wallet',
-    'walletPassword',
-    'navTargetId'
-  ],
+  props: {
+    navTargetId: {
+      type: String,
+      default() {
+        return 'namespace'
+      }
+    }
+  },
   data() {
     return {
       n_name: 'foo',
@@ -50,20 +52,22 @@ export default {
       n_history: []
     }
   },
+  computed: {
+    existsAccount() {
+      return this.$store.getters['wallet/existsAccount']
+    }
+  },
   methods: {
     n_announceHandler: function (event) {
       const namespaceName = this.n_name
-      const account = this.wallet.open(this.walletPassword)
-      const endpoint = this.endpoint
-      const registerNamespaceTransaction = new RegisterNamespaceTransaction(
-        this.wallet.network,
-        this.$TransactionVersion.REGISTER_NAMESPACE,
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
         Deadline.create(),
-        UInt64.fromUint(this.n_fee),
-        NamespaceType.RootNamespace,
         namespaceName,
-        new NamespaceId(namespaceName),
-        UInt64.fromUint(this.n_duration)
+        UInt64.fromUint(this.n_duration),
+        account.address.networkType,
+        UInt64.fromUint(this.n_fee)
       )
       const signedTx = account.sign(registerNamespaceTransaction)
       const txHttp = new TransactionHttp(endpoint)

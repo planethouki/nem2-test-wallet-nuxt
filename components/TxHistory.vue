@@ -12,7 +12,14 @@
 <script>
 export default {
   name: 'TxHistory',
-  props: ['history']
+  props: {
+    history: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  }
 }
 </script>
 

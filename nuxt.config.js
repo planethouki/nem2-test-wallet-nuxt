@@ -41,11 +41,11 @@ module.exports = {
   */
   plugins: [
     '@/plugins/vuetify',
-    '@/plugins/transactionVersion',
     '@/plugins/convert',
     '@/plugins/hash',
     '@/plugins/crypto',
-    '@/plugins/parser'
+    '@/plugins/parser',
+    '@/plugins/transactionType'
   ],
 
   /*
