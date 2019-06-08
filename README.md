@@ -27,7 +27,7 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 
 ## Demo
 
-http://walletcow.z31.web.core.windows.net/
+http://walletdragon.z31.web.core.windows.net/
 
 ## Function
 
