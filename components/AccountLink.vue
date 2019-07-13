@@ -30,7 +30,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { LinkAction, AccountLinkTransaction, Deadline, UInt64, TransactionHttp } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'AccountLink',

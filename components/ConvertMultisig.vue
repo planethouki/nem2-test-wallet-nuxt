@@ -69,7 +69,7 @@ import { mapGetters } from 'vuex'
 import {
   Deadline, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
   MultisigCosignatoryModificationType, PublicAccount, AccountHttp, UInt64 } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'ConvertMultisig',

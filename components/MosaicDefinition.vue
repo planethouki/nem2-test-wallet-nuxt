@@ -48,7 +48,7 @@ import {
   Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
   AggregateTransaction } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'MosaicDefinition',

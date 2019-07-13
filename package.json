@@ -17,7 +17,7 @@
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
     "cross-env": "^5.2.0",
-    "nem2-sdk": "^0.12.1",
+    "nem2-sdk": "^0.13.0",
     "nuxt": "^2.8.1",
     "rxjs": "^6.5.2",
     "secure-random": "^1.1.2",

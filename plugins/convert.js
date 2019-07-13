@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { convert } from 'nem2-library'
+import { convert } from '~/lib/convert'
 
 Vue.prototype.$convert = {
   numberToUint8_4: function (input) {

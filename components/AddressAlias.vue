@@ -35,7 +35,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, NamespaceId, Address, AliasActionType, TransactionHttp, AddressAliasTransaction } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'AddressAlias',

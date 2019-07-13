@@ -68,7 +68,7 @@
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, PropertyType, TransactionHttp,
   PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyEntityTypeTransaction } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'AccountPropertyAddress',

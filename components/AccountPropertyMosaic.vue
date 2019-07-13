@@ -62,7 +62,7 @@
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, MosaicId, PropertyType, TransactionHttp,
   PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyMosaicTransaction } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'AccountPropertyMosaic',

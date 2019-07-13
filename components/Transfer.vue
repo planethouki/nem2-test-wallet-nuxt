@@ -49,7 +49,7 @@ import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp, EncryptedMessage, PublicAccount
 } from 'nem2-sdk'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'Transfer',

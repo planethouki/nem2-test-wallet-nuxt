@@ -29,7 +29,7 @@
 import {
   AccountHttp, TransactionHttp, PublicAccount, CosignatureTransaction } from 'nem2-sdk'
 import { throwIfEmpty, filter, mergeMap } from 'rxjs/operators'
-import TxHistory from './TxHistory.vue'
+import TxHistory from './history/TxHistory.vue'
 
 export default {
   name: 'CosignatureMultisig',

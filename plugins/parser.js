@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { Mosaic, MosaicId, NamespaceId, UInt64, Address } from 'nem2-sdk'
-import { address as addressLib, convert } from 'nem2-library'
+import { convert } from '~/lib/convert'
+import { base32 } from '~/lib/base32'
 
 Vue.prototype.$parser = {
   parseMosaics: function (str) {
@@ -48,7 +49,7 @@ Vue.prototype.$parser = {
       const hexAddress = '91' + convert.uint8ToHex(uint8ns.reverse()) + '00000000000000000000000000000000'
       address = {
         plain: function () {
-          return addressLib.addressToString(convert.hexToUint8(hexAddress))
+          return base32.encode(convert.hexToUint8(hexAddress))
         }
       }
     } else {
