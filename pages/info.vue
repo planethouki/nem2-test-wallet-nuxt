@@ -46,7 +46,7 @@ export default {
   },
   asyncData({ store, redirect }) {
     if (!store.getters['wallet/existsAccount']) {
-      redirect('/')
+      redirect('/login')
     }
     return {
       nav: [
