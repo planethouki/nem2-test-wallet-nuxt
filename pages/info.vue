@@ -44,10 +44,7 @@ export default {
       return this.$store.getters['wallet/existsAccount']
     }
   },
-  asyncData({ store, redirect }) {
-    if (!store.getters['wallet/existsAccount']) {
-      redirect('/login')
-    }
+  asyncData() {
     return {
       nav: [
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },

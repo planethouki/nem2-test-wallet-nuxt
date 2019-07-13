@@ -110,6 +110,7 @@ import TransactionListener from '~/components/TheTransactionListener.vue'
 import Logout from '~/components/Logout.vue'
 
 export default {
+  middleware: 'checkLogin',
   components: {
     Navigation,
     TransactionListener,
