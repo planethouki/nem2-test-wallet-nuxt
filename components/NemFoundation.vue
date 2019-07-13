@@ -10,6 +10,12 @@
         v-btn(slot="activator" color="indigo lighten-2" dark href="http://docs.nem.io/en/testnet" target="_blank")
           span.white--text.mr-1 View Docs
           v-icon play_circle_outline
+        v-btn(slot="activator" color="indigo lighten-2" dark href="http://nf-catapult-testnet.herokuapp.com/" target="_blank")
+          span.white--text.mr-1 Faucet
+          v-icon play_circle_outline
+        v-btn(slot="activator" color="indigo lighten-2" dark href="http://3.17.139.170:8080/" target="_blank")
+          span.white--text.mr-1 Network Explorer
+          v-icon play_circle_outline
 </template>
 
 <script>

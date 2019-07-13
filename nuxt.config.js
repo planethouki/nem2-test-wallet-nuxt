@@ -86,5 +86,9 @@ module.exports = {
         tls: 'empty'
       }
     }
+  },
+
+  env: {
+    isNf: true
   }
 }

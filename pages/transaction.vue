@@ -1,6 +1,7 @@
 <template lang="pug">
   v-layout(row)
     v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
+      NemFoundation(v-if="isNf")
       Balance(navTargetId="balance")
       Transfer(navTargetId="transfer")
       NamespaceInfo(navTargetId="namespaceInfo")
@@ -29,6 +30,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Balance from '~/components/info/Balance.vue'
 import Transfer from '~/components/tx/Transfer.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
@@ -53,11 +55,13 @@ import AccountPropertyEntityType from '~/components/tx/AccountPropertyEntityType
 import AccountLinkInfo from '~/components/info/AccountLinkInfo.vue'
 import AccountLink from '~/components/tx/AccountLink.vue'
 
+import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
 
 export default {
   components: {
     Sidebar,
+    NemFoundation,
     Balance,
     Transfer,
     NamespaceInfo,
@@ -83,6 +87,9 @@ export default {
     AccountLink
   },
   computed: {
+    ...mapGetters('env', [
+      'isNf'
+    ]),
     existsAccount() {
       return this.$store.getters['wallet/existsAccount']
     },
@@ -149,14 +156,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .title {
-    color: #35495e;
-    font-weight: bold;
-  }
-  .subheading {
-    color: #35495e;
-    font-weight: bold;
-  }
-</style>

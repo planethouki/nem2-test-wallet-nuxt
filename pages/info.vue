@@ -1,6 +1,7 @@
 <template lang="pug">
   v-layout(row)
     v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
+      NemFoundation(v-if="isNf")
       Balance(navTargetId="balance")
       TransactionInfo(navTargetId="transactionInfo")
       NamespaceInfo(navTargetId="namespaceInfo")
@@ -14,6 +15,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Balance from '~/components/info/Balance.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
 import MosaicInfo from '~/components/info/MosaicInfo.vue'
@@ -40,6 +42,9 @@ export default {
     TransactionInfo
   },
   computed: {
+    ...mapGetters('env', [
+      'isNf'
+    ]),
     existsAccount() {
       return this.$store.getters['wallet/existsAccount']
     }
@@ -86,14 +91,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .title {
-    color: #35495e;
-    font-weight: bold;
-  }
-  .subheading {
-    color: #35495e;
-    font-weight: bold;
-  }
-</style>

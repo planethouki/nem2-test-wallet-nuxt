@@ -1,6 +1,7 @@
 <template lang="pug">
   v-layout(row)
     v-flex#content.pt-3.px-3
+      NemFoundation(v-if="isNf")
       v-flex(mb-5)#login
         v-card
           v-form
@@ -45,9 +46,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import NemFoundation from '~/components/NemFoundation.vue'
 
 export default {
   layout: 'login',
+  components: {
+    NemFoundation
+  },
   head() {
     return {
       meta: [
@@ -75,8 +80,7 @@ export default {
       'defaultEndpoint',
       'defaultPrivateKey',
       'defaultNetworkType',
-      'currencyNamespaceName',
-      'harvestNamespaceName'
+      'isNf'
     ]),
     breakPoint() {
       return this.$vuetify.breakpoint.name
@@ -122,14 +126,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .title {
-    color: #35495e;
-    font-weight: bold;
-  }
-  .subheading {
-    color: #35495e;
-    font-weight: bold;
-  }
-</style>

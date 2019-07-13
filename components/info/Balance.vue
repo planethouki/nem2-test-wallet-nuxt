@@ -4,8 +4,6 @@
       v-card-title
         v-layout(align-baseline)
           span.title Balance
-          v-spacer
-          small resolve only {{ currencyNamespaceName }} and {{ harvestNamespaceName }}
       v-card-text
         v-layout.mb-3(column)
           span.mb-3.subheading mosaics
@@ -45,28 +43,14 @@ export default {
     ...mapGetters('wallet', [
       'existsAddress',
       'address',
-      'endpoint',
-      'currencyNamespaceName',
-      'harvestNamespaceName'
+      'endpoint'
     ]),
     ...mapGetters('chain', [
-      'blockHeight',
-      'currencyMosaicId',
-      'harvestMosaicId'
+      'blockHeight'
     ]),
     ...mapGetters('mosaicAmountViews', [
       'mosaicAmountViews'
     ]),
-    currencyBalance() {
-      return this.allMosaicsBalance.filter((m) => {
-        return m.alias === this.currencyNamespaceName
-      })
-    },
-    harvestBalance() {
-      return this.allMosaicsBalance.filter((m) => {
-        return m.alias === this.harvestNamespaceName
-      })
-    },
     mosaicBalance() {
       return this.allMosaicsBalance.filter((m) => {
         return m.alias !== this.currencyNamespaceName && m.alias !== this.harvestNamespaceName
@@ -74,10 +58,6 @@ export default {
     },
     allMosaicsBalance() {
       const blockHeight = this.blockHeight
-      const currencyMosaicId = this.currencyMosaicId
-      const harvestMosaicId = this.harvestMosaicId
-      const currencyNamespaceName = this.currencyNamespaceName
-      const harvestNamespaceName = this.harvestNamespaceName
       if (this.isLoading === false && this.mosaicAmountViews.length === 0) {
         return []
       } else if (this.mosaicAmountViews === null) {
@@ -107,15 +87,7 @@ export default {
           absoluteAmount: amount.toString(10),
           relativeAmount: relAmount.toString(10)
         }
-        if (mosaicAmountView.mosaicInfo.mosaicId.equals(currencyMosaicId)) {
-          ret.id = `${mosaicAmountView.fullName().toUpperCase()}`
-          ret.alias = `${currencyNamespaceName}`
-        } else if (mosaicAmountView.mosaicInfo.mosaicId.equals(harvestMosaicId)) {
-          ret.id = `${mosaicAmountView.fullName().toUpperCase()}`
-          ret.alias = `${harvestNamespaceName}`
-        } else {
-          ret.id = mosaicAmountView.fullName().toUpperCase()
-        }
+        ret.id = mosaicAmountView.fullName().toUpperCase()
         return ret
       })
     }
@@ -123,9 +95,6 @@ export default {
   methods: {
     reload: async function (event) {
       this.isLoading = true
-      if (!(this.currencyMosaicId || this.harvestMosaicId)) {
-        await this.$store.dispatch('chain/init')
-      }
       await this.$store.dispatch('chain/updateBlockHeight', {
         endpoint: this.endpoint
       })

@@ -31,7 +31,7 @@ export const actions = {
     const mosaicService = new MosaicService(accountHttp, mosaicHttp)
     accountHttp.getAccountInfo(address).pipe(
       mergeMap((accountInfo) => {
-        const mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : [state.currencyMosaicId.createAbsolute(0), state.harvestMosaicId.createAbsolute(0)]
+        const mosaics = accountInfo.mosaics.length !== 0 ? accountInfo.mosaics : []
         return mosaicService.mosaicsAmountView(mosaics)
       })
     ).subscribe((mosaicAmountViews) => {
