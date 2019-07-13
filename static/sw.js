@@ -2,40 +2,48 @@ importScripts('/_nuxt/workbox.4c4f5ca6.js')
 
 workbox.precaching.precacheAndRoute([
   {
-    "url": "/_nuxt/06d395d64013de86185e.js",
-    "revision": "5448e12d716310af4ef3644e5102d983"
+    "url": "/_nuxt/1ef20731f7f0bfb58c1a.js",
+    "revision": "fd61a794a1e4bb17dc525ffa43a151fe"
   },
   {
-    "url": "/_nuxt/2750ac18a23466b28f24.js",
-    "revision": "fe4329f22a4c859f0869638ba5bbc57e"
+    "url": "/_nuxt/4bc75e1efbc856458ab2.js",
+    "revision": "1d32dd857f835417edc937a8502a6aab"
   },
   {
-    "url": "/_nuxt/2b9add63e7594dc352ba.js",
-    "revision": "cd8daadae7a85fcb9ca99ee1c5ee253f"
+    "url": "/_nuxt/55902bce000333cb4769.js",
+    "revision": "63e70232024d15297d3a6b0215141295"
   },
   {
-    "url": "/_nuxt/568451a2b8edcd73e954.js",
-    "revision": "8e75ecdc6d837886cdec357fe3218843"
+    "url": "/_nuxt/579c1164be7b51ff0e34.js",
+    "revision": "33fac78d94faf270db17c039c6a11ba8"
   },
   {
-    "url": "/_nuxt/6c3f8d16fd789068ba91.js",
-    "revision": "ef64485e337bb977fae71b2125738a5c"
+    "url": "/_nuxt/5cc2eed440f63820d588.js",
+    "revision": "5b1ad885710ca2f565c9de54715dbb81"
   },
   {
-    "url": "/_nuxt/a61594f38652ba5be8ca.js",
-    "revision": "b30cf1097615096d78891b394cbe8bf8"
+    "url": "/_nuxt/69a0abd2562536699622.js",
+    "revision": "882b342657d7b52cdfa69c71a593f6ea"
   },
   {
-    "url": "/_nuxt/a6ad6a157c80fe5ea1dc.js",
-    "revision": "56476ba537630aabe3220a07b9f7dcfc"
+    "url": "/_nuxt/857d6e751a62744a1a8f.js",
+    "revision": "1f0babd65066d3f5a3721e7640266c8e"
   },
   {
-    "url": "/_nuxt/c6f252cf9d90dd971e2e.js",
-    "revision": "2caaf9966c5915c4b4526cd075fe4cf8"
+    "url": "/_nuxt/8a3fcc0749f9ec3c183a.js",
+    "revision": "3ba367f2e5b5b5be75af198137b50acf"
   },
   {
-    "url": "/_nuxt/d8a9fc313dd9f5b819f0.js",
-    "revision": "f9205b4441e3cedb7410d77fef9898a7"
+    "url": "/_nuxt/92db2c5d492e536a2b30.js",
+    "revision": "02794ec2fb12800de9ed2cb8302568b4"
+  },
+  {
+    "url": "/_nuxt/963c492001a635fa2dd3.js",
+    "revision": "ac8d262f1575428ae4932d3363d2531f"
+  },
+  {
+    "url": "/_nuxt/9f9a7b46093ac99c7fad.js",
+    "revision": "0e82eda14f83cbd698505f7c57ec6a61"
   }
 ], {
   "cacheId": "nem2-test-wallet-nuxt",

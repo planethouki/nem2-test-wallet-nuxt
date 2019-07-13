@@ -13,7 +13,7 @@
           label="Mosaics"
           v-model="t_mosaics"
           required
-          placeholder="ex). @cat.currency::0, 941299B2B7E1291C::0")
+          :placeholder="`ex). ${mosaicPlaceholder.transfer}`")
         v-radio-group(label="Message Type" v-model="t_messageType" row)
           v-radio(
             v-for="mt in t_messageTypes"
@@ -68,7 +68,7 @@ export default {
     return {
       t_recipientAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       t_recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
-      t_mosaics: '@cat.currency::0, 941299B2B7E1291C::0',
+      t_mosaics: '',
       t_messageType: 0,
       t_messageTypes: [
         { type: 0, label: 'Plain' },
@@ -86,7 +86,13 @@ export default {
     ]),
     ...mapGetters('chain', [
       'generationHash'
+    ]),
+    ...mapGetters('env', [
+      'mosaicPlaceholder'
     ])
+  },
+  mounted() {
+    this.t_mosaics = this.mosaicPlaceholder.transfer
   },
   methods: {
     t_announceHandler: function (event) {

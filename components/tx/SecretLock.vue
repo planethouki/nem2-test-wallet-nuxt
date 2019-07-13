@@ -18,7 +18,7 @@
           label="Mosaic"
           v-model="l_mosaic"
           required
-          placeholder="ex). @cat.currency::1000000")
+          :placeholder="`ex). ${mosaicPlaceholder.currency10}`")
         v-text-field(
           label="To Address"
           v-model="l_recipient"
@@ -73,7 +73,7 @@ export default {
         { type: HashType.Op_Hash_256, label: 'Hash256', strLen: '64' },
         { type: HashType.Op_Hash_160, label: 'Hash160', strLen: '40' }
       ],
-      l_mosaic: '@cat.currency::10000000',
+      l_mosaic: '',
       l_recipient: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       l_duration: 240,
       l_history: [],
@@ -83,7 +83,11 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['mosaicPlaceholder'])
+  },
+  mounted() {
+    this.l_mosaic = this.mosaicPlaceholder.currency10
   },
   watch: {
     l_hashType: {

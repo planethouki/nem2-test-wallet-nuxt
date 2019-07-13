@@ -18,7 +18,7 @@
                 label="Mosaics"
                 v-model="e_mosaics1"
                 required
-                placeholder="ex). @cat.currency::0, 941299B2B7E1291C::0")
+                :placeholder="`ex). ${mosaicPlaceholder.escrow1}`")
               v-text-field(
                 label="Message"
                 v-model="e_message1"
@@ -39,7 +39,7 @@
                 label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
                 v-model="e_mosaics2"
                 required
-                placeholder="ex). 85BBEA6CC462B244::0, @cat.harvest::0")
+                :placeholder="`ex). ${mosaicPlaceholder.escrow2}`")
               v-text-field(
                 label="Message"
                 v-model="e_message2"
@@ -53,7 +53,7 @@
           v-text-field(
             label="Lock Funds Mosaic"
             v-model="e_mosaic3"
-            placeholder="ex). @cat.currency::10000000")
+            :placeholder="`ex). ${mosaicPlaceholder.currency10}`")
           v-text-field(
             label="Lock Funds Duration In Blocks"
             v-model="e_duration3"
@@ -75,8 +75,7 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
-  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener,
-  NamespaceHttp
+  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
@@ -97,12 +96,12 @@ export default {
   data() {
     return {
       e_recipient1: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
-      e_mosaics1: '@cat.currency::0, 941299B2B7E1291C::0',
+      e_mosaics1: '',
       e_message1: 'escrow payment',
       e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
-      e_mosaics2: '85BBEA6CC462B244::0, @cat.harvest::0',
+      e_mosaics2: '',
       e_message2: 'escrow invoice',
-      e_mosaic3: '@cat.currency::10000000',
+      e_mosaic3: '',
       e_duration3: 480,
       e_history: [],
       e_fee: 0,
@@ -111,10 +110,16 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['mosaicPlaceholder'])
+  },
+  mounted() {
+    this.e_mosaics1 = this.mosaicPlaceholder.escrow1
+    this.e_mosaics2 = this.mosaicPlaceholder.escrow2
+    this.e_mosaic3 = this.mosaicPlaceholder.currency10
   },
   methods: {
-    e_announceHandler: async function (event) {
+    e_announceHandler: function (event) {
       const endpoint = this.$store.getters['wallet/endpoint']
       const wsEndpoint = endpoint.replace('http', 'ws')
       const listener = new Listener(wsEndpoint, WebSocket)
@@ -122,9 +127,7 @@ export default {
       const network = account.address.networkType
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
-      let lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
-      const namespaceHttp = new NamespaceHttp(endpoint)
-      lockFundsMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockFundsMosaic)
+      const lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
         this.$parser.parseAddress(this.e_recipient1),
@@ -150,7 +153,7 @@ export default {
         UInt64.fromUint(this.e_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx, this.generationHash)
-      const lockFundsTx = new LockFundsTransaction(
+      const lockFundsTx = LockFundsTransaction.create(
         Deadline.create(),
         lockFundsMosaic,
         UInt64.fromUint(this.e_duration3),

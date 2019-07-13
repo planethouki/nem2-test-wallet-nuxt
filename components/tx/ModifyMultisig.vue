@@ -70,7 +70,7 @@
         v-flex.pt-4
           v-text-field(
             label="Lock Funds Mosaic"
-            placeholder="ex). @cat.currency::10000000"
+            :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
             v-model="d_lockMosaic"
             required)
           v-text-field(
@@ -127,13 +127,17 @@ export default {
       d_history: [],
       d_fee: 0,
       d_lockFee: 0,
-      d_lockMosaic: '@cat.currency::10000000',
+      d_lockMosaic: '',
       d_lockDuration: 480
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['mosaicPlaceholder'])
+  },
+  mounted() {
+    this.d_lockMosaic = this.mosaicPlaceholder.currency10
   },
   methods: {
     d_deleteModification: function (index) {

@@ -89,6 +89,6 @@ module.exports = {
   },
 
   env: {
-    isNf: false
+    isNf: true
   }
 }

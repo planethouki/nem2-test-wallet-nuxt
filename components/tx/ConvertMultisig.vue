@@ -55,7 +55,7 @@
         v-flex.pt-4
           v-text-field(
             label="Lock Funds Mosaic"
-            placeholder="ex). @cat.currency::10000000"
+            :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
             v-model="u_lockMosaic"
             required)
           v-text-field(
@@ -114,7 +114,7 @@ export default {
       u_history: [],
       u_fee: 0,
       u_lockFee: 0,
-      u_lockMosaic: '@cat.currency::10000000',
+      u_lockMosaic: '',
       u_lockDuration: 480
     }
   },
@@ -122,6 +122,7 @@ export default {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'address']),
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('multisigGraph', ['isMultisig']),
+    ...mapGetters('env', ['mosaicPlaceholder']),
     u_forbidMultisig() {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
@@ -130,6 +131,9 @@ export default {
       if (this.isMultisig) return 'Already converted'
       return ''
     }
+  },
+  mounted() {
+    this.u_lockMosaic = this.mosaicPlaceholder.currency10
   },
   watch: {},
   methods: {
