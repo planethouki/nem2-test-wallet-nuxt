@@ -1,7 +1,6 @@
 <template lang="pug">
   v-layout(row)
     v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
-      WalletInfo(navTargetId="walletInfo")
       Balance(navTargetId="balance")
       TransactionInfo(navTargetId="transactionInfo")
       NamespaceInfo(navTargetId="namespaceInfo")
@@ -17,7 +16,6 @@
 <script>
 import Login from '~/components/Login.vue'
 
-import WalletInfo from '~/components/info/WalletInfo.vue'
 import Balance from '~/components/info/Balance.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
 import MosaicInfo from '~/components/info/MosaicInfo.vue'
@@ -35,7 +33,6 @@ export default {
     Sidebar,
     NemFoundation,
     Login,
-    WalletInfo,
     Balance,
     NamespaceInfo,
     MosaicInfo,
@@ -56,7 +53,6 @@ export default {
     }
     return {
       nav: [
-        { icon: 'star', title: 'WalletInfo', target: '#walletInfo', offset: 48 },
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
         { icon: 'star', title: 'Transaction', target: '#transactionInfo', offset: 48 },
         { icon: 'star', title: 'Namespace', target: '#namespaceInfo', offset: 48 },

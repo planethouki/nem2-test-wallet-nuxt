@@ -31,7 +31,6 @@
 <script>
 import Login from '~/components/Login.vue'
 
-import WalletInfo from '~/components/info/WalletInfo.vue'
 import Balance from '~/components/info/Balance.vue'
 import Transfer from '~/components/tx/Transfer.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
@@ -62,7 +61,6 @@ export default {
   components: {
     Sidebar,
     Login,
-    WalletInfo,
     Balance,
     Transfer,
     NamespaceInfo,
