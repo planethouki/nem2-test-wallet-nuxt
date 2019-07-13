@@ -2,11 +2,11 @@
   v-flex(mb-5 v-if="existsAddress" v-bind:id="navTargetId")
     v-card
       v-card-title
-        span.title Current Account Property
+        span.title Current Account Restriction
       v-card-text
         v-layout(align-baseline)
           span(v-if="properties === null")
-          span(v-if="propertiesTree.length === 0") None
+          span(v-if="propertiesTree.length === 0") Please wait for update
           v-treeview(v-else :items="propertiesTree")
       v-card-actions
         v-btn(

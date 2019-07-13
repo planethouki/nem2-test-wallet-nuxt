@@ -22,7 +22,10 @@
         v-btn(
         color="blue"
         class="white--text"
-        @click="announceHandler") announce
+        @click="announceHandler"
+        :disabled="forbidLink") announce
+        v-flex
+          div(v-if="forbidLink") &nbsp; {{ announceDisabledMessage }}
       v-card-text
         tx-history(v-bind:history="history")
 </template>
@@ -58,13 +61,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('wallet', ['existsAccount', 'address', 'account', 'endpoint']),
+    ...mapGetters('chain', ['generationHash']),
+    forbidLink() {
+      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
+    },
+    announceDisabledMessage() {
+      if (this.forbidLink) return 'Please try another account.'
+      return ''
+    }
   },
   methods: {
     announceHandler: function (event) {
-      const account = this.$store.getters['wallet/account']
-      const endpoint = this.$store.getters['wallet/endpoint']
+      const account = this.account
+      const endpoint = this.endpoint
       const accountLinkTransaction = AccountLinkTransaction.create(
         Deadline.create(),
         this.remoteAccountKey,

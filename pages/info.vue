@@ -58,7 +58,7 @@ export default {
         { icon: 'star', title: 'Mosaic', target: '#mosaicInfo', offset: 48 },
         { icon: 'star', title: 'Multisig', target: '#multisigInfo', offset: 48 },
         { icon: 'star', title: 'Alias', target: '#aliasInfo', offset: 48 },
-        { icon: 'star', title: 'Account Property', target: '#accountPropertyInfo', offset: 48 },
+        { icon: 'star', title: 'Account Restriction', target: '#accountPropertyInfo', offset: 48 },
         { icon: 'star', title: 'Account Link', target: '#accountLinkInfo', offset: 48 }
       ],
       navActive: ''

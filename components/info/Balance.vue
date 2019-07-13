@@ -6,7 +6,6 @@
           span.title Balance
       v-card-text
         v-layout.mb-3(column)
-          span.mb-3.subheading mosaics
           span.ml-3(v-if="isLoading")
           template(v-else-if="mosaicBalance.length")
             div(v-for="m in mosaicBalance" v-bind:key="m.id")
