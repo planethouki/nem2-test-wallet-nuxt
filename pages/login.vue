@@ -107,13 +107,15 @@ export default {
         endpoint = `http://${endpoint}`
       }
       await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint })
-      await this.$store.dispatch('chain/init')
-      await this.$store.dispatch('mosaicAmountViews/update')
-      await this.$store.dispatch('multisigGraph/update')
-      await this.$store.dispatch('namespaces/update')
-      await this.$store.dispatch('accountProperties/update')
-      await this.$store.dispatch('accountLink/update')
-      await this.$store.dispatch('transactions/update')
+      await Promise.all([
+        this.$store.dispatch('chain/init'),
+        this.$store.dispatch('mosaicAmountViews/update'),
+        this.$store.dispatch('multisigGraph/update'),
+        this.$store.dispatch('namespaces/update'),
+        this.$store.dispatch('accountProperties/update'),
+        this.$store.dispatch('accountLink/update'),
+        this.$store.dispatch('transactions/update')
+      ])
       this.loginDisabled = false
       this.$router.push('/info')
     }

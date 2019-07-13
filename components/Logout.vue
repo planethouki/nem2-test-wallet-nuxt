@@ -11,7 +11,7 @@ export default {
   methods: {
     logoutWallet: function (event) {
       this.$store.dispatch('wallet/logout')
-      this.$router.push('/')
+      this.$router.push('/login')
     }
   }
 }
