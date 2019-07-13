@@ -67,7 +67,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, PropertyType, TransactionHttp,
-  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyEntityTypeTransaction } from 'nem2-sdk'
+  PropertyModificationType, AccountPropertyModification, ModifyAccountPropertyEntityTypeTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -131,7 +131,7 @@ export default {
         Deadline.create(),
         this.propertyType,
         this.modifications.map((modification) => {
-          return AccountPropertyTransaction.createEntityTypeFilter(
+          return AccountPropertyModification.createForEntityType(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             Number('0x'.concat(modification.hexEntityType))
           )

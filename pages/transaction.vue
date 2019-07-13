@@ -11,6 +11,7 @@
       MosaicDefinition(navTargetId="mosaic")
       SecretLock(navTargetId="secretlock")
       SecretProof(navTargetId="secretproof")
+      MultisigInfo(navTargetId="multisigInfo")
       ConvertMultisig(navTargetId="multisig")
       ModifyMultisig(navTargetId="modifymultisig")
       Escrow(navTargetId="escrow")
@@ -40,6 +41,7 @@ import MosaicInfo from '~/components/info/MosaicInfo.vue'
 import MosaicDefinition from '~/components/tx/MosaicDefinition.vue'
 import SecretLock from '~/components/tx/SecretLock.vue'
 import SecretProof from '~/components/tx/SecretProof.vue'
+import MultisigInfo from '../components/info/MultisigInfo'
 import ConvertMultisig from '~/components/tx/ConvertMultisig.vue'
 import ModifyMultisig from '~/components/tx/ModifyMultisig.vue'
 import Escrow from '~/components/tx/Escrow.vue'
@@ -71,6 +73,7 @@ export default {
     MosaicDefinition,
     SecretLock,
     SecretProof,
+    MultisigInfo,
     ConvertMultisig,
     ModifyMultisig,
     Escrow,
@@ -111,6 +114,7 @@ export default {
         { icon: 'web_asset', title: 'Mosaic', target: '#mosaic', offset: 48 },
         { icon: 'lock', title: 'Secret Lock Tx', target: '#secretlock', offset: 48 },
         { icon: 'lock_open', title: 'Secret proof Tx', target: '#secretproof', offset: 48 },
+        { icon: 'star', title: 'Current Multisig', target: '#multisigInfo', offset: 48 },
         { icon: 'menu', title: 'Multisig', target: '#multisig', offset: 48 },
         { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: 48 },
         { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: 48 },

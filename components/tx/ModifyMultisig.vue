@@ -96,7 +96,7 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener, NamespaceHttp
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
@@ -147,7 +147,7 @@ export default {
       this.d_additionalModificationPubkey = ''
       this.d_additionalModificationType = false
     },
-    d_announceHandler: async function (event) {
+    d_announceHandler: function (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
       const account = this.wallet.open(this.walletPassword)
       const endpoint = this.endpoint
@@ -179,9 +179,7 @@ export default {
         UInt64.fromUint(this.d_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx, this.generationHash)
-      let lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
-      const namespaceHttp = new NamespaceHttp(endpoint)
-      lockMosaic = await this.$parser.resolveIfNamespace(namespaceHttp, lockMosaic)
+      const lockMosaic = this.$parser.parseMosaic(this.d_lockMosaic)
       const lockFundsTx = LockFundsTransaction.create(
         Deadline.create(),
         lockMosaic,

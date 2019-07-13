@@ -61,7 +61,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { Address, Deadline, UInt64, PropertyType, TransactionHttp,
-  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
+  PropertyModificationType, AccountPropertyModification, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -99,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount', 'endpoint']),
+    ...mapGetters('wallet', ['existsAccount', 'endpoint', 'account']),
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
@@ -120,7 +120,7 @@ export default {
         Deadline.create(),
         this.propertyType,
         this.modifications.map((modification) => {
-          return AccountPropertyTransaction.createAddressFilter(
+          return AccountPropertyModification.createForAddress(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             Address.createFromRawAddress(modification.rawAddress)
           )

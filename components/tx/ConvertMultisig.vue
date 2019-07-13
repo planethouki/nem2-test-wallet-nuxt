@@ -52,29 +52,47 @@
           v-model="u_fee"
           required
           type="number")
+        v-flex.pt-4
+          v-text-field(
+            label="Lock Funds Mosaic"
+            placeholder="ex). @cat.currency::10000000"
+            v-model="u_lockMosaic"
+            required)
+          v-text-field(
+            label="Lock Funds Duration In Blocks"
+            placeholder="ex). 480"
+            v-model="u_lockDuration"
+            required)
+          v-text-field(
+            label="Lock Funds Max Fee"
+            v-model="u_lockFee"
+            required
+            type="number")
       v-card-actions
         v-btn(
           color="blue"
           class="white--text"
           @click="u_announceHandler"
-          :disabled="u_isMultisig || u_forbidMultisig") announce
+          :disabled="isMultisig || u_forbidMultisig") announce
         v-flex
-          div(v-if="u_isMultisig || u_forbidMultisig") &nbsp; {{ u_announceDisabledMessage }}
+          div(v-if="isMultisig || u_forbidMultisig") &nbsp; {{ u_announceDisabledMessage }}
       v-card-text
-        tx-history(v-bind:history="u_history")
+        aggregatetx-history(v-bind:history="u_history")
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import {
   Deadline, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, AccountHttp, UInt64 } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
+  MultisigCosignatoryModificationType, PublicAccount, UInt64, AggregateTransaction, Listener,
+  LockFundsTransaction } from 'nem2-sdk'
+import { filter, timeout } from 'rxjs/operators'
+import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
   name: 'ConvertMultisig',
   components: {
-    TxHistory
+    AggregatetxHistory
   },
   props: {
     navTargetId: {
@@ -95,53 +113,26 @@ export default {
       u_minRemovalDelta: 2,
       u_history: [],
       u_fee: 0,
-      u_isMultisig: false,
-      u_forbidMultisig: false,
-      u_announceDisabledMessage: ''
+      u_lockFee: 0,
+      u_lockMosaic: '@cat.currency::10000000',
+      u_lockDuration: 480
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount', 'endpoint']),
-    ...mapGetters('chain', ['generationHash'])
-  },
-  watch: {
-    address: {
-      handler: function (newVal) {
-        if (newVal && newVal.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2') {
-          this.u_forbidMultisig = true
-          this.u_announceDisabledMessage = 'Please try another account.'
-        } else {
-          this.u_forbidMultisig = false
-          this.$nextTick(() => {
-            this.u_checkIsMultisig()
-          })
-        }
-      }
+    ...mapGetters('wallet', ['existsAccount', 'endpoint', 'address']),
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('multisigGraph', ['isMultisig']),
+    u_forbidMultisig() {
+      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
-    endpoint: {
-      handler: function (newVal) {
-        if (newVal) {
-          this.$nextTick(() => {
-            this.u_checkIsMultisig()
-          })
-        }
-      }
+    u_announceDisabledMessage() {
+      if (this.u_forbidMultisig) return 'Please try another account.'
+      if (this.isMultisig) return 'Already converted'
+      return ''
     }
   },
+  watch: {},
   methods: {
-    u_checkIsMultisig: async function () {
-      if (!this.address) return
-      if (!this.endpoint) return
-      if (this.u_forbidMultisig) return
-      const accountHttp = new AccountHttp(this.endpoint)
-      const multisigInfo = await accountHttp.getMultisigAccountInfo(this.address).toPromise()
-      if (multisigInfo.isMultisig()) {
-        this.u_announceDisabledMessage = 'This account is already converted to multisig.'
-        this.u_isMultisig = true
-      } else {
-        this.u_isMultisig = false
-      }
-    },
     u_deleteCosignatory: function (index) {
       this.u_cosignatories.splice(index, 1)
     },
@@ -152,6 +143,8 @@ export default {
     u_announceHandler: function (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
+      const wsEndpoint = endpoint.replace('http', 'ws')
+      const listener = new Listener(wsEndpoint, WebSocket)
       const networkType = account.address.networkType
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta
@@ -169,12 +162,51 @@ export default {
         networkType,
         UInt64.fromUint(this.u_fee)
       )
-      const signedTx = account.sign(tx, this.generationHash)
+      const aggregateTx = AggregateTransaction.createBonded(
+        Deadline.create(23),
+        [
+          tx.toAggregate(account.publicAccount)
+        ],
+        networkType,
+        [],
+        UInt64.fromUint(this.d_fee)
+      )
+      const signedAggregateTx = account.sign(aggregateTx, this.generationHash)
+      const lockFundsTx = LockFundsTransaction.create(
+        Deadline.create(),
+        this.$parser.parseMosaic(this.u_lockMosaic),
+        UInt64.fromUint(this.u_lockDuration),
+        signedAggregateTx,
+        networkType,
+        UInt64.fromUint(this.u_lockFee)
+      )
+      const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx)
+      listener.open().then(() => {
+        return txHttp.announce(signedLockFundsTx).toPromise()
+      }).then(() => {
+        return new Promise((resolve, reject) => {
+          listener.confirmed(account.address).pipe(
+            timeout(90000),
+            filter((transaction) => {
+              return transaction.transactionInfo !== undefined &&
+                transaction.transactionInfo.hash === signedLockFundsTx.hash
+            })
+          ).subscribe(
+            result => resolve(result),
+            error => reject(error)
+          )
+        })
+      }).then(() => {
+        return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
+      }).finally(() => {
+        listener.close()
+      })
       const historyData = {
-        hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        agHash: signedAggregateTx.hash,
+        agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+        lfHash: signedLockFundsTx.hash,
+        lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`
       }
       this.u_history.push(historyData)
     }

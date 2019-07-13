@@ -25,7 +25,7 @@ export const actions = {
     const properties = await new Promise((resolve) => {
       accountHttp.getAccountInfo(address).pipe(
         mergeMap((accountInfo) => {
-          return accountHttp.getAccountProperty(accountInfo.publicAccount)
+          return accountHttp.getAccountProperties(accountInfo.address)
         })
       ).subscribe((accountPropertiesInfo) => {
         resolve(accountPropertiesInfo.accountProperties.properties)

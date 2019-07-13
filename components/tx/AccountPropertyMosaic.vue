@@ -61,7 +61,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, MosaicId, PropertyType, TransactionHttp,
-  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyMosaicTransaction } from 'nem2-sdk'
+  PropertyModificationType, AccountPropertyModification, ModifyAccountPropertyMosaicTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -99,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('wallet', ['existsAccount', 'account', 'endpoint']),
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
@@ -114,13 +114,13 @@ export default {
       this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
     announceHandler: function (event) {
-      const account = this.$store.getters['wallet/account']
-      const endpoint = this.$store.getters['wallet/endpoint']
+      const account = this.account
+      const endpoint = this.endpoint
       const modifyAccountPropertyMosaicTransaction = ModifyAccountPropertyMosaicTransaction.create(
         Deadline.create(),
         this.propertyType,
         this.modifications.map((modification) => {
-          return AccountPropertyTransaction.createMosaicFilter(
+          return AccountPropertyModification.createForMosaic(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
             new MosaicId(modification.hexMosaicId)
           )
