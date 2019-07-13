@@ -2,42 +2,38 @@
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
-        div.title Mosaic Alias
+        div.title Account Link
       v-card-text
-        v-radio-group(label="Alias Action Type" v-model="actionType" row)
+        v-radio-group(label="Link Action" v-model="linkAction" row)
           v-radio(
-            v-for="at in actionTypes"
-            :key="at.type"
-            :label="at.label"
-            :value="at.type")
+          v-for="pt in linkActions"
+          :key="pt.type"
+          :label="pt.label"
+          :value="pt.type")
         v-text-field(
-          label="Namespace Name"
-          v-model="namespaceName"
-          required
-          placeholder="ex). foo")
-        v-text-field(
-          label="hexMosaicId"
-          v-model="hexMosaicId"
+          label="Remote Account Public Key"
+          v-model="remoteAccountKey"
+          :counter="64"
           required)
         v-text-field(
           label="Max Fee"
           v-model="fee")
       v-card-actions
         v-btn(
-          color="blue"
-          class="white--text"
-          @click="announceHandler") announce
+        color="blue"
+        class="white--text"
+        @click="announceHandler") announce
       v-card-text
         tx-history(v-bind:history="history")
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, NamespaceId, MosaicId, AliasActionType, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
-import TxHistory from './history/TxHistory.vue'
+import { LinkAction, AccountLinkTransaction, Deadline, UInt64, TransactionHttp } from 'nem2-sdk'
+import TxHistory from '../history/TxHistory.vue'
 
 export default {
-  name: 'MosaicAlias',
+  name: 'AccountLink',
   components: {
     TxHistory
   },
@@ -45,19 +41,18 @@ export default {
     navTargetId: {
       type: String,
       default() {
-        return 'mosaicAlias'
+        return 'accountLink'
       }
     }
   },
   data() {
     return {
-      actionType: AliasActionType.Link,
-      actionTypes: [
-        { type: AliasActionType.Link, label: 'Link' },
-        { type: AliasActionType.Unlink, label: 'Unlink' }
+      remoteAccountKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
+      linkAction: LinkAction.Link,
+      linkActions: [
+        { type: LinkAction.Link, label: 'Link' },
+        { type: LinkAction.Unlink, label: 'Unlink' }
       ],
-      namespaceName: 'foo',
-      hexMosaicId: '79DC0ABC22594941',
       fee: 0,
       history: []
     }
@@ -70,17 +65,18 @@ export default {
     announceHandler: function (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
-      const mosaicAliasTransaction = MosaicAliasTransaction.create(
+      const accountLinkTransaction = AccountLinkTransaction.create(
         Deadline.create(),
-        this.actionType,
-        new NamespaceId(this.namespaceName),
-        new MosaicId(this.hexMosaicId),
+        this.remoteAccountKey,
+        this.linkAction,
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(mosaicAliasTransaction, this.generationHash)
+      const signedTx = account.sign(accountLinkTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx)
+      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
+      })
+
       const historyData = {
         hash: signedTx.hash,
         apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`

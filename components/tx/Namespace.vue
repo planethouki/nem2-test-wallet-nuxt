@@ -30,7 +30,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
-import TxHistory from './history/TxHistory.vue'
+import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'Namespace',

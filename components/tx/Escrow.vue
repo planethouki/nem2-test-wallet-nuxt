@@ -79,7 +79,7 @@ import {
   NamespaceHttp
 } from 'nem2-sdk'
 import { filter, timeout } from 'rxjs/operators'
-import AggregatetxHistory from './history/AggregatetxHistory.vue'
+import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
   name: 'Escrow',

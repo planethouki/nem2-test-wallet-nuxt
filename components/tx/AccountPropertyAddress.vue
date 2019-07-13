@@ -2,7 +2,7 @@
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
-        div.title Account Property Entity Type
+        div.title Account Property Address
       v-card-text
         v-radio-group(label="Property Type" v-model="propertyType" row)
           v-radio(
@@ -11,14 +11,14 @@
             :label="pt.label"
             :value="pt.type")
         v-flex.pt-4
-          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.hexEntityType" row wrap)
+          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.rawAddress" row wrap)
             v-flex
               v-layout(align-baseline)
                 span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
                 v-flex
                   v-text-field(
-                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Entity Type: ' + (index + 1)"
-                  v-bind:value="modification.hexEntityType"
+                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Address: ' + (index + 1)"
+                  v-bind:value="modification.rawAddress"
                   disabled)
                 v-btn(
                 fab
@@ -37,15 +37,9 @@
               v-model="additionalModification.isAdd")
             v-flex
               v-text-field(
-                v-bind:label="`Hex Entity Type Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-                v-model="additionalModification.hexEntityType"
-                placeholder="ex). 4152")
-              v-select(
-                :items="entityTypes"
-                item-text="label"
-                item-value="hexEntityType"
-                v-model="additionalModification.hexEntityType"
-                label="(Option) Select From")
+              v-bind:label="`Address Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+              v-model="additionalModification.rawAddress"
+              placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
             v-btn(
             fab
             small
@@ -66,9 +60,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, PropertyType, TransactionHttp,
-  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyEntityTypeTransaction } from 'nem2-sdk'
-import TxHistory from './history/TxHistory.vue'
+import { Address, Deadline, UInt64, PropertyType, TransactionHttp,
+  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
+import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'AccountPropertyAddress',
@@ -79,39 +73,34 @@ export default {
     navTargetId: {
       type: String,
       default() {
-        return 'accountPropertyEntityType'
+        return 'accountPropertyAddress'
       }
     }
   },
   data() {
     return {
-      propertyType: PropertyType.AllowTransaction,
+      propertyType: PropertyType.AllowAddress,
       propertyTypes: [
-        { type: PropertyType.AllowTransaction, label: 'Allow' },
-        { type: PropertyType.BlockTransaction, label: 'Block' }
+        { type: PropertyType.AllowAddress, label: 'Allow' },
+        { type: PropertyType.BlockAddress, label: 'Block' }
       ],
       modifications: [
         {
           isAdd: true,
-          hexEntityType: '4152'
+          rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
         }
       ],
       additionalModification: {
         isAdd: true,
-        hexEntityType: '4152'
+        rawAddress: ''
       },
       fee: 0,
       history: []
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash']),
-    entityTypes() {
-      return this.$transactionTypes.map((x) => {
-        return { label: x.label, entityType: x.entityType, hexEntityType: x.entityType.toString(16).toUpperCase() }
-      })
-    }
+    ...mapGetters('wallet', ['existsAccount', 'endpoint']),
+    ...mapGetters('chain', ['generationHash'])
   },
   methods: {
     deleteModification: function (index) {
@@ -119,27 +108,27 @@ export default {
     },
     addModification: function () {
       this.modifications.push({
-        hexEntityType: this.additionalModification.hexEntityType,
+        rawAddress: this.additionalModification.rawAddress,
         isAdd: this.additionalModification.isAdd
       })
-      this.additionalModification.rawAddress = '4152'
+      this.additionalModification.rawAddress = ''
     },
     announceHandler: function (event) {
-      const account = this.$store.getters['wallet/account']
-      const endpoint = this.$store.getters['wallet/endpoint']
-      const modifyAccountPropertyEntityTypeTransaction = ModifyAccountPropertyEntityTypeTransaction.create(
+      const account = this.account
+      const endpoint = this.endpoint
+      const modifyAccountPropertyAddressTransaction = ModifyAccountPropertyAddressTransaction.create(
         Deadline.create(),
         this.propertyType,
         this.modifications.map((modification) => {
-          return AccountPropertyTransaction.createEntityTypeFilter(
+          return AccountPropertyTransaction.createAddressFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
-            Number('0x'.concat(modification.hexEntityType))
+            Address.createFromRawAddress(modification.rawAddress)
           )
         }),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(modifyAccountPropertyEntityTypeTransaction, this.generationHash)
+      const signedTx = account.sign(modifyAccountPropertyAddressTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

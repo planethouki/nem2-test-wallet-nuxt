@@ -2,7 +2,7 @@
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
-        div.title Account Property Mosaic
+        div.title Account Property Entity Type
       v-card-text
         v-radio-group(label="Property Type" v-model="propertyType" row)
           v-radio(
@@ -11,14 +11,14 @@
             :label="pt.label"
             :value="pt.type")
         v-flex.pt-4
-          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.hexMosaicId" row wrap)
+          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.hexEntityType" row wrap)
             v-flex
               v-layout(align-baseline)
                 span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
                 v-flex
                   v-text-field(
-                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Mosaic: ' + (index + 1)"
-                  v-bind:value="modification.hexMosaicId"
+                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Entity Type: ' + (index + 1)"
+                  v-bind:value="modification.hexEntityType"
                   disabled)
                 v-btn(
                 fab
@@ -37,9 +37,15 @@
               v-model="additionalModification.isAdd")
             v-flex
               v-text-field(
-              v-bind:label="`Hex Mosaic ID Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              v-model="additionalModification.hexMosaicId"
-              placeholder="ex). 41BC54DEB7515742")
+                v-bind:label="`Hex Entity Type Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+                v-model="additionalModification.hexEntityType"
+                placeholder="ex). 4152")
+              v-select(
+                :items="entityTypes"
+                item-text="label"
+                item-value="hexEntityType"
+                v-model="additionalModification.hexEntityType"
+                label="(Option) Select From")
             v-btn(
             fab
             small
@@ -60,12 +66,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, MosaicId, PropertyType, TransactionHttp,
-  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyMosaicTransaction } from 'nem2-sdk'
-import TxHistory from './history/TxHistory.vue'
+import { Deadline, UInt64, PropertyType, TransactionHttp,
+  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyEntityTypeTransaction } from 'nem2-sdk'
+import TxHistory from '../history/TxHistory.vue'
 
 export default {
-  name: 'AccountPropertyMosaic',
+  name: 'AccountPropertyAddress',
   components: {
     TxHistory
   },
@@ -73,26 +79,26 @@ export default {
     navTargetId: {
       type: String,
       default() {
-        return 'accountPropertyMosaic'
+        return 'accountPropertyEntityType'
       }
     }
   },
   data() {
     return {
-      propertyType: PropertyType.AllowMosaic,
+      propertyType: PropertyType.AllowTransaction,
       propertyTypes: [
-        { type: PropertyType.AllowMosaic, label: 'Allow' },
-        { type: PropertyType.BlockMosaic, label: 'Block' }
+        { type: PropertyType.AllowTransaction, label: 'Allow' },
+        { type: PropertyType.BlockTransaction, label: 'Block' }
       ],
       modifications: [
         {
           isAdd: true,
-          hexMosaicId: '41BC54DEB7515742'
+          hexEntityType: '4152'
         }
       ],
       additionalModification: {
         isAdd: true,
-        hexMosaicId: '41BC54DEB7515742'
+        hexEntityType: '4152'
       },
       fee: 0,
       history: []
@@ -100,7 +106,12 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    entityTypes() {
+      return this.$transactionTypes.map((x) => {
+        return { label: x.label, entityType: x.entityType, hexEntityType: x.entityType.toString(16).toUpperCase() }
+      })
+    }
   },
   methods: {
     deleteModification: function (index) {
@@ -108,27 +119,27 @@ export default {
     },
     addModification: function () {
       this.modifications.push({
-        hexMosaicId: this.additionalModification.hexMosaicId,
+        hexEntityType: this.additionalModification.hexEntityType,
         isAdd: this.additionalModification.isAdd
       })
-      this.additionalModification.hexMosaicId = '41BC54DEB7515742'
+      this.additionalModification.rawAddress = '4152'
     },
     announceHandler: function (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
-      const modifyAccountPropertyMosaicTransaction = ModifyAccountPropertyMosaicTransaction.create(
+      const modifyAccountPropertyEntityTypeTransaction = ModifyAccountPropertyEntityTypeTransaction.create(
         Deadline.create(),
         this.propertyType,
         this.modifications.map((modification) => {
-          return AccountPropertyTransaction.createMosaicFilter(
+          return AccountPropertyTransaction.createEntityTypeFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
-            new MosaicId(modification.hexMosaicId)
+            Number('0x'.concat(modification.hexEntityType))
           )
         }),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(modifyAccountPropertyMosaicTransaction, this.generationHash)
+      const signedTx = account.sign(modifyAccountPropertyEntityTypeTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

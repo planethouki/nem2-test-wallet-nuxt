@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { Mosaic, MosaicId, NamespaceId, UInt64, Address } from 'nem2-sdk'
-import { convert } from '~/lib/convert'
-import { base32 } from '~/lib/base32'
+import convert from '~/lib/convert'
+import base32 from '~/lib/base32'
 
 Vue.prototype.$parser = {
   parseMosaics: function (str) {

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { convert } from '~/lib/convert'
+import convert from '~/lib/convert'
 // eslint-disable-next-line
 import { sha3_256, keccak256 } from 'js-sha3'
 import { RIPEMD160, SHA256, enc } from 'crypto-js'

@@ -8,20 +8,6 @@
           small resolve only {{ currencyNamespaceName }} and {{ harvestNamespaceName }}
       v-card-text
         v-layout.mb-3(column)
-          span.mb-3.subheading {{ currencyNamespaceName }}
-          span.ml-3(v-if="isLoading")
-          template(v-else-if="currencyBalance.length")
-            div(v-for="m in currencyBalance" v-bind:key="m.id")
-              span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
-          span.ml-3(v-else) None
-        v-layout.mb-3(column)
-          span.mb-3.subheading {{ harvestNamespaceName }}
-          span.ml-3(v-if="isLoading")
-          template(v-else-if="harvestBalance.length")
-            div(v-for="m in harvestBalance" v-bind:key="m.id")
-              span.ml-3 {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
-          span.ml-3(v-else) None
-        v-layout.mb-3(column)
           span.mb-3.subheading mosaics
           span.ml-3(v-if="isLoading")
           template(v-else-if="mosaicBalance.length")

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { convert } from '~/lib/convert'
+import convert from '~/lib/convert'
 const secureRandom = require('secure-random')
 
 Vue.prototype.$crypto = {

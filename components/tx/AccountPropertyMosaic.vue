@@ -2,7 +2,7 @@
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
-        div.title Account Property Address
+        div.title Account Property Mosaic
       v-card-text
         v-radio-group(label="Property Type" v-model="propertyType" row)
           v-radio(
@@ -11,14 +11,14 @@
             :label="pt.label"
             :value="pt.type")
         v-flex.pt-4
-          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.rawAddress" row wrap)
+          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.hexMosaicId" row wrap)
             v-flex
               v-layout(align-baseline)
                 span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
                 v-flex
                   v-text-field(
-                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Address: ' + (index + 1)"
-                  v-bind:value="modification.rawAddress"
+                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Mosaic: ' + (index + 1)"
+                  v-bind:value="modification.hexMosaicId"
                   disabled)
                 v-btn(
                 fab
@@ -37,9 +37,9 @@
               v-model="additionalModification.isAdd")
             v-flex
               v-text-field(
-              v-bind:label="`Address Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              v-model="additionalModification.rawAddress"
-              placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
+              v-bind:label="`Hex Mosaic ID Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+              v-model="additionalModification.hexMosaicId"
+              placeholder="ex). 41BC54DEB7515742")
             v-btn(
             fab
             small
@@ -60,12 +60,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Address, Deadline, UInt64, PropertyType, TransactionHttp,
-  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyAddressTransaction } from 'nem2-sdk'
-import TxHistory from './history/TxHistory.vue'
+import { Deadline, UInt64, MosaicId, PropertyType, TransactionHttp,
+  PropertyModificationType, AccountPropertyTransaction, ModifyAccountPropertyMosaicTransaction } from 'nem2-sdk'
+import TxHistory from '../history/TxHistory.vue'
 
 export default {
-  name: 'AccountPropertyAddress',
+  name: 'AccountPropertyMosaic',
   components: {
     TxHistory
   },
@@ -73,33 +73,33 @@ export default {
     navTargetId: {
       type: String,
       default() {
-        return 'accountPropertyAddress'
+        return 'accountPropertyMosaic'
       }
     }
   },
   data() {
     return {
-      propertyType: PropertyType.AllowAddress,
+      propertyType: PropertyType.AllowMosaic,
       propertyTypes: [
-        { type: PropertyType.AllowAddress, label: 'Allow' },
-        { type: PropertyType.BlockAddress, label: 'Block' }
+        { type: PropertyType.AllowMosaic, label: 'Allow' },
+        { type: PropertyType.BlockMosaic, label: 'Block' }
       ],
       modifications: [
         {
           isAdd: true,
-          rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
+          hexMosaicId: '41BC54DEB7515742'
         }
       ],
       additionalModification: {
         isAdd: true,
-        rawAddress: ''
+        hexMosaicId: '41BC54DEB7515742'
       },
       fee: 0,
       history: []
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount', 'endpoint']),
+    ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
@@ -108,27 +108,27 @@ export default {
     },
     addModification: function () {
       this.modifications.push({
-        rawAddress: this.additionalModification.rawAddress,
+        hexMosaicId: this.additionalModification.hexMosaicId,
         isAdd: this.additionalModification.isAdd
       })
-      this.additionalModification.rawAddress = ''
+      this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
     announceHandler: function (event) {
-      const account = this.account
-      const endpoint = this.endpoint
-      const modifyAccountPropertyAddressTransaction = ModifyAccountPropertyAddressTransaction.create(
+      const account = this.$store.getters['wallet/account']
+      const endpoint = this.$store.getters['wallet/endpoint']
+      const modifyAccountPropertyMosaicTransaction = ModifyAccountPropertyMosaicTransaction.create(
         Deadline.create(),
         this.propertyType,
         this.modifications.map((modification) => {
-          return AccountPropertyTransaction.createAddressFilter(
+          return AccountPropertyTransaction.createMosaicFilter(
             modification.isAdd ? PropertyModificationType.Add : PropertyModificationType.Remove,
-            Address.createFromRawAddress(modification.rawAddress)
+            new MosaicId(modification.hexMosaicId)
           )
         }),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(modifyAccountPropertyAddressTransaction, this.generationHash)
+      const signedTx = account.sign(modifyAccountPropertyMosaicTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {
