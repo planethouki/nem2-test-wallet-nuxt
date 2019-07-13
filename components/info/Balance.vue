@@ -52,11 +52,6 @@ export default {
       'mosaicAmountViews'
     ]),
     mosaicBalance() {
-      return this.allMosaicsBalance.filter((m) => {
-        return m.alias !== this.currencyNamespaceName && m.alias !== this.harvestNamespaceName
-      })
-    },
-    allMosaicsBalance() {
       const blockHeight = this.blockHeight
       if (this.isLoading === false && this.mosaicAmountViews.length === 0) {
         return []

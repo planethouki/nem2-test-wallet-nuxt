@@ -90,7 +90,7 @@ export default {
   },
   asyncData({ store, redirect }) {
     if (store.getters['wallet/existsAccount']) {
-      redirect('/info')
+      redirect('/transaction')
     }
   },
   created: function () {
@@ -121,7 +121,7 @@ export default {
         this.$store.dispatch('transactions/update')
       ])
       this.loginDisabled = false
-      this.$router.push('/info')
+      this.$router.push('/transaction')
     }
   }
 }
