@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import Login from '~/components/Login.vue'
-
 import Balance from '~/components/info/Balance.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
 import MosaicInfo from '~/components/info/MosaicInfo.vue'
@@ -32,7 +30,6 @@ export default {
   components: {
     Sidebar,
     NemFoundation,
-    Login,
     Balance,
     NamespaceInfo,
     MosaicInfo,

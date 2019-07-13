@@ -29,8 +29,6 @@
 </template>
 
 <script>
-import Login from '~/components/Login.vue'
-
 import Balance from '~/components/info/Balance.vue'
 import Transfer from '~/components/tx/Transfer.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
@@ -60,7 +58,6 @@ import Sidebar from '~/components/Sidebar.vue'
 export default {
   components: {
     Sidebar,
-    Login,
     Balance,
     Transfer,
     NamespaceInfo,
