@@ -56,3 +56,15 @@ export const getters = {
     return state.mosaicPlaceholder
   }
 }
+
+export const mutations = {
+  setDefaultPrivateKey(state, { privateKey }) {
+    state.defaultPrivateKey = privateKey
+  }
+}
+
+export const actions = {
+  logout({ commit }, { account }) {
+    commit('setDefaultPrivateKey', { privateKey: account.privateKey })
+  }
+}

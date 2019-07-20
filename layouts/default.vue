@@ -45,19 +45,14 @@
           v-btn(
             icon
             v-on="on")
-            v-icon account_circle
-        v-card
+            v-icon account_balance_wallet
+        v-card(style="width: 300px;")
           v-layout(column).py-1
             div.px-3.mb-2
-              div.body-2 Address
-              div.mb-1 {{ address.pretty() }}
               div.body-2 Mosaic Balance
               div(v-for="m in mosaicBalance" v-bind:key="m.id")
                 span {{ m.id }}::{{ m.absoluteAmount }} ({{ m.relativeAmount }})
               div(v-show="mosaicBalance.length === 0") None
-          v-card-actions
-            v-layout(justify-center)
-              Logout
       v-menu(
         v-model="settingMenu"
         :close-on-content-click="false"
@@ -66,8 +61,8 @@
           v-btn(
             icon
             v-on="on")
-            v-icon settings
-        v-card(style="max-width: 300px;")
+            v-icon account_circle
+        v-card(style="width: 300px;")
           v-list(dense two-line)
             v-list-tile(v-if="endpoint")
               v-list-tile-content
@@ -115,6 +110,22 @@
                   flat
                   @click="copyPrivateKeyHandler")
                   v-icon filter_none
+      v-menu(
+        v-model="logoutMenu"
+        :close-on-content-click="false"
+        offset-y)
+        template(v-slot:activator="{ on }")
+          v-btn(
+            icon
+            v-on="on")
+            v-icon exit_to_app
+        v-card(style="width: 300px;")
+          v-card-actions
+            v-layout(justify-center)
+              v-btn(
+                color="pink"
+                class="white--text"
+                @click="logoutWallet") logout
     v-content
       v-container.pa-0(fluid fill-height="true")
         nuxt
@@ -124,19 +135,18 @@
 <script>
 import { mapGetters } from 'vuex'
 import TransactionListener from '~/components/TheTransactionListener.vue'
-import Logout from '~/components/Logout.vue'
 
 export default {
   middleware: 'checkLogin',
   components: {
-    TransactionListener,
-    Logout
+    TransactionListener
   },
   data: () => ({
     accountMenu: false,
     settingMenu: false,
     unconfirmedMenu: false,
     partialMenu: false,
+    logoutMenu: false,
     privateKey: null
   }),
   computed: {
@@ -248,6 +258,9 @@ export default {
         window.getSelection().removeAllRanges()
         this.privateKey = null
       })
+    },
+    logoutWallet: function (event) {
+      this.$router.push('/logout')
     }
   }
 }
