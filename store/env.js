@@ -3,8 +3,9 @@ import { NetworkType } from 'nem2-sdk'
 let endpointList, defaultEndpoint, mosaicPlaceholder
 if (process.env.isNf) {
   endpointList = [
-    { url: 'http://3.0.78.183:3000', label: 'el-my' },
-    { url: 'http://13.114.200.132:3000', label: 'jp-5' }
+    { url: 'http://3.0.78.183:3000', label: 'my-8' },
+    { url: 'http://13.114.200.132:3000', label: 'jp-5' },
+    { url: 'http://120.79.181.170:3000', label: 'cn-2' }
   ]
   defaultEndpoint = 'http://3.0.78.183:3000'
   mosaicPlaceholder = {
