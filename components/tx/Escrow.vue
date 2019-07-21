@@ -75,9 +75,8 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
-  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction, Listener
+  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction
 } from 'nem2-sdk'
-import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
@@ -121,8 +120,6 @@ export default {
   methods: {
     e_announceHandler: function (event) {
       const endpoint = this.$store.getters['wallet/endpoint']
-      const wsEndpoint = endpoint.replace('http', 'ws')
-      const listener = new Listener(wsEndpoint, WebSocket)
       const account = this.$store.getters['wallet/account']
       const network = account.address.networkType
       const paySender = account.publicAccount
@@ -163,25 +160,12 @@ export default {
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      listener.open().then(() => {
-        return txHttp.announce(signedLockFundsTx).toPromise()
-      }).then(() => {
-        return new Promise((resolve, reject) => {
-          listener.confirmed(account.address).pipe(
-            timeout(90000),
-            filter((transaction) => {
-              return transaction.transactionInfo !== undefined &&
-                  transaction.transactionInfo.hash === signedLockFundsTx.hash
-            })
-          ).subscribe(
-            result => resolve(result),
-            error => reject(error)
-          )
-        })
-      }).then(() => {
-        return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
-      }).finally(() => {
-        listener.close()
+      txHttp.announce(signedLockFundsTx)
+      const unsubscribe = this.$store.subscribeAction((action, state) => {
+        if (action.type !== 'transactions/confirmedAdded') return
+        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) return
+        txHttp.announceAggregateBonded(signedAggregateTx)
+        unsubscribe()
       })
       const historyData = {
         agHash: signedAggregateTx.hash,

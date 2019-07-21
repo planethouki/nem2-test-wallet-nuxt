@@ -51,6 +51,8 @@ export default {
         if (this.listener.isOpen()) {
           this.listener.close()
           this.listener = null
+          // eslint-disable-next-line
+          console.log('connection close')
         }
       }
     },
@@ -59,7 +61,7 @@ export default {
         if (this.listener.isOpen()) {
           this.listener.close()
           // eslint-disable-next-line
-          console.log('connection close')
+            console.log('connection close')
         }
       }
       const wsEndpoint = endpoint.replace('http', 'ws')
@@ -113,7 +115,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

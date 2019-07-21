@@ -96,9 +96,8 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction, Listener
+  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction
 } from 'nem2-sdk'
-import { filter, timeout } from 'rxjs/operators'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
@@ -132,7 +131,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount']),
+    ...mapGetters('wallet', ['existsAccount', 'account', 'network', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['mosaicPlaceholder'])
   },
@@ -153,11 +152,9 @@ export default {
     },
     d_announceHandler: function (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
-      const account = this.wallet.open(this.walletPassword)
+      const account = this.account
       const endpoint = this.endpoint
-      const network = this.wallet.network
-      const wsEndpoint = endpoint.replace('http', 'ws')
-      const listener = new Listener(wsEndpoint, WebSocket)
+      const network = account.address.networkType
       const minApprovalDelta = this.d_minApprovalDelta
       const minRemovalDelta = this.d_minRemovalDelta
       const cosignatories = this.d_cosignatories
@@ -194,25 +191,12 @@ export default {
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      listener.open().then(() => {
-        return txHttp.announce(signedLockFundsTx).toPromise()
-      }).then(() => {
-        return new Promise((resolve, reject) => {
-          listener.confirmed(account.address).pipe(
-            timeout(90000),
-            filter((transaction) => {
-              return transaction.transactionInfo !== undefined &&
-                  transaction.transactionInfo.hash === signedLockFundsTx.hash
-            })
-          ).subscribe(
-            result => resolve(result),
-            error => reject(error)
-          )
-        })
-      }).then(() => {
-        return txHttp.announceAggregateBonded(signedAggregateTx).toPromise()
-      }).finally(() => {
-        listener.close()
+      txHttp.announce(signedLockFundsTx)
+      const unsubscribe = this.$store.subscribeAction((action, state) => {
+        if (action.type !== 'transactions/confirmedAdded') return
+        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) return
+        txHttp.announceAggregateBonded(signedAggregateTx)
+        unsubscribe()
       })
       const historyData = {
         agHash: signedAggregateTx.hash,
