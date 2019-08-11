@@ -5,31 +5,31 @@ export const state = () => ({
 })
 
 export const getters = {
-  multisigAccountGraphInfo(state) {
-    if (state.multisigAccountInfo === null) return null
+  multisigAccountGraphInfo (state) {
+    if (state.multisigAccountInfo === null) { return null }
     return state.multisigAccountInfo.multisigAccounts
   },
-  multisigAccountInfo(state) {
+  multisigAccountInfo (state) {
     return state.multisigAccountInfo
   },
-  isMultisig(state) {
-    if (state.multisigAccountInfo === null) return null
+  isMultisig (state) {
+    if (state.multisigAccountInfo === null) { return null }
     return state.multisigAccountInfo.isMultisig()
   },
-  isCosigner(state) {
-    if (state.multisigAccountInfo === null) return null
+  isCosigner (state) {
+    if (state.multisigAccountInfo === null) { return null }
     return state.multisigAccountInfo.multisigAccounts.length !== 0
   }
 }
 
 export const mutations = {
-  multisig(state, { multisigAccountInfo }) {
+  multisig (state, { multisigAccountInfo }) {
     state.multisigAccountInfo = multisigAccountInfo
   }
 }
 
 export const actions = {
-  async update({ commit, rootGetters }) {
+  async update ({ commit, rootGetters }) {
     const endpoint = rootGetters['wallet/endpoint']
     const address = rootGetters['wallet/address']
     const accountHttp = new AccountHttp(endpoint)
@@ -37,7 +37,7 @@ export const actions = {
       return null
     })
     commit('multisig', {
-      multisigAccountInfo: multisigAccountInfo
+      multisigAccountInfo
     })
   }
 }

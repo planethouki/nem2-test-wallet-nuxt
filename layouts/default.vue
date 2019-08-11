@@ -166,23 +166,23 @@ export default {
     ...mapGetters('chain', [
       'blockHeight'
     ]),
-    unconfirmedBadge() {
-      if (!this.unconfirmedTransactions) return false
+    unconfirmedBadge () {
+      if (!this.unconfirmedTransactions) { return false }
       return this.unconfirmedTransactions.length > 0
     },
-    partialBadge() {
-      if (!this.aggregateBondedTransactions) return false
+    partialBadge () {
+      if (!this.aggregateBondedTransactions) { return false }
       return this.aggregateBondedTransactions.length > 0
     },
-    unconfirmedCount() {
-      if (!this.unconfirmedTransactions) return 0
+    unconfirmedCount () {
+      if (!this.unconfirmedTransactions) { return 0 }
       return this.unconfirmedTransactions.length
     },
-    partialCount() {
-      if (!this.aggregateBondedTransactions) return 0
+    partialCount () {
+      if (!this.aggregateBondedTransactions) { return 0 }
       return this.aggregateBondedTransactions.length
     },
-    mosaicBalance() {
+    mosaicBalance () {
       const blockHeight = this.blockHeight
       if (this.isLoading === false && this.mosaicAmountViews.length === 0) {
         return []
@@ -219,7 +219,7 @@ export default {
     }
   },
   methods: {
-    copyEndpointHandler: function (event) {
+    copyEndpointHandler (event) {
       const target = this.$refs.endpoint
       const range = document.createRange()
       range.selectNode(target)
@@ -228,7 +228,7 @@ export default {
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
     },
-    copyAddressHandler: function (event) {
+    copyAddressHandler (event) {
       const target = this.$refs.address
       const range = document.createRange()
       range.selectNode(target)
@@ -237,7 +237,7 @@ export default {
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
     },
-    copyPublicKeyHandler: function (event) {
+    copyPublicKeyHandler (event) {
       const target = this.$refs.publicKey
       const range = document.createRange()
       range.selectNode(target)
@@ -246,7 +246,7 @@ export default {
       document.execCommand('copy')
       window.getSelection().removeAllRanges()
     },
-    copyPrivateKeyHandler: function (event) {
+    copyPrivateKeyHandler (event) {
       this.privateKey = this.account.privateKey
       this.$nextTick(() => {
         const target = this.$refs.privateKey
@@ -259,7 +259,7 @@ export default {
         this.privateKey = null
       })
     },
-    logoutWallet: function (event) {
+    logoutWallet (event) {
       this.$router.push('/logout')
     }
   }

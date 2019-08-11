@@ -45,12 +45,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'addressAlias'
       }
     }
   },
-  data() {
+  data () {
     return {
       actionType: AliasActionType.Link,
       actionTypes: [
@@ -68,7 +68,7 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const addressAliasTransaction = AddressAliasTransaction.create(

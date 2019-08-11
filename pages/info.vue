@@ -16,10 +16,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import MultisigInfo from '../components/info/MultisigInfo'
 import Balance from '~/components/info/Balance.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
 import MosaicInfo from '~/components/info/MosaicInfo.vue'
-import MultisigInfo from '../components/info/MultisigInfo'
 import AliasInfo from '~/components/info/AliasInfo.vue'
 import AccountPropertyInfo from '~/components/info/AccountPropertyInfo.vue'
 import AccountLinkInfo from '~/components/info/AccountLinkInfo.vue'
@@ -45,11 +45,11 @@ export default {
     ...mapGetters('env', [
       'isNf'
     ]),
-    existsAccount() {
+    existsAccount () {
       return this.$store.getters['wallet/existsAccount']
     }
   },
-  asyncData() {
+  asyncData () {
     return {
       nav: [
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
@@ -64,14 +64,14 @@ export default {
       navActive: ''
     }
   },
-  created() {
+  created () {
     window.addEventListener('scroll', this.onScroll)
   },
-  destroyed() {
+  destroyed () {
     window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    onScroll(e) {
+    onScroll (e) {
       const elements = document.querySelectorAll('#content > div')
       elements.forEach((elm) => {
         const top = elm.getBoundingClientRect().top
@@ -82,7 +82,7 @@ export default {
       })
     }
   },
-  head() {
+  head () {
     return {
       meta: [
         { hid: 'top', name: 'top', content: 'top' }

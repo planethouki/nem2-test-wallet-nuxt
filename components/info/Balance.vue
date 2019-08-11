@@ -28,12 +28,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'balance'
       }
     }
   },
-  data() {
+  data () {
     return {
       isLoading: null
     }
@@ -50,7 +50,7 @@ export default {
     ...mapGetters('mosaicAmountViews', [
       'mosaicAmountViews'
     ]),
-    mosaicBalance() {
+    mosaicBalance () {
       const blockHeight = this.blockHeight
       if (this.isLoading === false && this.mosaicAmountViews.length === 0) {
         return []
@@ -87,7 +87,7 @@ export default {
     }
   },
   methods: {
-    reload: async function (event) {
+    async reload (event) {
       this.isLoading = true
       await this.$store.dispatch('chain/updateBlockHeight', {
         endpoint: this.endpoint

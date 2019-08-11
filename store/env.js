@@ -3,11 +3,11 @@ import { NetworkType } from 'nem2-sdk'
 let endpointList, defaultEndpoint, mosaicPlaceholder
 if (process.env.isNf) {
   endpointList = [
-    { url: 'http://3.0.78.183:3000', label: 'my-8' },
+    { url: 'http://3.1.202.148:3000', label: 'my-8' },
     { url: 'http://13.114.200.132:3000', label: 'jp-5' },
-    { url: 'http://120.79.181.170:3000', label: 'cn-2' }
+    { url: 'http://47.107.245.217:3000', label: 'cn-2' }
   ]
-  defaultEndpoint = 'http://3.0.78.183:3000'
+  defaultEndpoint = 'http://3.1.202.148:3000'
   mosaicPlaceholder = {
     transfer: '@nem.xem::0',
     currency10: '@nem.xem::10000000',
@@ -37,34 +37,34 @@ export const state = () => ({
 })
 
 export const getters = {
-  defaultEndpoint(state) {
+  defaultEndpoint (state) {
     return state.defaultEndpoint
   },
-  defaultPrivateKey(state) {
+  defaultPrivateKey (state) {
     return state.defaultPrivateKey
   },
-  defaultNetworkType(state) {
+  defaultNetworkType (state) {
     return state.defaultNetworkType
   },
-  endpointList(state) {
+  endpointList (state) {
     return state.endpointList
   },
-  isNf(state) {
+  isNf (state) {
     return state.isNf
   },
-  mosaicPlaceholder(state) {
+  mosaicPlaceholder (state) {
     return state.mosaicPlaceholder
   }
 }
 
 export const mutations = {
-  setDefaultPrivateKey(state, { privateKey }) {
+  setDefaultPrivateKey (state, { privateKey }) {
     state.defaultPrivateKey = privateKey
   }
 }
 
 export const actions = {
-  logout({ commit }, { account }) {
+  logout ({ commit }, { account }) {
     commit('setDefaultPrivateKey', { privateKey: account.privateKey })
   }
 }

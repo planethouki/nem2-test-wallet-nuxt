@@ -39,12 +39,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'cosignaturemultisig'
       }
     }
   },
-  data() {
+  data () {
     return {
       g_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
       g_hash: '',
@@ -52,12 +52,12 @@ export default {
     }
   },
   computed: {
-    existsAccount() {
+    existsAccount () {
       return this.$store.getters['wallet/existsAccount']
     }
   },
   methods: {
-    g_announceHandler: function (event) {
+    g_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const network = account.address.networkType
@@ -75,7 +75,7 @@ export default {
         return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
       }).then((result) => {
         const historyData = {
-          hash: hash,
+          hash,
           apiStatusUrl: `${endpoint}/transaction/${hash}/status`
         }
         this.g_history.push(historyData)

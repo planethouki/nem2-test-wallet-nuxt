@@ -15,7 +15,7 @@ export default {
   props: {
     history: {
       type: Array,
-      default() {
+      default () {
         return []
       }
     }

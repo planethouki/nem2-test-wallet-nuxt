@@ -87,12 +87,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'escrow'
       }
     }
   },
-  data() {
+  data () {
     return {
       e_recipient1: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       e_mosaics1: '',
@@ -112,13 +112,13 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['mosaicPlaceholder'])
   },
-  mounted() {
+  mounted () {
     this.e_mosaics1 = this.mosaicPlaceholder.escrow1
     this.e_mosaics2 = this.mosaicPlaceholder.escrow2
     this.e_mosaic3 = this.mosaicPlaceholder.currency10
   },
   methods: {
-    e_announceHandler: function (event) {
+    e_announceHandler (event) {
       const endpoint = this.$store.getters['wallet/endpoint']
       const account = this.$store.getters['wallet/account']
       const network = account.address.networkType
@@ -162,8 +162,8 @@ export default {
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedLockFundsTx)
       const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') return
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) return
+        if (action.type !== 'transactions/confirmedAdded') { return }
+        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
         txHttp.announceAggregateBonded(signedAggregateTx)
         unsubscribe()
       })

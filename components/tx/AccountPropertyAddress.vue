@@ -72,12 +72,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'accountPropertyAddress'
       }
     }
   },
-  data() {
+  data () {
     return {
       propertyType: PropertyType.AllowAddress,
       propertyTypes: [
@@ -103,17 +103,17 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    deleteModification: function (index) {
+    deleteModification (index) {
       this.modifications.splice(index, 1)
     },
-    addModification: function () {
+    addModification () {
       this.modifications.push({
         rawAddress: this.additionalModification.rawAddress,
         isAdd: this.additionalModification.isAdd
       })
       this.additionalModification.rawAddress = ''
     },
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.account
       const endpoint = this.endpoint
       const modifyAccountPropertyAddressTransaction = ModifyAccountPropertyAddressTransaction.create(

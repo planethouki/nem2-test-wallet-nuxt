@@ -6,14 +6,14 @@
 export default {
   layout: 'login',
   components: {},
-  data() {
+  data () {
     return {}
   },
-  mounted: function () {
+  mounted () {
     this.logout()
   },
   methods: {
-    logout() {
+    logout () {
       const account = this.$store.getters['wallet/account']
       this.$store.dispatch('env/logout', { account })
       this.$store.dispatch('wallet/logout')

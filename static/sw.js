@@ -46,8 +46,8 @@ workbox.precaching.precacheAndRoute([
     "revision": "bd56573afe4ad1decbc64f8a30c041d3"
   },
   {
-    "url": "/_nuxt/fa28d8149f5ffc61824d.js",
-    "revision": "e0c3ed5b98de3266a74fb05f421e5d27"
+    "url": "/_nuxt/f8b32fec048cf713050c.js",
+    "revision": "af5598dae87d5446094526af6f0164a4"
   }
 ], {
   "cacheId": "nem2-test-wallet-nuxt",

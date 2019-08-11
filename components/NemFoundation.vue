@@ -27,20 +27,8 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'nemFoundation'
-      }
-    }
-  },
-  data() {
-    return {
-
-    }
-  },
-  watch: {
-    wallet: {
-      handler: function () {
-
       }
     }
   },

@@ -40,12 +40,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'namespace'
       }
     }
   },
-  data() {
+  data () {
     return {
       n_name: 'foo',
       n_duration: 60,
@@ -58,7 +58,7 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    n_announceHandler: function (event) {
+    n_announceHandler (event) {
       const namespaceName = this.n_name
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']

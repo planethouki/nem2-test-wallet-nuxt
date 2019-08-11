@@ -30,12 +30,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'multisigInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       isLoading: null
     }
@@ -50,7 +50,7 @@ export default {
     ])
   },
   methods: {
-    reload: async function (event) {
+    async reload (event) {
       this.isLoading = true
       await this.$store.dispatch('multisigGraph/update')
       this.isLoading = false

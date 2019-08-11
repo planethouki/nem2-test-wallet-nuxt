@@ -6,23 +6,23 @@ export const state = () => ({
 })
 
 export const getters = {
-  mosaicAmountViews(state) {
+  mosaicAmountViews (state) {
     return state.mosaicAmountViews
   }
 }
 
 export const mutations = {
-  init(state) {
+  init (state) {
     state.mosaicAmountViews = []
   },
-  concatMosaicAmountViews(state, { mosaicAmountViews }) {
+  concatMosaicAmountViews (state, { mosaicAmountViews }) {
     const oldVal = state.mosaicAmountViews.slice()
     state.mosaicAmountViews = oldVal.concat(mosaicAmountViews)
   }
 }
 
 export const actions = {
-  update({ rootGetters, commit }) {
+  update ({ rootGetters, commit }) {
     commit('init')
     const endpoint = rootGetters['wallet/endpoint']
     const address = rootGetters['wallet/address']

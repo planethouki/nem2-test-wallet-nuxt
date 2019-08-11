@@ -6,25 +6,25 @@ export const state = () => ({
 })
 
 export const getters = {
-  blockHeight(state) {
+  blockHeight (state) {
     return state.blockHeight
   },
-  generationHash(state) {
+  generationHash (state) {
     return state.generationHash
   }
 }
 
 export const mutations = {
-  blockHeight(state, { blockHeight }) {
+  blockHeight (state, { blockHeight }) {
     state.blockHeight = blockHeight
   },
-  generationHash(state, { generationHash }) {
+  generationHash (state, { generationHash }) {
     state.generationHash = generationHash
   }
 }
 
 export const actions = {
-  async init({ rootGetters, commit }) {
+  async init ({ rootGetters, commit }) {
     const endpoint = rootGetters['wallet/endpoint']
     const chainHttp = new ChainHttp(endpoint)
     const blockHeight = (await chainHttp.getBlockchainHeight().toPromise()).compact()
@@ -33,7 +33,7 @@ export const actions = {
     const generationHash = (await blockHttp.getBlockByHeight(1).toPromise()).generationHash
     commit('generationHash', { generationHash })
   },
-  async updateBlockHeight({ rootGetters, commit }) {
+  async updateBlockHeight ({ rootGetters, commit }) {
     const endpoint = rootGetters['wallet/endpoint']
     const chainHttp = new ChainHttp(endpoint)
     const blockHeight = (await chainHttp.getBlockchainHeight().toPromise()).compact()

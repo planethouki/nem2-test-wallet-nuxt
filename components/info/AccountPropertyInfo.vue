@@ -25,12 +25,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'accountPropertyInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       isLoading: null
     }
@@ -42,7 +42,7 @@ export default {
     ...mapGetters('accountProperties', [
       'properties'
     ]),
-    propertiesTree() {
+    propertiesTree () {
       return this.properties.map((property) => {
         return {
           id: property.propertyType,
@@ -65,12 +65,12 @@ export default {
     }
   },
   methods: {
-    reload: async function (event) {
+    async reload (event) {
       this.isLoading = true
       await this.$store.dispatch('accountProperties/update')
       this.isLoading = false
     },
-    propertyTypeToName: function (propertyType) {
+    propertyTypeToName (propertyType) {
       switch (propertyType) {
         case 0x01: return 'AllowAddress'
         case 0x02: return 'AllowMosaic'

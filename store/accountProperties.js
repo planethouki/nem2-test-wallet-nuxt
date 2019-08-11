@@ -6,19 +6,19 @@ export const state = () => ({
 })
 
 export const getters = {
-  properties(state) {
+  properties (state) {
     return state.properties
   }
 }
 
 export const mutations = {
-  properties(state, { properties }) {
+  properties (state, { properties }) {
     state.properties = properties
   }
 }
 
 export const actions = {
-  async update({ commit, rootGetters }) {
+  async update ({ commit, rootGetters }) {
     const endpoint = rootGetters['wallet/endpoint']
     const address = rootGetters['wallet/address']
     const accountHttp = new AccountHttp(endpoint)

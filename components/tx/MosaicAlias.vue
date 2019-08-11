@@ -44,12 +44,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'mosaicAlias'
       }
     }
   },
-  data() {
+  data () {
     return {
       actionType: AliasActionType.Link,
       actionTypes: [
@@ -67,7 +67,7 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const mosaicAliasTransaction = MosaicAliasTransaction.create(

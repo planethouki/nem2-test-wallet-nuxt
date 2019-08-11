@@ -22,12 +22,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'accountLinkInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       isLoading: null
     }
@@ -41,7 +41,7 @@ export default {
     ])
   },
   methods: {
-    reload: async function (event) {
+    async reload (event) {
       this.isLoading = true
       await this.$store.dispatch('accountLink/update')
       this.isLoading = false

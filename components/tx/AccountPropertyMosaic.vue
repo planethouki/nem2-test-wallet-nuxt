@@ -72,12 +72,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'accountPropertyMosaic'
       }
     }
   },
-  data() {
+  data () {
     return {
       propertyType: PropertyType.AllowMosaic,
       propertyTypes: [
@@ -103,17 +103,17 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    deleteModification: function (index) {
+    deleteModification (index) {
       this.modifications.splice(index, 1)
     },
-    addModification: function () {
+    addModification () {
       this.modifications.push({
         hexMosaicId: this.additionalModification.hexMosaicId,
         isAdd: this.additionalModification.isAdd
       })
       this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.account
       const endpoint = this.endpoint
       const modifyAccountPropertyMosaicTransaction = ModifyAccountPropertyMosaicTransaction.create(

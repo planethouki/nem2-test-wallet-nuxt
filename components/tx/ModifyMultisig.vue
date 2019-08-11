@@ -108,12 +108,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'modifymultisig'
       }
     }
   },
-  data() {
+  data () {
     return {
       d_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
       d_cosignatories: [
@@ -135,14 +135,14 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['mosaicPlaceholder'])
   },
-  mounted() {
+  mounted () {
     this.d_lockMosaic = this.mosaicPlaceholder.currency10
   },
   methods: {
-    d_deleteModification: function (index) {
+    d_deleteModification (index) {
       this.d_cosignatories.splice(index, 1)
     },
-    d_addModification: function (event) {
+    d_addModification (event) {
       this.d_cosignatories.push({
         pubKey: this.d_additionalModificationPubkey,
         isAdd: this.d_additionalModificationType
@@ -150,7 +150,7 @@ export default {
       this.d_additionalModificationPubkey = ''
       this.d_additionalModificationType = false
     },
-    d_announceHandler: function (event) {
+    d_announceHandler (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
       const account = this.account
       const endpoint = this.endpoint
@@ -193,8 +193,8 @@ export default {
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedLockFundsTx)
       const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') return
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) return
+        if (action.type !== 'transactions/confirmedAdded') { return }
+        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
         txHttp.announceAggregateBonded(signedAggregateTx)
         unsubscribe()
       })

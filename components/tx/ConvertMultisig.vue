@@ -96,12 +96,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'multisig'
       }
     }
   },
-  data() {
+  data () {
     return {
       u_cosignatories: [
         '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
@@ -122,28 +122,28 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('multisigGraph', ['isMultisig']),
     ...mapGetters('env', ['mosaicPlaceholder']),
-    u_forbidMultisig() {
+    u_forbidMultisig () {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
-    u_announceDisabledMessage() {
-      if (this.u_forbidMultisig) return 'Please try another account.'
-      if (this.isMultisig) return 'Already converted'
+    u_announceDisabledMessage () {
+      if (this.u_forbidMultisig) { return 'Please try another account.' }
+      if (this.isMultisig) { return 'Already converted' }
       return ''
     }
   },
-  mounted() {
+  watch: {},
+  mounted () {
     this.u_lockMosaic = this.mosaicPlaceholder.currency10
   },
-  watch: {},
   methods: {
-    u_deleteCosignatory: function (index) {
+    u_deleteCosignatory (index) {
       this.u_cosignatories.splice(index, 1)
     },
-    u_addCosignatory: function (event) {
+    u_addCosignatory (event) {
       this.u_cosignatories.push(this.u_addedCosignatory)
       this.u_addedCosignatory = ''
     },
-    u_announceHandler: function (event) {
+    u_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const networkType = account.address.networkType
@@ -185,8 +185,8 @@ export default {
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedLockFundsTx)
       const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') return
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) return
+        if (action.type !== 'transactions/confirmedAdded') { return }
+        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
         txHttp.announceAggregateBonded(signedAggregateTx)
         unsubscribe()
       })

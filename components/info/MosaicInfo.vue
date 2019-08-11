@@ -34,12 +34,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'mosaicInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       isLoading: null,
       headers: [
@@ -61,7 +61,7 @@ export default {
     ...mapGetters('mosaicAmountViews', [
       'mosaicAmountViews'
     ]),
-    mosaicTexts() {
+    mosaicTexts () {
       const endpoint = this.endpoint
       const address = this.address
       if (!this.isLoading && this.mosaicAmountViews.length === 0) {
@@ -85,12 +85,12 @@ export default {
         const startHeight = mosaicAmountView.mosaicInfo.height.compact()
         const endHeight = startHeight + duration
         return {
-          hexId: hexId,
+          hexId,
           expire: endHeight,
           mosaicLink: `${endpoint}/mosaic/${hexId}`,
           blockLink: `${endpoint}/block/${startHeight}`,
           height: startHeight,
-          duration: duration,
+          duration,
           supply: mosaicAmountView.mosaicInfo.supply.compact(),
           divisibility: mosaicAmountView.mosaicInfo.divisibility,
           isSupplyMutable: mosaicAmountView.mosaicInfo.isSupplyMutable(),
@@ -100,7 +100,7 @@ export default {
     }
   },
   methods: {
-    reloadMosaics: async function (event) {
+    async reloadMosaics (event) {
       this.isLoading = true
       await this.$store.dispatch('mosaicAmountViews/update')
       this.isLoading = false

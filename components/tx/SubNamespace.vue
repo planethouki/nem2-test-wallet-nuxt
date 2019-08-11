@@ -39,12 +39,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'subnamespace'
       }
     }
   },
-  data() {
+  data () {
     return {
       s_name: 'bar',
       s_parentNamespace: 'foo',
@@ -57,7 +57,7 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    s_announceHandler: function (event) {
+    s_announceHandler (event) {
       const namespaceName = this.s_name
       const parentNamespaceName = this.s_parentNamespace
       const account = this.$store.getters['wallet/account']

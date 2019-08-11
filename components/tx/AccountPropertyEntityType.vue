@@ -78,12 +78,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'accountPropertyEntityType'
       }
     }
   },
-  data() {
+  data () {
     return {
       propertyType: PropertyType.AllowTransaction,
       propertyTypes: [
@@ -107,24 +107,24 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    entityTypes() {
+    entityTypes () {
       return this.$transactionTypes.map((x) => {
         return { label: x.label, entityType: x.entityType, hexEntityType: x.entityType.toString(16).toUpperCase() }
       })
     }
   },
   methods: {
-    deleteModification: function (index) {
+    deleteModification (index) {
       this.modifications.splice(index, 1)
     },
-    addModification: function () {
+    addModification () {
       this.modifications.push({
         hexEntityType: this.additionalModification.hexEntityType,
         isAdd: this.additionalModification.isAdd
       })
       this.additionalModification.rawAddress = '4152'
     },
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const modifyAccountPropertyEntityTypeTransaction = ModifyAccountPropertyEntityTypeTransaction.create(

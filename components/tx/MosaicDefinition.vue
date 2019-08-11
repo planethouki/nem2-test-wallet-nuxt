@@ -58,12 +58,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'mosaic'
       }
     }
   },
-  data() {
+  data () {
     return {
       m_nonce: '0',
       m_supplyMutable: true,
@@ -81,7 +81,7 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    m_announceHandler: function (event) {
+    m_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const networkType = account.address.networkType

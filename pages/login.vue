@@ -53,14 +53,14 @@ export default {
   components: {
     NemFoundation
   },
-  head() {
+  head () {
     return {
       meta: [
         { hid: 'top', name: 'top', content: 'top' }
       ]
     }
   },
-  data() {
+  data () {
     return {
       predefinedEndpoint: '',
       userEndpoint: '',
@@ -82,26 +82,26 @@ export default {
       'defaultNetworkType',
       'isNf'
     ]),
-    breakPoint() {
+    breakPoint () {
       return this.$vuetify.breakpoint.name
     }
   },
   watch: {
   },
-  asyncData({ store, redirect }) {
+  asyncData ({ store, redirect }) {
     if (store.getters['wallet/existsAccount']) {
       redirect('/transaction')
     }
   },
-  created: function () {
+  created () {
     this.predefinedEndpoint = this.defaultEndpoint
     this.privateKey = this.defaultPrivateKey
   },
   methods: {
-    regenPrivateKey: function (event) {
+    regenPrivateKey (event) {
       this.privateKey = this.$crypto.random32()
     },
-    createWallet: async function (event) {
+    async createWallet (event) {
       this.loginDisabled = true
       let endpoint = this.predefinedEndpoint || this.userEndpoint
       if (endpoint.match(/:\d+$/) === null) {

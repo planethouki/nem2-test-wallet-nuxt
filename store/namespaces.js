@@ -6,26 +6,26 @@ export const state = () => ({
 })
 
 export const getters = {
-  namespaces(state) {
+  namespaces (state) {
     return state.namespaces
   }
 }
 
 export const mutations = {
-  initNamespaces(state) {
+  initNamespaces (state) {
     state.namespaces = []
   },
-  concatNamespaces(state, { namespaces }) {
+  concatNamespaces (state, { namespaces }) {
     state.namespaces = state.namespaces.concat(namespaces)
   }
 }
 
 export const actions = {
-  async update({ commit, rootGetters }) {
+  async update ({ commit, rootGetters }) {
     commit('initNamespaces')
     const endpoint = rootGetters['wallet/endpoint']
     const address = rootGetters['wallet/address']
-    function getNamespaces(namespaceHttp, address, query) {
+    function getNamespaces (namespaceHttp, address, query) {
       return new Promise((resolve, reject) => {
         const namespacesInfoTemporary = []
         namespaceHttp.getNamespacesFromAccount(address, query).pipe(

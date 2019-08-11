@@ -38,12 +38,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'namespaceInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       isLoading: null,
       headers: [
@@ -67,14 +67,14 @@ export default {
     ...mapGetters('namespaces', [
       'namespaces'
     ]),
-    namespaceTexts() {
+    namespaceTexts () {
       const endpoint = this.endpoint
       if (!this.isLoading && this.namespaces.length === 0) {
         return []
       }
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
-          if (ns === namespaces[i]) return false
+          if (ns === namespaces[i]) { return false }
         }
         return true
       }).sort(function (a, b) {
@@ -91,8 +91,8 @@ export default {
         const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.')
         const hexId = ns.namespaceInfo.id.toHex().toUpperCase()
         return {
-          hexId: hexId,
-          name: name,
+          hexId,
+          name,
           startHeight: ns.namespaceInfo.startHeight.compact(),
           endHeight: ns.namespaceInfo.endHeight.compact(),
           hasAlias: ns.namespaceInfo.hasAlias(),
@@ -104,7 +104,7 @@ export default {
     }
   },
   methods: {
-    reload: async function (event) {
+    async reload (event) {
       this.isLoading = true
       await this.$store.dispatch('namespaces/update')
       this.isLoading = false

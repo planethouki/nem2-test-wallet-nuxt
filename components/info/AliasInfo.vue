@@ -32,12 +32,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'aliasInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       headers: [
         { text: 'NamespaceName', value: 'name' },
@@ -53,10 +53,10 @@ export default {
     ...mapGetters('namespaces', [
       'namespaces'
     ]),
-    namespaceTable: function () {
+    namespaceTable () {
       return this.namespaces.filter((ns, index, namespaces) => {
         for (let i = 0; i < index; i++) {
-          if (ns === namespaces[i]) return false
+          if (ns === namespaces[i]) { return false }
         }
         return true
       }).sort(function (a, b) {
@@ -96,7 +96,7 @@ export default {
     }
   },
   methods: {
-    reload: async function (event) {
+    async reload (event) {
       this.isLoading = true
       await this.$store.dispatch('namespaces/update')
       this.isLoading = false

@@ -33,24 +33,24 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'cosignature'
       }
     }
   },
-  data() {
+  data () {
     return {
       c_hash: '',
       c_history: []
     }
   },
   computed: {
-    existsAccount() {
+    existsAccount () {
       return this.$store.getters['wallet/existsAccount']
     }
   },
   methods: {
-    c_announceHandler: function (event) {
+    c_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const hash = this.c_hash
@@ -66,7 +66,7 @@ export default {
         return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
       }).then((result) => {
         const historyData = {
-          hash: hash,
+          hash,
           apiStatusUrl: `${endpoint}/transaction/${hash}/status`
         }
         this.c_history.push(historyData)

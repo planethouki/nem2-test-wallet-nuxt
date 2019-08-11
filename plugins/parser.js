@@ -4,7 +4,7 @@ import convert from '~/lib/convert'
 import base32 from '~/lib/base32'
 
 Vue.prototype.$parser = {
-  parseMosaics: function (str) {
+  parseMosaics (str) {
     const mosaics = str.split(',').map((mosaicRawStr) => {
       const idAndAmount = mosaicRawStr.trim().split('::')
       let mosaicId
@@ -20,10 +20,10 @@ Vue.prototype.$parser = {
     })
     return mosaics
   },
-  parseMosaic: function (str) {
+  parseMosaic (str) {
     return this.parseMosaics(str)[0]
   },
-  resolveIfNamespace: async function (namespaceHttp, mosaic) {
+  async resolveIfNamespace (namespaceHttp, mosaic) {
     const isNamespace = (mosaic.id.id.higher >>> 31) === 1
     if (isNamespace) {
       const mosaicId = await namespaceHttp.getLinkedMosaicId(mosaic.id).toPromise()
@@ -32,7 +32,7 @@ Vue.prototype.$parser = {
       return mosaic
     }
   },
-  parseAddress: function (str) {
+  parseAddress (str) {
     let address
     if (str.startsWith('@')) {
       address = new NamespaceId(str.substr(1))
@@ -41,14 +41,14 @@ Vue.prototype.$parser = {
     }
     return address
   },
-  parseAddressSecretLock: function (str) {
+  parseAddressSecretLock (str) {
     let address
     if (str.startsWith('@')) {
       const namespaceId = new NamespaceId(str.substr(1))
       const uint8ns = convert.hexToUint8(namespaceId.toHex())
       const hexAddress = '91' + convert.uint8ToHex(uint8ns.reverse()) + '00000000000000000000000000000000'
       address = {
-        plain: function () {
+        plain () {
           return base32.encode(convert.hexToUint8(hexAddress))
         }
       }

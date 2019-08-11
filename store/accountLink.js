@@ -5,19 +5,19 @@ export const state = () => ({
 })
 
 export const getters = {
-  linkedAccountKey(state) {
+  linkedAccountKey (state) {
     return state.linkedAccountKey
   }
 }
 
 export const mutations = {
-  linkedAccountKey(state, { linkedAccountKey }) {
+  linkedAccountKey (state, { linkedAccountKey }) {
     state.linkedAccountKey = linkedAccountKey
   }
 }
 
 export const actions = {
-  async update({ commit, rootGetters }) {
+  async update ({ commit, rootGetters }) {
     const endpoint = rootGetters['wallet/endpoint']
     const address = rootGetters['wallet/address']
     const linkedAccountKey = await rp(`${endpoint}/account/${address.plain()}`).then((response) => {

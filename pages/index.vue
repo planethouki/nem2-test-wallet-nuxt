@@ -1,6 +1,6 @@
 <script>
 export default {
-  asyncData({ redirect }) {
+  asyncData ({ redirect }) {
     redirect('/login')
   }
 }

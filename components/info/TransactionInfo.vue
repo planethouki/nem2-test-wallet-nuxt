@@ -25,12 +25,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'transactionInfo'
       }
     }
   },
-  data() {
+  data () {
     return {
       headers: [
         { text: 'Height', value: 'height' },
@@ -50,7 +50,7 @@ export default {
     ])
   },
   methods: {
-    typeToName(type) {
+    typeToName (type) {
       const withLabel = this.$transactionTypes.find((x) => {
         return x.entityType === type
       })

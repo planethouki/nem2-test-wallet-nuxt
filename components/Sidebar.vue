@@ -16,18 +16,18 @@ export default {
   props: {
     nav: {
       type: Array,
-      default() {
+      default () {
         return []
       }
     },
     active: {
       type: String,
-      default() {
+      default () {
         return ''
       }
     }
   },
-  data() {
+  data () {
     return {
       drawer: false
     }

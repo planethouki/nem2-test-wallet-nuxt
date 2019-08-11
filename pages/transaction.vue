@@ -32,6 +32,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import MultisigInfo from '../components/info/MultisigInfo'
 import Balance from '~/components/info/Balance.vue'
 import Transfer from '~/components/tx/Transfer.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
@@ -41,7 +42,6 @@ import MosaicInfo from '~/components/info/MosaicInfo.vue'
 import MosaicDefinition from '~/components/tx/MosaicDefinition.vue'
 import SecretLock from '~/components/tx/SecretLock.vue'
 import SecretProof from '~/components/tx/SecretProof.vue'
-import MultisigInfo from '../components/info/MultisigInfo'
 import ConvertMultisig from '~/components/tx/ConvertMultisig.vue'
 import ModifyMultisig from '~/components/tx/ModifyMultisig.vue'
 import Escrow from '~/components/tx/Escrow.vue'
@@ -93,16 +93,16 @@ export default {
     ...mapGetters('env', [
       'isNf'
     ]),
-    existsAccount() {
+    existsAccount () {
       return this.$store.getters['wallet/existsAccount']
     },
-    breakPoint() {
+    breakPoint () {
       return this.$vuetify.breakpoint.name
     }
   },
   watch: {
   },
-  asyncData() {
+  asyncData () {
     return {
       nav: [
         { icon: 'star', title: 'Balance', target: '#balance', offset: 48 },
@@ -133,14 +133,14 @@ export default {
       navActive: ''
     }
   },
-  created() {
+  created () {
     window.addEventListener('scroll', this.onScroll)
   },
-  destroyed() {
+  destroyed () {
     window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    onScroll(e) {
+    onScroll (e) {
       const elements = document.querySelectorAll('#content > div')
       elements.forEach((elm) => {
         const top = elm.getBoundingClientRect().top
@@ -151,7 +151,7 @@ export default {
       })
     }
   },
-  head() {
+  head () {
     return {
       meta: [
         { hid: 'transaction', name: 'transaction', content: 'transaction' }

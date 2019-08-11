@@ -1,16 +1,16 @@
 import Vue from 'vue'
-import convert from '~/lib/convert'
 // eslint-disable-next-line
 import { sha3_256, keccak256 } from 'js-sha3'
 import { RIPEMD160, SHA256, enc } from 'crypto-js'
+import convert from '~/lib/convert'
 
-function sha256hex(input) {
+function sha256hex (input) {
   const words = enc.Hex.parse(input)
   const hash = SHA256(words)
   return hash.toString(enc.Hex).toUpperCase()
 }
 
-function ripemd160hex(input) {
+function ripemd160hex (input) {
   const words = enc.Hex.parse(input)
   const hash = RIPEMD160(words)
   return hash.toString(enc.Hex).toUpperCase()
@@ -23,19 +23,19 @@ function endian(hex) {
 }
 
 Vue.prototype.$hash = {
-  sha3: function (input) {
+  sha3 (input) {
     return sha3_256.create().update(Buffer.from(input, 'hex')).hex().toUpperCase()
   },
-  keccac: function (input) {
+  keccac (input) {
     return keccak256.create().update(Buffer.from(input, 'hex')).hex().toUpperCase()
   },
-  hash256: function (input) {
+  hash256 (input) {
     return sha256hex(sha256hex(input))
   },
-  hash160: function (input) {
+  hash160 (input) {
     return ripemd160hex(sha256hex(input))
   },
-  getSinedTxHash: function (payload) {
+  getSinedTxHash (payload) {
     const hashInputPayload =
       payload.substr(4 * 2, 32 * 2) +
       payload.substr((4 + 64) * 2, 32 * 2) +

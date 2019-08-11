@@ -58,12 +58,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'secretlock'
       }
     }
   },
-  data() {
+  data () {
     return {
       l_hashType: HashType.Op_Sha3_256,
       l_hashStrLen: '64',
@@ -86,12 +86,9 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['mosaicPlaceholder'])
   },
-  mounted() {
-    this.l_mosaic = this.mosaicPlaceholder.currency10
-  },
   watch: {
     l_hashType: {
-      handler: function () {
+      handler () {
         for (let i = 0; i < this.l_hashTypes.length; i++) {
           if (this.l_hashType === this.l_hashTypes[i].type) {
             this.l_hashStrLen = this.l_hashTypes[i].strLen
@@ -100,8 +97,11 @@ export default {
       }
     }
   },
+  mounted () {
+    this.l_mosaic = this.mosaicPlaceholder.currency10
+  },
   methods: {
-    l_announceHandler: function (event) {
+    l_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const duration = this.l_duration
@@ -124,7 +124,7 @@ export default {
       })
       const hash = signedTx.hash
       const historyData = {
-        hash: hash,
+        hash,
         apiStatusUrl: `${endpoint}/transaction/${hash}/status`
       }
       this.l_history.push(historyData)
