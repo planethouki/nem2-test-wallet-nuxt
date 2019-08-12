@@ -5,9 +5,9 @@
         span.title Current Account Restriction
       v-card-text
         v-layout(align-baseline)
-          span(v-if="properties === null")
-          span(v-if="propertiesTree.length === 0") Please wait for update
-          v-treeview(v-else :items="propertiesTree")
+          span(v-if="restrictions === null")
+          span(v-if="restrictionsTree.length === 0") Please wait for update
+          v-treeview(v-else :items="restrictionsTree")
       v-card-actions
         v-btn(
           @click="reload"
@@ -18,15 +18,15 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { PropertyType, Address } from 'nem2-sdk'
+import { RestrictionType, Address } from 'nem2-sdk'
 
 export default {
-  name: 'AccountPropertyInfo',
+  name: 'AccountRestrictionInfo',
   props: {
     navTargetId: {
       type: String,
       default () {
-        return 'accountPropertyInfo'
+        return 'accountRestrictionInfo'
       }
     }
   },
@@ -39,16 +39,16 @@ export default {
     ...mapGetters('wallet', {
       existsAddress: 'existsAddress'
     }),
-    ...mapGetters('accountProperties', [
-      'properties'
+    ...mapGetters('accountRestrictions', [
+      'restrictions'
     ]),
-    propertiesTree () {
-      return this.properties.map((property) => {
+    restrictionsTree () {
+      return this.restrictions.map((restriction) => {
         return {
-          id: property.propertyType,
-          name: this.propertyTypeToName(property.propertyType),
-          children: property.values.map((value) => {
-            if (property.propertyType === PropertyType.BlockAddress || property.propertyType === PropertyType.AllowAddress) {
+          id: restriction.restrictionType,
+          name: this.restrictionTypeToName(restriction.restrictionType),
+          children: restriction.values.map((value) => {
+            if (restriction.restrictionType === RestrictionType.BlockAddress || restriction.restrictionType === RestrictionType.AllowAddress) {
               return {
                 id: value,
                 name: Address.createFromEncoded(this.$convert.base64ToHex(value)).plain()
@@ -67,11 +67,11 @@ export default {
   methods: {
     async reload (event) {
       this.isLoading = true
-      await this.$store.dispatch('accountProperties/update')
+      await this.$store.dispatch('accountRestrictions/update')
       this.isLoading = false
     },
-    propertyTypeToName (propertyType) {
-      switch (propertyType) {
+    restrictionTypeToName (restrictionType) {
+      switch (restrictionType) {
         case 0x01: return 'AllowAddress'
         case 0x02: return 'AllowMosaic'
         case 0x04: return 'AllowTransaction'

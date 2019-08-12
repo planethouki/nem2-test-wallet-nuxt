@@ -8,7 +8,7 @@
       MosaicInfo(navTargetId="mosaicInfo")
       MultisigInfo(navTargetId="multisigInfo")
       AliasInfo(navTargetId="aliasInfo")
-      AccountPropertyInfo(navTargetId="accountPropertyInfo")
+      AccountRestrictionInfo(navTargetId="accountRestrictionInfo")
       AccountLinkInfo(navTargetId="accountLinkInfo")
     v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
       Sidebar(:nav="nav" :active="navActive")
@@ -21,7 +21,7 @@ import Balance from '~/components/info/Balance.vue'
 import NamespaceInfo from '~/components/info/NamespaceInfo.vue'
 import MosaicInfo from '~/components/info/MosaicInfo.vue'
 import AliasInfo from '~/components/info/AliasInfo.vue'
-import AccountPropertyInfo from '~/components/info/AccountPropertyInfo.vue'
+import AccountRestrictionInfo from '~/components/info/AccountRestrictionInfo.vue'
 import AccountLinkInfo from '~/components/info/AccountLinkInfo.vue'
 import TransactionInfo from '~/components/info/TransactionInfo.vue'
 
@@ -37,7 +37,7 @@ export default {
     MosaicInfo,
     MultisigInfo,
     AliasInfo,
-    AccountPropertyInfo,
+    AccountRestrictionInfo,
     AccountLinkInfo,
     TransactionInfo
   },
@@ -58,7 +58,7 @@ export default {
         { icon: 'star', title: 'Mosaic', target: '#mosaicInfo', offset: 48 },
         { icon: 'star', title: 'Multisig', target: '#multisigInfo', offset: 48 },
         { icon: 'star', title: 'Alias', target: '#aliasInfo', offset: 48 },
-        { icon: 'star', title: 'Account Restriction', target: '#accountPropertyInfo', offset: 48 },
+        { icon: 'star', title: 'Account Restriction', target: '#accountRestrictionInfo', offset: 48 },
         { icon: 'star', title: 'Account Link', target: '#accountLinkInfo', offset: 48 }
       ],
       navActive: ''

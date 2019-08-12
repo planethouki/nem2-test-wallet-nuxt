@@ -2,18 +2,18 @@ import { AccountHttp } from 'nem2-sdk'
 import { mergeMap } from 'rxjs/operators'
 
 export const state = () => ({
-  properties: null
+  restrictions: null
 })
 
 export const getters = {
-  properties (state) {
-    return state.properties
+  restrictions (state) {
+    return state.restrictions
   }
 }
 
 export const mutations = {
-  properties (state, { properties }) {
-    state.properties = properties
+  restrictions (state, { restrictions }) {
+    state.restrictions = restrictions
   }
 }
 
@@ -22,17 +22,17 @@ export const actions = {
     const endpoint = rootGetters['wallet/endpoint']
     const address = rootGetters['wallet/address']
     const accountHttp = new AccountHttp(endpoint)
-    const properties = await new Promise((resolve) => {
+    const restrictions = await new Promise((resolve) => {
       accountHttp.getAccountInfo(address).pipe(
         mergeMap((accountInfo) => {
-          return accountHttp.getAccountProperties(accountInfo.address)
+          return accountHttp.getAccountRestrictions(accountInfo.address)
         })
-      ).subscribe((accountPropertiesInfo) => {
-        resolve(accountPropertiesInfo.accountProperties.properties)
+      ).subscribe((accountRestrictionsInfo) => {
+        resolve(accountRestrictionsInfo.accountRestrictions.restrictions)
       }, () => {
         resolve([])
       })
     })
-    commit('properties', { properties })
+    commit('restrictions', { restrictions })
   }
 }

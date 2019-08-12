@@ -20,10 +20,10 @@
       AliasInfo(navTargetId="aliasInfo")
       MosaicAlias(navTargetId="mosaicAlias")
       AddressAlias(navTargetId="addressAlias")
-      AccountPropertyInfo(navTargetId="accountPropertyInfo")
-      AccountPropertyAddress(navTargetId="accountPropertyAddress")
-      AccountPropertyMosaic(navTargetId="accountPropertyMosaic")
-      AccountPropertyEntityType(navTargetId="accountPropertyEntityType")
+      AccountRestrictionInfo(navTargetId="accountRestrictionInfo")
+      AccountRestrictionAddress(navTargetId="accountRestrictionAddress")
+      AccountRestrictionMosaic(navTargetId="accountRestrictionMosaic")
+      AccountRestrictionEntityType(navTargetId="accountRestrictionEntityType")
       AccountLinkInfo(navTargetId="accountLinkInfo")
       AccountLink(navTargetId="accountLink")
     v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
@@ -50,10 +50,10 @@ import CosignatureMultisig from '~/components/tx/CosignatureMultisig.vue'
 import AliasInfo from '~/components/info/AliasInfo.vue'
 import MosaicAlias from '~/components/tx/MosaicAlias.vue'
 import AddressAlias from '~/components/tx/AddressAlias.vue'
-import AccountPropertyInfo from '~/components/info/AccountPropertyInfo.vue'
-import AccountPropertyAddress from '~/components/tx/AccountPropertyAddress.vue'
-import AccountPropertyMosaic from '~/components/tx/AccountPropertyMosaic.vue'
-import AccountPropertyEntityType from '~/components/tx/AccountPropertyEntityType.vue'
+import AccountRestrictionInfo from '~/components/info/AccountRestrictionInfo.vue'
+import AccountRestrictionAddress from '~/components/tx/AccountRestrictionAddress.vue'
+import AccountRestrictionMosaic from '~/components/tx/AccountRestrictionMosaic.vue'
+import AccountRestrictionEntityType from '~/components/tx/AccountRestrictionEntityType.vue'
 import AccountLinkInfo from '~/components/info/AccountLinkInfo.vue'
 import AccountLink from '~/components/tx/AccountLink.vue'
 
@@ -82,10 +82,10 @@ export default {
     AliasInfo,
     MosaicAlias,
     AddressAlias,
-    AccountPropertyInfo,
-    AccountPropertyAddress,
-    AccountPropertyMosaic,
-    AccountPropertyEntityType,
+    AccountRestrictionInfo,
+    AccountRestrictionAddress,
+    AccountRestrictionMosaic,
+    AccountRestrictionEntityType,
     AccountLinkInfo,
     AccountLink
   },
@@ -123,10 +123,10 @@ export default {
         { icon: 'star', title: 'Current Alias', target: '#aliasInfo', offset: 48 },
         { icon: 'text_rotation_none', title: 'Mosaic Alias', target: '#mosaicAlias', offset: 48 },
         { icon: 'text_rotation_none', title: 'Address Alias', target: '#addressAlias', offset: 48 },
-        { icon: 'star', title: 'Current Account Restriction', target: '#accountPropertyInfo', offset: 48 },
-        { icon: 'person_add', title: 'Account Restriction Address', target: '#accountPropertyAddress', offset: 48 },
-        { icon: 'person_add', title: 'Account Restriction Mosaic', target: '#accountPropertyMosaic', offset: 48 },
-        { icon: 'person_add', title: 'Account Restriction Entity', target: '#accountPropertyEntityType', offset: 48 },
+        { icon: 'star', title: 'Current Account Restriction', target: '#accountRestrictionInfo', offset: 48 },
+        { icon: 'person_add', title: 'Account Restriction Address', target: '#accountRestrictionAddress', offset: 48 },
+        { icon: 'person_add', title: 'Account Restriction Mosaic', target: '#accountRestrictionMosaic', offset: 48 },
+        { icon: 'person_add', title: 'Account Restriction Entity', target: '#accountRestrictionEntityType', offset: 48 },
         { icon: 'star', title: 'Current Account Link', target: '#accountLinkInfo', offset: 48 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 48 }
       ],

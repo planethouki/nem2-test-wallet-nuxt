@@ -116,7 +116,7 @@ export default {
         this.$store.dispatch('mosaicAmountViews/update'),
         this.$store.dispatch('multisigGraph/update'),
         this.$store.dispatch('namespaces/update'),
-        this.$store.dispatch('accountProperties/update'),
+        this.$store.dispatch('accountRestrictions/update'),
         this.$store.dispatch('accountLink/update'),
         this.$store.dispatch('transactions/update')
       ])

@@ -16,9 +16,9 @@ if (process.env.isNf) {
   }
 } else {
   endpointList = [
-    { url: 'http://elephant.48gh23s.xyz:3000', label: 'elephant.48gh23s.xyz' }
+    { url: 'http://elephant2.48gh23s.xyz:3000', label: 'elephant2.48gh23s.xyz' }
   ]
-  defaultEndpoint = 'http://elephant.48gh23s.xyz:3000'
+  defaultEndpoint = 'http://elephant2.48gh23s.xyz:3000'
   mosaicPlaceholder = {
     transfer: '@cat.currency::0, 941299B2B7E1291C::0',
     currency10: '@cat.currency::10000000',
