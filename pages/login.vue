@@ -1,47 +1,46 @@
 <template lang="pug">
-  v-layout(row)
-    v-flex#content.pt-3.px-3
-      NemFoundation(v-if="isNf")
-      v-flex(mb-5)#login
-        v-card
-          v-form
-            v-card-text
-              v-radio-group(label="Select Endpoint" v-model="predefinedEndpoint")
-                v-radio(
-                  v-for="ep in endpointList"
-                  :key="ep.url"
-                  :label="ep.label"
-                  :value="ep.url")
-                v-radio(
-                  label="other"
-                  value="")
+  v-layout(column)
+    NemFoundation(v-if="isNf")
+    v-flex(mb-5)
+      v-card
+        v-card-text
+          v-radio-group(label="Select Endpoint" v-model="predefinedEndpoint")
+            v-radio(
+              v-for="ep in endpointList"
+              :key="ep.url"
+              :label="ep.label"
+              :value="ep.url")
+            v-radio(
+              label="other"
+              value="")
+          v-text-field(
+            v-show="predefinedEndpoint.length === 0"
+            label="Endpoint"
+            v-model="userEndpoint"
+            name="Endpoint"
+            required
+            placeholder="ex). http://localhost:3000")
+          v-row
+            v-col
               v-text-field(
-                v-show="predefinedEndpoint.length === 0"
-                label="Endpoint"
-                v-model="userEndpoint"
-                name="Endpoint"
+                label="Private Key"
+                v-model="privateKey"
+                :counter="64"
+                name="PrivateKey"
                 required
-                placeholder="ex). http://localhost:3000")
-              v-layout(row)
-                v-text-field(
-                  label="Private Key"
-                  v-model="privateKey"
-                  :counter="64"
-                  name="PrivateKey"
-                  required
-                  placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E")
-                v-btn(
-                  fab
-                  small
-                  flat
-                  @click="regenPrivateKey")
-                  v-icon cached
-            v-card-actions
+                placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E")
+            v-col(align-self="center" shrink)
               v-btn(
-                :disabled="loginDisabled"
-                color="blue"
-                class="white--text"
-                @click="createWallet") login
+                fab
+                small
+                @click="regenPrivateKey")
+                v-icon cached
+        v-card-actions
+          v-btn(
+            :disabled="loginDisabled"
+            color="blue"
+            class="white--text"
+            @click="createWallet") login
 </template>
 
 <script>

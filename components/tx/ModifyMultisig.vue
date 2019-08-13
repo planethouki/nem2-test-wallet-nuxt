@@ -37,7 +37,6 @@
                 v-btn(
                   fab
                   small
-                  flat
                   v-on:click="d_deleteModification(index)")
                     v-icon delete_forever
         v-flex
@@ -58,7 +57,6 @@
             v-btn(
               fab
               small
-              flat
               v-on:click="d_addModification")
                 v-icon add_box
         v-flex

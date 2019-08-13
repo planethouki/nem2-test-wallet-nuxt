@@ -30,7 +30,6 @@
                 v-btn(
                   fab
                   small
-                  flat
                   v-on:click="u_deleteCosignatory(index)")
                     v-icon delete_forever
         v-flex.pt-3
@@ -44,7 +43,6 @@
             v-btn(
               fab
               small
-              flat
               v-on:click="u_addCosignatory")
                 v-icon add_box
         v-text-field.pt-5(

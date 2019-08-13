@@ -1,6 +1,6 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform" lang="pug">
   v-app
-    v-toolbar(color="indigo" dark app)
+    v-app-bar(color="indigo" dark app)
       v-toolbar-title Catapult Account Interface
       v-spacer
       v-menu(
@@ -72,7 +72,6 @@
                 v-btn(
                   fab
                   small
-                  flat
                   @click="copyEndpointHandler")
                   v-icon filter_none
             v-list-tile(v-if="address")
@@ -83,7 +82,6 @@
                 v-btn(
                   fab
                   small
-                  flat
                   @click="copyAddressHandler")
                   v-icon filter_none
             v-list-tile(v-if="publicAccount")
@@ -94,7 +92,6 @@
                 v-btn(
                   fab
                   small
-                  flat
                   @click="copyPublicKeyHandler")
                   v-icon filter_none
             v-list-tile(v-if="account")
@@ -107,7 +104,6 @@
                 v-btn(
                   fab
                   small
-                  flat
                   @click="copyPrivateKeyHandler")
                   v-icon filter_none
       v-menu(
@@ -127,7 +123,7 @@
                 class="white--text"
                 @click="logoutWallet") logout
     v-content
-      v-container.pa-0(fluid fill-height="true")
+      v-container(fluid fill-height)
         nuxt
     TransactionListener
 </template>
