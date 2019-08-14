@@ -12,24 +12,22 @@
               :value="ep.url")
             v-radio(
               label="other"
-              value="")
+              value="other")
           v-text-field(
-            v-show="predefinedEndpoint.length === 0"
+            v-show="predefinedEndpoint === 'other'"
             label="Endpoint"
             v-model="userEndpoint"
             name="Endpoint"
             required
             placeholder="ex). http://localhost:3000")
-          v-row
-            v-col
-              v-text-field(
-                label="Private Key"
-                v-model="privateKey"
-                :counter="64"
-                name="PrivateKey"
-                required
-                placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E")
-            v-col(align-self="center" shrink)
+          v-text-field(
+            label="Private Key"
+            v-model="privateKey"
+            :counter="64"
+            name="PrivateKey"
+            required
+            placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E")
+            template(slot="append-outer")
               v-btn(
                 fab
                 small
@@ -81,11 +79,16 @@ export default {
       'defaultNetworkType',
       'isNf'
     ]),
-    breakPoint () {
-      return this.$vuetify.breakpoint.name
+    endpoint () {
+      let endpoint = this.predefinedEndpoint === 'other' ? this.userEndpoint : this.predefinedEndpoint
+      if (endpoint.match(/:\d+$/) === null) {
+        endpoint = `${endpoint}:3000`
+      }
+      if (!endpoint.startsWith('http')) {
+        endpoint = `http://${endpoint}`
+      }
+      return endpoint
     }
-  },
-  watch: {
   },
   asyncData ({ store, redirect }) {
     if (store.getters['wallet/existsAccount']) {
@@ -102,14 +105,7 @@ export default {
     },
     async createWallet (event) {
       this.loginDisabled = true
-      let endpoint = this.predefinedEndpoint || this.userEndpoint
-      if (endpoint.match(/:\d+$/) === null) {
-        endpoint = `${endpoint}:3000`
-      }
-      if (!endpoint.startsWith('http')) {
-        endpoint = `http://${endpoint}`
-      }
-      await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint })
+      await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint: this.endpoint })
       await Promise.all([
         this.$store.dispatch('chain/init'),
         this.$store.dispatch('mosaicAmountViews/update'),
