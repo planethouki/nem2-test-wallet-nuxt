@@ -1,11 +1,11 @@
 <template>
   <v-list subheader>
     <v-subheader>History</v-subheader>
-    <v-list-tile v-for="tx in history" :key="tx.hash">
-      <v-list-tile-content>
+    <v-list-item v-for="tx in history" :key="tx.hash">
+      <v-list-item-content>
         <a :href="tx.apiStatusUrl" target="_blank">{{ tx.hash }}</a>
-      </v-list-tile-content>
-    </v-list-tile>
+      </v-list-item-content>
+    </v-list-item>
   </v-list>
 </template>
 
@@ -24,5 +24,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
