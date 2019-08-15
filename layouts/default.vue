@@ -63,44 +63,47 @@
             v-on="on")
             v-icon account_circle
         v-card(style="width: 300px;")
+          div(style="opacity:0;position:absolute;font-size:0px;" ref="endpoint") {{ endpoint }}
+          div(style="opacity:0;position:absolute;font-size:0px;" ref="address") {{ address.pretty() }}
+          div(style="opacity:0;position:absolute;font-size:0px;" ref="publicKey") {{ publicAccount.publicKey }}
+          div(style="opacity:0;position:absolute;font-size:0px;" ref="privateKey") {{ privateKey }}
           v-list(dense two-line)
-            v-list-tile(v-if="endpoint")
-              v-list-tile-content
-                v-list-tile-title Endpoint
-                v-list-tile-sub-title(ref="endpoint") {{ endpoint }}
-              v-list-tile-action
+            v-list-item(v-if="endpoint")
+              v-list-item-content
+                v-list-item-title Endpoint
+                v-list-item-subtitle {{ endpoint }}
+              v-list-item-action
                 v-btn(
                   fab
                   small
                   @click="copyEndpointHandler")
                   v-icon filter_none
-            v-list-tile(v-if="address")
-              v-list-tile-content
-                v-list-tile-title Address
-                v-list-tile-sub-title(ref="address") {{ address.pretty() }}
-              v-list-tile-action
+            v-list-item(v-if="address")
+              v-list-item-content
+                v-list-item-title Address
+                v-list-item-subtitle {{ address.pretty() }}
+              v-list-item-action
                 v-btn(
                   fab
                   small
                   @click="copyAddressHandler")
                   v-icon filter_none
-            v-list-tile(v-if="publicAccount")
-              v-list-tile-content
-                v-list-tile-title Public Key
-                v-list-tile-sub-title(ref="publicKey") {{ publicAccount.publicKey }}
-              v-list-tile-action
+            v-list-item(v-if="publicAccount")
+              v-list-item-content
+                v-list-item-title Public Key
+                v-list-item-subtitle {{ publicAccount.publicKey }}
+              v-list-item-action
                 v-btn(
                   fab
                   small
                   @click="copyPublicKeyHandler")
                   v-icon filter_none
-            v-list-tile(v-if="account")
-              v-list-tile-content
-                v-list-tile-title Private Key
-                v-list-tile-sub-title
+            v-list-item(v-if="account")
+              v-list-item-content
+                v-list-item-title Private Key
+                v-list-item-subtitle
                   span ********
-                  span(style="opacity: 0;" ref="privateKey") {{ privateKey }}
-              v-list-tile-action
+              v-list-item-action
                 v-btn(
                   fab
                   small
