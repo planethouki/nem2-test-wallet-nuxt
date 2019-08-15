@@ -23,7 +23,7 @@
       AccountRestrictionInfo(navTargetId="accountRestrictionInfo")
       AccountRestrictionAddress(navTargetId="accountRestrictionAddress")
       AccountRestrictionMosaic(navTargetId="accountRestrictionMosaic")
-      AccountRestrictionEntityType(navTargetId="accountRestrictionEntityType")
+      AccountRestrictionOperation(navTargetId="accountRestrictionOperation")
       AccountLinkInfo(navTargetId="accountLinkInfo")
       AccountLink(navTargetId="accountLink")
     v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
@@ -53,7 +53,7 @@ import AddressAlias from '~/components/tx/AddressAlias.vue'
 import AccountRestrictionInfo from '~/components/info/AccountRestrictionInfo.vue'
 import AccountRestrictionAddress from '~/components/tx/AccountRestrictionAddress.vue'
 import AccountRestrictionMosaic from '~/components/tx/AccountRestrictionMosaic.vue'
-import AccountRestrictionEntityType from '~/components/tx/AccountRestrictionEntityType.vue'
+import AccountRestrictionOperation from '~/components/tx/AccountRestrictionOperation.vue'
 import AccountLinkInfo from '~/components/info/AccountLinkInfo.vue'
 import AccountLink from '~/components/tx/AccountLink.vue'
 
@@ -85,7 +85,7 @@ export default {
     AccountRestrictionInfo,
     AccountRestrictionAddress,
     AccountRestrictionMosaic,
-    AccountRestrictionEntityType,
+    AccountRestrictionOperation,
     AccountLinkInfo,
     AccountLink
   },
@@ -126,7 +126,7 @@ export default {
         { icon: 'star', title: 'Current Account Restriction', target: '#accountRestrictionInfo', offset: 48 },
         { icon: 'person_add', title: 'Account Restriction Address', target: '#accountRestrictionAddress', offset: 48 },
         { icon: 'person_add', title: 'Account Restriction Mosaic', target: '#accountRestrictionMosaic', offset: 48 },
-        { icon: 'person_add', title: 'Account Restriction Entity', target: '#accountRestrictionEntityType', offset: 48 },
+        { icon: 'person_add', title: 'Account Restriction Operation', target: '#accountRestrictionOperation', offset: 48 },
         { icon: 'star', title: 'Current Account Link', target: '#accountLinkInfo', offset: 48 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 48 }
       ],

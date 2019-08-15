@@ -2,7 +2,7 @@
   v-flex(mb-5 v-if="existsAccount" v-bind:id="navTargetId")
     v-card
       v-card-title
-        div.title Account Restriction Entity Type
+        div.title Account Restriction Operation
       v-card-text
         v-radio-group(label="Restriction Type" v-model="restrictionType" row)
           v-radio(
@@ -70,7 +70,7 @@ import { Deadline, UInt64, RestrictionType, TransactionHttp,
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
-  name: 'AccountRestrictionAddress',
+  name: 'AccountRestrictionOperation',
   components: {
     TxHistory
   },
