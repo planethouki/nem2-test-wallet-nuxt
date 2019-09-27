@@ -33,7 +33,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, NamespaceId, MosaicId, AliasActionType, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, NamespaceId, MosaicId, AliasAction, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -51,10 +51,10 @@ export default {
   },
   data () {
     return {
-      actionType: AliasActionType.Link,
+      actionType: AliasAction.Link,
       actionTypes: [
-        { type: AliasActionType.Link, label: 'Link' },
-        { type: AliasActionType.Unlink, label: 'Unlink' }
+        { type: AliasAction.Link, label: 'Link' },
+        { type: AliasAction.Unlink, label: 'Unlink' }
       ],
       namespaceName: 'foo',
       hexMosaicId: '79DC0ABC22594941',

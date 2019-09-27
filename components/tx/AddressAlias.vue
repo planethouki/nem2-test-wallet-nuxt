@@ -34,7 +34,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, NamespaceId, Address, AliasActionType, TransactionHttp, AddressAliasTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, NamespaceId, Address, AliasAction, TransactionHttp, AddressAliasTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -52,10 +52,10 @@ export default {
   },
   data () {
     return {
-      actionType: AliasActionType.Link,
+      actionType: AliasAction.Link,
       actionTypes: [
-        { type: AliasActionType.Link, label: 'Link' },
-        { type: AliasActionType.Unlink, label: 'Unlink' }
+        { type: AliasAction.Link, label: 'Link' },
+        { type: AliasAction.Unlink, label: 'Unlink' }
       ],
       namespaceName: 'foo',
       rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',

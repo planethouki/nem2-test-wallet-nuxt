@@ -7,7 +7,7 @@
         v-flex
           v-card
             v-card-title
-              div.subheading Payment
+              .body-1 Payment
             v-card-text
               v-text-field(
                 label="To Address"
@@ -27,7 +27,7 @@
         v-flex.pt-3
           v-card
             v-card-title
-              div.subheading Invoice
+              .body-1 Invoice
             v-card-text
               v-text-field(
                 label="Partner PublicKey"

@@ -22,65 +22,56 @@
           required
           type="number"
           placeholder="ex). 2")
-        v-flex.pt-4
-          v-layout(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                span.grey--text.mr-1.pr-1 {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
-                v-flex
-                  v-text-field(
-                    v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
-                    v-bind:value="d_cosignatory.pubKey"
-                    required
-                    :counter="64"
-                    disabled)
-                v-btn(
-                  fab
-                  small
-                  v-on:click="d_deleteModification(index)")
-                    v-icon delete_forever
-        v-flex
-          v-layout(align-baseline)
-            div.mr-1.pr-1
-              v-checkbox(
-                v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
-                hide-details
-                off-icon="remove_circle"
-                on-icon="add_circle"
-                v-model="d_additionalModificationType")
-            v-flex
-              v-text-field(
-                v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
-                v-model="d_additionalModificationPubkey"
-                :counter="64"
-                placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0")
-            v-btn(
-              fab
-              small
-              v-on:click="d_addModification")
-                v-icon add_box
-        v-flex
+        .d-flex.align-baseline.mt-4(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey")
+          span.grey--text.mr-1.pr-1 {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
           v-text-field(
-            label="Max Fee"
-            v-model="d_fee"
+            v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
+            v-bind:value="d_cosignatory.pubKey"
             required
-            type="number")
-        v-flex.pt-4
+            :counter="64"
+            disabled)
+          v-btn(
+            fab
+            small
+            v-on:click="d_deleteModification(index)")
+              v-icon delete_forever
+        .d-flex.align-baseline
+          v-checkbox(
+            v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
+            hide-details
+            off-icon="remove_circle"
+            on-icon="add_circle"
+            v-model="d_additionalModificationType")
           v-text-field(
-            label="Lock Funds Mosaic"
-            :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
-            v-model="d_lockMosaic"
-            required)
-          v-text-field(
-            label="Lock Funds Duration In Blocks"
-            placeholder="ex). 480"
-            v-model="d_lockDuration"
-            required)
-          v-text-field(
-            label="Lock Funds Max Fee"
-            v-model="d_lockFee"
-            required
-            type="number")
+            v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
+            v-model="d_additionalModificationPubkey"
+            :counter="64"
+            placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0").ml-2
+          v-btn(
+            fab
+            small
+            v-on:click="d_addModification").ml-2
+              v-icon add_box
+        v-text-field(
+          label="Max Fee"
+          v-model="d_fee"
+          required
+          type="number")
+        v-text-field(
+          label="Lock Funds Mosaic"
+          :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
+          v-model="d_lockMosaic"
+          required).mt-4
+        v-text-field(
+          label="Lock Funds Duration In Blocks"
+          placeholder="ex). 480"
+          v-model="d_lockDuration"
+          required)
+        v-text-field(
+          label="Lock Funds Max Fee"
+          v-model="d_lockFee"
+          required
+          type="number")
         v-card-actions
           v-btn(
             color="blue"

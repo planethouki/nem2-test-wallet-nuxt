@@ -16,35 +16,30 @@
           required
           type="number"
           placeholder="ex). 2")
-        v-flex.pt-5
-          v-layout(v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                v-flex
-                  v-text-field(
-                    v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
-                    v-bind:value="u_cosignatory"
-                    required
-                    :counter="64"
-                    disabled)
-                v-btn(
-                  fab
-                  small
-                  v-on:click="u_deleteCosignatory(index)")
-                    v-icon delete_forever
-        v-flex.pt-3
-          v-layout(align-baseline)
-            v-flex
-              v-text-field(
-                label="Add Cosignatory"
-                v-model="u_addedCosignatory"
-                :counter="64"
-                placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0")
-            v-btn(
-              fab
-              small
-              v-on:click="u_addCosignatory")
-                v-icon add_box
+        .d-flex.align-baseline.mt-3(v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory")
+          v-text-field(
+            v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
+            v-bind:value="u_cosignatory"
+            required
+            :counter="64"
+            disabled)
+          v-btn(
+            fab
+            small
+            v-on:click="u_deleteCosignatory(index)")
+              v-icon delete_forever
+        .d-flex.align-baseline.mt-3
+          v-flex
+            v-text-field(
+              label="Add Cosignatory"
+              v-model="u_addedCosignatory"
+              :counter="64"
+              placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0")
+          v-btn(
+            fab
+            small
+            v-on:click="u_addCosignatory")
+              v-icon add_box
         v-text-field.pt-5(
           label="Max Fee"
           v-model="u_fee"
@@ -112,13 +107,13 @@ export default {
       u_fee: 0,
       u_lockFee: 0,
       u_lockMosaic: '',
-      u_lockDuration: 480
+      u_lockDuration: 480,
+      isMultisig: false
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'address']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('multisigGraph', ['isMultisig']),
     ...mapGetters('env', ['mosaicPlaceholder']),
     u_forbidMultisig () {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'

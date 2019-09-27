@@ -4,46 +4,41 @@
       v-card-title
         div.title Account Restriction Address
       v-card-text
-        v-radio-group(label="Restriction Type" v-model="restrictionType" row)
+        v-radio-group(label="Restriction Type" v-model="restrictionType" column)
           v-radio(
             v-for="pt in restrictionTypes"
             :key="pt.type"
             :label="pt.label"
             :value="pt.type")
-        v-flex.pt-4
-          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.rawAddress" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
-                v-flex
-                  v-text-field(
-                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Address: ' + (index + 1)"
-                  v-bind:value="modification.rawAddress"
-                  disabled)
-                v-btn(
-                fab
-                small
-                v-on:click="deleteModification(index)")
-                  v-icon delete_forever
-        v-flex
-          v-layout(align-baseline)
-            div.mr-1.pr-1
-              v-checkbox(
-              v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              hide-details
-              off-icon="remove_circle"
-              on-icon="add_circle"
-              v-model="additionalModification.isAdd")
-            v-flex
-              v-text-field(
-              v-bind:label="`Address Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              v-model="additionalModification.rawAddress"
-              placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
-            v-btn(
+        .d-flex.align-baseline.mt-4(
+          v-for="(modification, index) in modifications"
+          v-bind:key="modification.rawAddress")
+          span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
+          v-text-field(
+            v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Address: ' + (index + 1)"
+            v-bind:value="modification.rawAddress"
+            disabled)
+          v-btn(
+          fab
+          small
+          v-on:click="deleteModification(index)")
+            v-icon delete_forever
+        .d-flex.align-baseline
+          v-checkbox(
+            v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+            hide-details
+            off-icon="remove_circle"
+            on-icon="add_circle"
+            v-model="additionalModification.isAdd").mr-2
+          v-text-field(
+            v-bind:label="`Address Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+            v-model="additionalModification.rawAddress"
+            placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
+          v-btn(
             fab
             small
             v-on:click="addModification")
-              v-icon add_box
+            v-icon add_box
         v-text-field(
           label="Max Fee"
           v-model="fee")
@@ -58,8 +53,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Address, Deadline, UInt64, RestrictionType, TransactionHttp,
-  RestrictionModificationType, AccountRestrictionModification, ModifyAccountRestrictionAddressTransaction } from 'nem2-sdk'
+import { Address, Deadline, UInt64, AccountRestrictionType, TransactionHttp,
+  AccountRestrictionModificationAction, AccountRestrictionModification,
+  AccountAddressRestrictionTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -77,10 +73,12 @@ export default {
   },
   data () {
     return {
-      restrictionType: RestrictionType.AllowAddress,
+      restrictionType: AccountRestrictionType.AllowIncomingAddress,
       restrictionTypes: [
-        { type: RestrictionType.AllowAddress, label: 'Allow' },
-        { type: RestrictionType.BlockAddress, label: 'Block' }
+        { type: AccountRestrictionType.AllowIncomingAddress, label: 'Allow Incoming' },
+        { type: AccountRestrictionType.AllowOutgoingAddress, label: 'Allow Outgoing' },
+        { type: AccountRestrictionType.BlockIncomingAddress, label: 'Block Incoming' },
+        { type: AccountRestrictionType.BlockOutgoingAddress, label: 'Block Outgoing' }
       ],
       modifications: [
         {
@@ -114,19 +112,19 @@ export default {
     announceHandler (event) {
       const account = this.account
       const endpoint = this.endpoint
-      const modifyAccountRestrictionAddressTransaction = ModifyAccountRestrictionAddressTransaction.create(
+      const accountAddressRestrictionTransaction = AccountAddressRestrictionTransaction.create(
         Deadline.create(),
         this.restrictionType,
         this.modifications.map((modification) => {
           return AccountRestrictionModification.createForAddress(
-            modification.isAdd ? RestrictionModificationType.Add : RestrictionModificationType.Remove,
+            modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
             Address.createFromRawAddress(modification.rawAddress)
           )
         }),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(modifyAccountRestrictionAddressTransaction, this.generationHash)
+      const signedTx = account.sign(accountAddressRestrictionTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

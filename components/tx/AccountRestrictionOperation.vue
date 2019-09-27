@@ -4,52 +4,45 @@
       v-card-title
         div.title Account Restriction Operation
       v-card-text
-        v-radio-group(label="Restriction Type" v-model="restrictionType" row)
+        v-radio-group(label="Restriction Type" v-model="restrictionType")
           v-radio(
             v-for="pt in restrictionTypes"
             :key="pt.type"
             :label="pt.label"
             :value="pt.type")
-        v-flex.pt-4
-          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.hexOperation" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
-                v-flex
-                  v-text-field(
-                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Entity Type: ' + (index + 1)"
-                  v-bind:value="modification.hexOperation"
-                  disabled)
-                v-btn(
-                fab
-                small
-                v-on:click="deleteModification(index)")
-                  v-icon delete_forever
-        v-flex
-          v-layout(align-baseline)
-            div.mr-1.pr-1
-              v-checkbox(
-              v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              hide-details
-              off-icon="remove_circle"
-              on-icon="add_circle"
-              v-model="additionalModification.isAdd")
-            v-flex
-              v-text-field(
-                v-bind:label="`Hex Entity Type Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-                v-model="additionalModification.hexOperation"
-                placeholder="ex). 4152")
-              v-select(
-                :items="operations"
-                item-text="label"
-                item-value="hexOperation"
-                v-model="additionalModification.hexOperation"
-                label="(Option) Select From")
-            v-btn(
-            fab
-            small
-            v-on:click="addModification")
-              v-icon add_box
+        .d-flex.align-baseline.mt-4(v-for="(modification, index) in modifications" v-bind:key="modification.hexOperation" row wrap)
+          span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
+          v-text-field(
+          v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Entity Type: ' + (index + 1)"
+          v-bind:value="modification.hexOperation"
+          disabled)
+          v-btn(
+          fab
+          small
+          v-on:click="deleteModification(index)")
+            v-icon delete_forever
+        .d-flex.align-baseline
+          v-checkbox(
+          v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+          hide-details
+          off-icon="remove_circle"
+          on-icon="add_circle"
+          v-model="additionalModification.isAdd")
+          v-text-field(
+            v-bind:label="`Hex Entity Type Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
+            v-model="additionalModification.hexOperation"
+            placeholder="ex). 4152").ml-2
+          v-select(
+            :items="operations"
+            item-text="label"
+            item-value="hexOperation"
+            v-model="additionalModification.hexOperation"
+            label="(Option) Select From").ml-2
+          v-btn(
+          fab
+          small
+          v-on:click="addModification")
+            v-icon add_box
         v-text-field(
           label="Max Fee"
           v-model="fee")
@@ -64,9 +57,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, RestrictionType, TransactionHttp,
-  RestrictionModificationType, AccountRestrictionModification,
-  AccountOperationRestrictionModificationTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, AccountRestrictionType, TransactionHttp,
+  AccountRestrictionModificationAction, AccountRestrictionModification,
+  AccountOperationRestrictionTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -84,10 +77,12 @@ export default {
   },
   data () {
     return {
-      restrictionType: RestrictionType.AllowTransaction,
+      restrictionType: AccountRestrictionType.AllowIncomingTransactionType,
       restrictionTypes: [
-        { type: RestrictionType.AllowTransaction, label: 'Allow' },
-        { type: RestrictionType.BlockTransaction, label: 'Block' }
+        { type: AccountRestrictionType.AllowIncomingTransactionType, label: 'Allow Incoming' },
+        { type: AccountRestrictionType.AllowOutgoingTransactionType, label: 'Allow Outgoing' },
+        { type: AccountRestrictionType.BlockIncomingTransactionType, label: 'Block Incoming' },
+        { type: AccountRestrictionType.BlockOutgoingTransactionType, label: 'Block Outgoing' }
       ],
       modifications: [
         {
@@ -126,19 +121,19 @@ export default {
     announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
-      const accountOperationRestrictionModificationTransaction = AccountOperationRestrictionModificationTransaction.create(
+      const accountOperationRestrictionTransaction = AccountOperationRestrictionTransaction.create(
         Deadline.create(),
         this.restrictionType,
         this.modifications.map((modification) => {
           return AccountRestrictionModification.createForOperation(
-            modification.isAdd ? RestrictionModificationType.Add : RestrictionModificationType.Remove,
+            modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
             Number('0x'.concat(modification.hexOperation))
           )
         }),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(accountOperationRestrictionModificationTransaction, this.generationHash)
+      const signedTx = account.sign(accountOperationRestrictionTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

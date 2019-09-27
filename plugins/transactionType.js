@@ -13,7 +13,7 @@ Vue.prototype.$transactionTypes = [
   { label: 'Secret Proof', entityType: TransactionType.SECRET_PROOF },
   { label: 'Address Alias', entityType: TransactionType.ADDRESS_ALIAS },
   { label: 'Mosaic Alias', entityType: TransactionType.MOSAIC_ALIAS },
-  { label: 'Account Restriction Address', entityType: TransactionType.MODIFY_ACCOUNT_RESTRICTION_ADDRESS },
-  { label: 'Account Restriction Mosaic', entityType: TransactionType.MODIFY_ACCOUNT_RESTRICTION_MOSAIC },
-  { label: 'Account Restriction Entity Type', entityType: TransactionType.MODIFY_ACCOUNT_RESTRICTION_OPERATION }
+  { label: 'Account Restriction Address', entityType: TransactionType.ACCOUNT_RESTRICTION_ADDRESS },
+  { label: 'Account Restriction Mosaic', entityType: TransactionType.ACCOUNT_RESTRICTION_MOSAIC },
+  { label: 'Account Restriction Operation', entityType: TransactionType.ACCOUNT_RESTRICTION_OPERATION }
 ]
