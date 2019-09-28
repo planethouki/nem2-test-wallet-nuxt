@@ -140,7 +140,7 @@ export default {
         network
       )
       const aggregateTx = AggregateTransaction.createBonded(
-        Deadline.create(23),
+        Deadline.create(),
         [
           paymentTx.toAggregate(paySender),
           invoiceTx.toAggregate(invSender)

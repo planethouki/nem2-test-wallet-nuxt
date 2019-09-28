@@ -78,19 +78,18 @@
     v-content
       v-container(fluid fill-height)
         nuxt
+    TransactionListener
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import TransactionListener from '~/components/TheTransactionListener.vue'
 
 export default {
   middleware: 'checkLogin',
-  components: {},
+  components: { TransactionListener },
   data: () => ({
-    accountMenu: false,
     settingMenu: false,
-    unconfirmedMenu: false,
-    partialMenu: false,
     logoutMenu: false,
     privateKey: null
   }),

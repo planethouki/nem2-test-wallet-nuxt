@@ -4,12 +4,22 @@
       v-card-title
         div.title Create Mosaic
       v-card-text
+        .d-flex
+          v-checkbox(v-model="m_supplyMutable" class="mx-2" label="Supply Mutable")
+          v-checkbox(v-model="m_transferable" class="mx-2" label="Transferable")
+          v-checkbox(v-model="m_restrictable" class="mx-2" label="Restrictable")
         v-text-field(
           label="Nonce (Number)"
           v-model="m_nonce"
           required
           type="number"
-          placeholder="ex). 35426")
+          placeholder="ex). 35426"
+          min="0"
+          max="4294967295")
+        v-text-field(
+          label="MosaicId"
+          :value="mosaicId.toHex()"
+          disabled)
         v-text-field(
           label="Supply Amount"
           v-model="m_delta"
@@ -46,7 +56,7 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
-  MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicProperties, MosaicSupplyType,
+  MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicFlags, MosaicSupplyChangeAction,
   AggregateTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
@@ -68,7 +78,7 @@ export default {
       m_nonce: '0',
       m_supplyMutable: true,
       m_transferable: true,
-      m_levyMutable: false,
+      m_restrictable: true,
       m_divisibility: 0,
       m_duration: 10,
       m_delta: 100,
@@ -77,35 +87,37 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('wallet', ['existsAccount', 'publicAccount']),
+    ...mapGetters('chain', ['generationHash']),
+    mosaicId () {
+      const mosaicNonce = MosaicNonce.createFromHex(`00000000${Number(this.m_nonce).toString(16)}`.substr(-8))
+      return MosaicId.createFromNonce(mosaicNonce, this.publicAccount)
+    }
   },
   methods: {
     m_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const networkType = account.address.networkType
-      const nonce = Number(this.m_nonce)
-      const mosaicNonce = new MosaicNonce(this.$convert.numberToUint8_4(nonce))
+      const mosaicNonce = MosaicNonce.createFromHex(`00000000${Number(this.m_nonce).toString(16)}`.substr(-8))
       const duration = this.m_duration
       const delta = this.m_delta
       const mosaicDefinitionTransaction = MosaicDefinitionTransaction.create(
         Deadline.create(),
         mosaicNonce,
-        MosaicId.createFromNonce(mosaicNonce, account.publicAccount),
-        MosaicProperties.create({
-          supplyMutable: this.m_supplyMutable,
-          transferable: this.m_transferable,
-          levyMutable: this.levyMutable,
-          divisibility: this.m_divisibility,
-          duration: UInt64.fromUint(duration)
-        }),
+        this.mosaicId,
+        MosaicFlags.create(
+          this.m_supplyMutable,
+          this.m_transferable,
+          this.m_restrictable),
+        this.m_divisibility,
+        UInt64.fromUint(duration),
         networkType
       )
       const mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
         Deadline.create(),
         mosaicDefinitionTransaction.mosaicId,
-        MosaicSupplyType.Increase,
+        MosaicSupplyChangeAction.Increase,
         UInt64.fromUint(delta),
         networkType
       )
