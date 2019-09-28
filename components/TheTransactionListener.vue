@@ -3,10 +3,9 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { Listener } from 'nem2-sdk'
-
 export default {
   name: 'TransactionListener',
-  data() {
+  data () {
     return {
       listener: null,
       subscriptions: {
@@ -24,18 +23,18 @@ export default {
     })
   },
   watch: {
-    endpoint(newVal) {
+    endpoint (newVal) {
       if (newVal) {
         this.changeListener(newVal)
       }
     }
   },
-  mounted() {
+  mounted () {
     if (this.endpoint) {
       this.changeListener(this.endpoint)
     }
   },
-  destroyed() {
+  destroyed () {
     this.closeListener()
   },
   methods: {
@@ -46,17 +45,17 @@ export default {
       'aggregateBondedRemoved',
       'confirmedAdded'
     ]),
-    closeListener() {
+    closeListener () {
       if (this.listener) {
         if (this.listener.isOpen()) {
           this.listener.close()
           this.listener = null
           // eslint-disable-next-line
-          console.log('connection close')
+            console.log('connection close')
         }
       }
     },
-    async changeListener(endpoint) {
+    async changeListener (endpoint) {
       if (this.listener) {
         if (this.listener.isOpen()) {
           this.listener.close()
@@ -71,7 +70,7 @@ export default {
       this.getAggregateBondedTransactions()
       this.getConfirmedTransactions()
     },
-    getUnconfirmedTransactions() {
+    getUnconfirmedTransactions () {
       if (this.subscriptions.unconfirmedAdded) {
         this.subscriptions.unconfirmedAdded.unsubscribe()
         this.subscriptions.unconfirmedAdded = null
@@ -87,7 +86,7 @@ export default {
         this.unconfirmedRemoved({ transaction })
       })
     },
-    getAggregateBondedTransactions() {
+    getAggregateBondedTransactions () {
       if (this.subscriptions.aggregateBondedAdded) {
         this.subscriptions.aggregateBondedAdded.unsubscribe()
         this.subscriptions.aggregateBondedAdded = null
@@ -103,7 +102,7 @@ export default {
         this.aggregateBondedRemoved({ transaction })
       })
     },
-    getConfirmedTransactions() {
+    getConfirmedTransactions () {
       if (this.subscriptions.confirmed) {
         this.subscriptions.confirmed.unsubscribe()
         this.subscriptions.confirmed = null

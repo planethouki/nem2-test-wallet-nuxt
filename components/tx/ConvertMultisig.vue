@@ -16,37 +16,30 @@
           required
           type="number"
           placeholder="ex). 2")
-        v-flex.pt-5
-          v-layout(v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                v-flex
-                  v-text-field(
-                    v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
-                    v-bind:value="u_cosignatory"
-                    required
-                    :counter="64"
-                    disabled)
-                v-btn(
-                  fab
-                  small
-                  flat
-                  v-on:click="u_deleteCosignatory(index)")
-                    v-icon delete_forever
-        v-flex.pt-3
-          v-layout(align-baseline)
-            v-flex
-              v-text-field(
-                label="Add Cosignatory"
-                v-model="u_addedCosignatory"
-                :counter="64"
-                placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0")
-            v-btn(
-              fab
-              small
-              flat
-              v-on:click="u_addCosignatory")
-                v-icon add_box
+        .d-flex.align-baseline.mt-3(v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="u_cosignatory")
+          v-text-field(
+            v-bind:label="'Cosignatory PublicKey: ' + (index + 1)"
+            v-bind:value="u_cosignatory"
+            required
+            :counter="64"
+            disabled)
+          v-btn(
+            fab
+            small
+            v-on:click="u_deleteCosignatory(index)")
+              v-icon delete_forever
+        .d-flex.align-baseline.mt-3
+          v-flex
+            v-text-field(
+              label="Add Cosignatory"
+              v-model="u_addedCosignatory"
+              :counter="64"
+              placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0")
+          v-btn(
+            fab
+            small
+            v-on:click="u_addCosignatory")
+              v-icon add_box
         v-text-field.pt-5(
           label="Max Fee"
           v-model="u_fee"
@@ -83,8 +76,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import {
-  Deadline, TransactionHttp, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, UInt64, AggregateTransaction,
+  Deadline, TransactionHttp, MultisigAccountModificationTransaction, MultisigCosignatoryModification,
+  CosignatoryModificationAction, PublicAccount, UInt64, AggregateTransaction,
   LockFundsTransaction } from 'nem2-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
@@ -96,12 +89,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'multisig'
       }
     }
   },
-  data() {
+  data () {
     return {
       u_cosignatories: [
         '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
@@ -114,63 +107,62 @@ export default {
       u_fee: 0,
       u_lockFee: 0,
       u_lockMosaic: '',
-      u_lockDuration: 480
+      u_lockDuration: 480,
+      isMultisig: false
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'address']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('multisigGraph', ['isMultisig']),
     ...mapGetters('env', ['mosaicPlaceholder']),
-    u_forbidMultisig() {
+    u_forbidMultisig () {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
-    u_announceDisabledMessage() {
-      if (this.u_forbidMultisig) return 'Please try another account.'
-      if (this.isMultisig) return 'Already converted'
+    u_announceDisabledMessage () {
+      if (this.u_forbidMultisig) { return 'Please try another account.' }
+      if (this.isMultisig) { return 'Already converted' }
       return ''
     }
   },
-  mounted() {
+  watch: {},
+  mounted () {
     this.u_lockMosaic = this.mosaicPlaceholder.currency10
   },
-  watch: {},
   methods: {
-    u_deleteCosignatory: function (index) {
+    u_deleteCosignatory (index) {
       this.u_cosignatories.splice(index, 1)
     },
-    u_addCosignatory: function (event) {
+    u_addCosignatory (event) {
       this.u_cosignatories.push(this.u_addedCosignatory)
       this.u_addedCosignatory = ''
     },
-    u_announceHandler: function (event) {
+    u_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const networkType = account.address.networkType
       const minApprovalDelta = this.u_minApprovalDelta
       const minRemovalDelta = this.u_minRemovalDelta
       const cosignatories = this.u_cosignatories
-      const tx = ModifyMultisigAccountTransaction.create(
+      const tx = MultisigAccountModificationTransaction.create(
         Deadline.create(),
         minApprovalDelta,
         minRemovalDelta,
         cosignatories.map((co) => {
           return new MultisigCosignatoryModification(
-            MultisigCosignatoryModificationType.Add,
+            CosignatoryModificationAction.Add,
             PublicAccount.createFromPublicKey(co, networkType)
           )
         }),
-        networkType,
-        UInt64.fromUint(this.u_fee)
+        networkType
       )
       const aggregateTx = AggregateTransaction.createBonded(
-        Deadline.create(23),
+        Deadline.create(),
         [
           tx.toAggregate(account.publicAccount)
         ],
         networkType,
         [],
-        UInt64.fromUint(this.d_fee)
+        UInt64.fromUint(this.u_fee)
       )
       const signedAggregateTx = account.sign(aggregateTx, this.generationHash)
       const lockFundsTx = LockFundsTransaction.create(
@@ -185,8 +177,8 @@ export default {
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedLockFundsTx)
       const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') return
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) return
+        if (action.type !== 'transactions/confirmedAdded') { return }
+        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
         txHttp.announceAggregateBonded(signedAggregateTx)
         unsubscribe()
       })

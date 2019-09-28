@@ -1,10 +1,10 @@
 <template>
   <v-app>
-    <v-toolbar color="indigo" dark app>
+    <v-app-bar color="indigo" dark app>
       <v-toolbar-title>Catapult Account Interface</v-toolbar-title>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
-      <v-container class="pa-0" fluid fill-height="true">
+      <v-container fill-height>
         <nuxt />
       </v-container>
     </v-content>
@@ -15,12 +15,8 @@
 
 export default {
   data: () => ({
-
   }),
   methods: {
-    toggleNav() {
-      this.$store.commit('toggleDrawer')
-    }
   }
 }
 </script>

@@ -59,12 +59,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'transfer'
       }
     }
   },
-  data() {
+  data () {
     return {
       t_recipientAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       t_recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
@@ -91,11 +91,11 @@ export default {
       'mosaicPlaceholder'
     ])
   },
-  mounted() {
+  mounted () {
     this.t_mosaics = this.mosaicPlaceholder.transfer
   },
   methods: {
-    t_announceHandler: function (event) {
+    t_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.endpoint
       const recipient = this.$parser.parseAddress(this.t_recipientAddress)

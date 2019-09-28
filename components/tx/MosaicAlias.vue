@@ -33,7 +33,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, NamespaceId, MosaicId, AliasActionType, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, NamespaceId, MosaicId, AliasAction, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -44,17 +44,17 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'mosaicAlias'
       }
     }
   },
-  data() {
+  data () {
     return {
-      actionType: AliasActionType.Link,
+      actionType: AliasAction.Link,
       actionTypes: [
-        { type: AliasActionType.Link, label: 'Link' },
-        { type: AliasActionType.Unlink, label: 'Unlink' }
+        { type: AliasAction.Link, label: 'Link' },
+        { type: AliasAction.Unlink, label: 'Unlink' }
       ],
       namespaceName: 'foo',
       hexMosaicId: '79DC0ABC22594941',
@@ -67,7 +67,7 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const mosaicAliasTransaction = MosaicAliasTransaction.create(

@@ -52,12 +52,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'secretproof'
       }
     }
   },
-  data() {
+  data () {
     return {
       p_hashType: 0,
       p_hashTypes: [
@@ -73,7 +73,7 @@ export default {
     }
   },
   computed: {
-    p_secret: function () {
+    p_secret () {
       switch (this.p_hashType) {
         case HashType.Op_Sha3_256:
           return this.$hash.sha3(this.p_proof)
@@ -90,11 +90,11 @@ export default {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash'])
   },
-  created: function () {
+  created () {
     this.p_proof = this.$crypto.random10()
   },
   methods: {
-    p_announceHandler: function (event) {
+    p_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const recipient = this.$parser.parseAddressSecretLock(this.p_recipient)

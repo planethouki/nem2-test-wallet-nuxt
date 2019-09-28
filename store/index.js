@@ -3,16 +3,16 @@ export const state = () => ({
 })
 
 export const getters = {
-  drawer(state) {
+  drawer (state) {
     return state.drawer
   }
 }
 
 export const mutations = {
-  toggleDrawer(state) {
+  toggleDrawer (state) {
     state.drawer = !state.drawer
   },
-  setDrawer(state, value) {
+  setDrawer (state, value) {
     state.drawer = value
   }
 }

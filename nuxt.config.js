@@ -1,4 +1,3 @@
-const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const pkg = require('./package')
 
 module.exports = {
@@ -33,19 +32,24 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    '~/assets/style/app.styl'
   ],
 
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/vuetify',
     '@/plugins/convert',
     '@/plugins/hash',
     '@/plugins/crypto',
     '@/plugins/parser',
     '@/plugins/transactionType'
+  ],
+
+  /*
+  ** Nuxt.js dev-modules
+  */
+  devModules: [
+    '@nuxtjs/vuetify'
   ],
 
   /*
@@ -56,21 +60,22 @@ module.exports = {
   ],
 
   /*
+  ** vuetify module configuration
+  ** https://github.com/nuxt-community/vuetify-module
+  */
+  vuetify: {
+    customVariables: ['~/assets/variables.scss']
+  },
+
+  /*
   ** Build configuration
   */
   build: {
-    transpile: ['vuetify/lib'],
-    plugins: [new VuetifyLoaderPlugin()],
-    loaders: {
-      stylus: {
-        import: ['~assets/style/variables.styl']
-      }
-    },
 
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {
+    extend (config, ctx) {
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({

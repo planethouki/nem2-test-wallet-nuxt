@@ -1,9 +1,11 @@
 <template lang="pug">
-  v-flex(mb-5 v-bind:id="navTargetId")
+  v-flex(v-bind:id="navTargetId" xs12 mb-5)
     v-card
-      v-card-title.d-block
-        header.display-1 NF Catapult Testnet Beta
-        p.blue-grey--text.text--darken-3 Welcome to the Nem Foundation Catapult Test Net
+      v-card-title
+        v-flex(colmun)
+          header.display-1 NF Catapult Testnet Beta
+          p.blue-grey--text.text--darken-3 Welcome to the Nem Foundation Catapult Test Net
+      v-card-text
         v-btn(slot="activator" color="indigo lighten-2" dark href="https://forum.nem.io/t/guide-to-using-nf-catapult-testnet-beta-wallet/22045" target="_blank")
           span.white--text.mr-1 View Guide
           v-icon play_circle_outline
@@ -27,20 +29,8 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'nemFoundation'
-      }
-    }
-  },
-  data() {
-    return {
-
-    }
-  },
-  watch: {
-    wallet: {
-      handler: function () {
-
       }
     }
   },
@@ -50,7 +40,7 @@ export default {
 </script>
 
 <style scoped>
-  header {
-    color: #3a3c4f;
-  }
+.v-btn + .v-btn {
+  margin-left: 1rem;
+}
 </style>

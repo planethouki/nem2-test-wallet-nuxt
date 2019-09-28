@@ -14,40 +14,40 @@ export const state = () => ({
 })
 
 export const getters = {
-  address(state) {
+  address (state) {
     return state.address
   },
-  publicAccount(state) {
+  publicAccount (state) {
     return state.publicAccount
   },
-  account(state) {
+  account (state) {
     return state.account
   },
-  endpoint(state) {
+  endpoint (state) {
     return state.endpoint
   },
-  existsAccount(state) {
+  existsAccount (state) {
     return state.account !== null
   },
-  existsAddress(state) {
+  existsAddress (state) {
     return state.address !== null
   },
-  mutateCount(state) {
+  mutateCount (state) {
     return state.mutateCount
   },
-  networkType(state) {
+  networkType (state) {
     return state.networkType
   },
-  currencyNamespaceName(state) {
+  currencyNamespaceName (state) {
     return state.currencyNamespaceName
   },
-  harvestNamespaceName(state) {
+  harvestNamespaceName (state) {
     return state.harvestNamespaceName
   }
 }
 
 export const mutations = {
-  login(state, { account, endpoint }) {
+  login (state, { account, endpoint }) {
     state.networkType = account.address.networkType
     state.endpoint = endpoint
     state.privateKey = account.privateKey
@@ -56,7 +56,7 @@ export const mutations = {
     state.address = account.address
     state.mutateCount++
   },
-  logout(state) {
+  logout (state) {
     state.privateKey = null
     state.endpoint = null
     state.networkType = null
@@ -68,7 +68,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async privateKeyLogin({ commit }, { privateKey, endpoint }) {
+  async privateKeyLogin ({ commit }, { privateKey, endpoint }) {
     const networkHttp = new NetworkHttp(endpoint)
     const networkType = await new Promise((resolve) => {
       networkHttp.getNetworkType().pipe(
@@ -82,7 +82,7 @@ export const actions = {
     const account = Account.createFromPrivateKey(privateKey, networkType)
     commit('login', { account, endpoint })
   },
-  logout({ commit }) {
+  logout ({ commit }) {
     commit('logout')
   }
 }

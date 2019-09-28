@@ -43,12 +43,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'accountLink'
       }
     }
   },
-  data() {
+  data () {
     return {
       remoteAccountKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
       linkAction: LinkAction.Link,
@@ -63,16 +63,16 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'address', 'account', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
-    forbidLink() {
+    forbidLink () {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
-    announceDisabledMessage() {
-      if (this.forbidLink) return 'Please try another account.'
+    announceDisabledMessage () {
+      if (this.forbidLink) { return 'Please try another account.' }
       return ''
     }
   },
   methods: {
-    announceHandler: function (event) {
+    announceHandler (event) {
       const account = this.account
       const endpoint = this.endpoint
       const accountLinkTransaction = AccountLinkTransaction.create(

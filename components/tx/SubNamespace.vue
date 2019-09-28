@@ -28,7 +28,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, TransactionHttp, RegisterNamespaceTransaction, UInt64 } from 'nem2-sdk'
+import { Deadline, TransactionHttp, NamespaceRegistrationTransaction, UInt64 } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -39,12 +39,12 @@ export default {
   props: {
     navTargetId: {
       type: String,
-      default() {
+      default () {
         return 'subnamespace'
       }
     }
   },
-  data() {
+  data () {
     return {
       s_name: 'bar',
       s_parentNamespace: 'foo',
@@ -57,19 +57,19 @@ export default {
     ...mapGetters('chain', ['generationHash'])
   },
   methods: {
-    s_announceHandler: function (event) {
+    s_announceHandler (event) {
       const namespaceName = this.s_name
       const parentNamespaceName = this.s_parentNamespace
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
-      const registerNamespaceTransaction = RegisterNamespaceTransaction.createSubNamespace(
+      const namespaceRegistrationTransaction = NamespaceRegistrationTransaction.createSubNamespace(
         Deadline.create(),
         namespaceName,
         parentNamespaceName,
         account.address.networkType,
         UInt64.fromUint(this.s_fee)
       )
-      const signedTx = account.sign(registerNamespaceTransaction, this.generationHash)
+      const signedTx = account.sign(namespaceRegistrationTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

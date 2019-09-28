@@ -1,47 +1,44 @@
 <template lang="pug">
-  v-layout(row)
-    v-flex#content.pt-3.px-3
-      NemFoundation(v-if="isNf")
-      v-flex(mb-5)#login
-        v-card
-          v-form
-            v-card-text
-              v-radio-group(label="Select Endpoint" v-model="predefinedEndpoint")
-                v-radio(
-                  v-for="ep in endpointList"
-                  :key="ep.url"
-                  :label="ep.label"
-                  :value="ep.url")
-                v-radio(
-                  label="other"
-                  value="")
-              v-text-field(
-                v-show="predefinedEndpoint.length === 0"
-                label="Endpoint"
-                v-model="userEndpoint"
-                name="Endpoint"
-                required
-                placeholder="ex). http://localhost:3000")
-              v-layout(row)
-                v-text-field(
-                  label="Private Key"
-                  v-model="privateKey"
-                  :counter="64"
-                  name="PrivateKey"
-                  required
-                  placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E")
-                v-btn(
-                  fab
-                  small
-                  flat
-                  @click="regenPrivateKey")
-                  v-icon cached
-            v-card-actions
+  v-layout(column)
+    NemFoundation(v-if="isNf")
+    v-flex(mb-5)
+      v-card
+        v-card-text
+          v-radio-group(label="Select Endpoint" v-model="predefinedEndpoint")
+            v-radio(
+              v-for="ep in endpointList"
+              :key="ep.url"
+              :label="ep.label"
+              :value="ep.url")
+            v-radio(
+              label="other"
+              value="other")
+          v-text-field(
+            v-show="predefinedEndpoint === 'other'"
+            label="Endpoint"
+            v-model="userEndpoint"
+            name="Endpoint"
+            required
+            placeholder="ex). http://localhost:3000")
+          v-text-field(
+            label="Private Key"
+            v-model="privateKey"
+            :counter="64"
+            name="PrivateKey"
+            required
+            placeholder="ex). 25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E")
+            template(slot="append-outer")
               v-btn(
-                :disabled="loginDisabled"
-                color="blue"
-                class="white--text"
-                @click="createWallet") login
+                fab
+                small
+                @click="regenPrivateKey")
+                v-icon cached
+        v-card-actions
+          v-btn(
+            :disabled="loginDisabled"
+            color="blue"
+            class="white--text"
+            @click="createWallet") login
 </template>
 
 <script>
@@ -53,14 +50,14 @@ export default {
   components: {
     NemFoundation
   },
-  head() {
+  head () {
     return {
       meta: [
         { hid: 'top', name: 'top', content: 'top' }
       ]
     }
   },
-  data() {
+  data () {
     return {
       predefinedEndpoint: '',
       userEndpoint: '',
@@ -82,43 +79,35 @@ export default {
       'defaultNetworkType',
       'isNf'
     ]),
-    breakPoint() {
-      return this.$vuetify.breakpoint.name
-    }
-  },
-  watch: {
-  },
-  asyncData({ store, redirect }) {
-    if (store.getters['wallet/existsAccount']) {
-      redirect('/transaction')
-    }
-  },
-  created: function () {
-    this.predefinedEndpoint = this.defaultEndpoint
-    this.privateKey = this.defaultPrivateKey
-  },
-  methods: {
-    regenPrivateKey: function (event) {
-      this.privateKey = this.$crypto.random32()
-    },
-    createWallet: async function (event) {
-      this.loginDisabled = true
-      let endpoint = this.predefinedEndpoint || this.userEndpoint
+    endpoint () {
+      let endpoint = this.predefinedEndpoint === 'other' ? this.userEndpoint : this.predefinedEndpoint
       if (endpoint.match(/:\d+$/) === null) {
         endpoint = `${endpoint}:3000`
       }
       if (!endpoint.startsWith('http')) {
         endpoint = `http://${endpoint}`
       }
-      await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint })
+      return endpoint
+    }
+  },
+  asyncData ({ store, redirect }) {
+    if (store.getters['wallet/existsAccount']) {
+      redirect('/transaction')
+    }
+  },
+  created () {
+    this.predefinedEndpoint = this.defaultEndpoint
+    this.privateKey = this.defaultPrivateKey
+  },
+  methods: {
+    regenPrivateKey (event) {
+      this.privateKey = this.$crypto.random32()
+    },
+    async createWallet (event) {
+      this.loginDisabled = true
+      await this.$store.dispatch('wallet/privateKeyLogin', { privateKey: this.privateKey, endpoint: this.endpoint })
       await Promise.all([
-        this.$store.dispatch('chain/init'),
-        this.$store.dispatch('mosaicAmountViews/update'),
-        this.$store.dispatch('multisigGraph/update'),
-        this.$store.dispatch('namespaces/update'),
-        this.$store.dispatch('accountProperties/update'),
-        this.$store.dispatch('accountLink/update'),
-        this.$store.dispatch('transactions/update')
+        this.$store.dispatch('chain/init')
       ])
       this.loginDisabled = false
       this.$router.push('/transaction')
