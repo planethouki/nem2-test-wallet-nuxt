@@ -88,10 +88,14 @@ export default {
       }
     },
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
   },
   created () {
     this.p_proof = this.$crypto.random10()
+  },
+  mounted () {
+    this.p_fee = this.feePlaceholder.default
   },
   methods: {
     p_announceHandler (event) {

@@ -96,7 +96,11 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'account']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.fee = this.feePlaceholder.default
   },
   methods: {
     deleteModification (index) {

@@ -101,11 +101,15 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder']),
     operations () {
       return this.$transactionTypes.map((x) => {
         return { label: x.label, operation: x.entityType, hexOperation: x.entityType.toString(16).toUpperCase() }
       })
     }
+  },
+  mounted () {
+    this.fee = this.feePlaceholder.default
   },
   methods: {
     deleteModification (index) {

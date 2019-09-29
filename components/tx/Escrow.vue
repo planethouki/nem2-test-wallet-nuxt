@@ -52,16 +52,16 @@
         v-flex.pt-3
           v-text-field(
             label="Lock Funds Mosaic"
-            v-model="e_mosaic3"
+            v-model="e_lockMosaic"
             :placeholder="`ex). ${mosaicPlaceholder.currency10}`")
           v-text-field(
             label="Lock Funds Duration In Blocks"
-            v-model="e_duration3"
+            v-model="e_lockDuration"
             type="number"
             placeholder="ex). 480")
           v-text-field(
             label="Lock Funds Max Fee"
-            v-model="e_fee3")
+            v-model="e_fee")
       v-card-actions
         v-btn(
           color="blue"
@@ -100,22 +100,27 @@ export default {
       e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
       e_mosaics2: '',
       e_message2: 'escrow invoice',
-      e_mosaic3: '',
-      e_duration3: 480,
+      e_lockMosaic: '',
+      e_lockDuration: 480,
       e_history: [],
       e_fee: 0,
-      e_fee3: 0
+      e_lockFee: 0
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['mosaicPlaceholder'])
+    ...mapGetters('env', [
+      'mosaicPlaceholder',
+      'feePlaceholder'
+    ])
   },
   mounted () {
     this.e_mosaics1 = this.mosaicPlaceholder.escrow1
     this.e_mosaics2 = this.mosaicPlaceholder.escrow2
-    this.e_mosaic3 = this.mosaicPlaceholder.currency10
+    this.e_lockMosaic = this.mosaicPlaceholder.currency10
+    this.e_fee = this.feePlaceholder.default
+    this.e_lockFee = this.feePlaceholder.default
   },
   methods: {
     e_announceHandler (event) {
@@ -124,7 +129,7 @@ export default {
       const network = account.address.networkType
       const paySender = account.publicAccount
       const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
-      const lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
+      const lockFundsMosaic = this.$parser.parseMosaic(this.e_lockMosaic)
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
         this.$parser.parseAddress(this.e_recipient1),
@@ -153,10 +158,10 @@ export default {
       const lockFundsTx = LockFundsTransaction.create(
         Deadline.create(),
         lockFundsMosaic,
-        UInt64.fromUint(this.e_duration3),
+        UInt64.fromUint(this.e_lockDuration),
         signedAggregateTx,
         network,
-        UInt64.fromUint(this.e_fee3)
+        UInt64.fromUint(this.e_lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)

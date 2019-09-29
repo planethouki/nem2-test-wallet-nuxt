@@ -55,7 +55,11 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.n_fee = this.feePlaceholder.default
   },
   methods: {
     n_announceHandler (event) {

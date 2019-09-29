@@ -114,7 +114,10 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'address']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['mosaicPlaceholder']),
+    ...mapGetters('env', [
+      'mosaicPlaceholder',
+      'feePlaceholder'
+    ]),
     u_forbidMultisig () {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
@@ -127,6 +130,8 @@ export default {
   watch: {},
   mounted () {
     this.u_lockMosaic = this.mosaicPlaceholder.currency10
+    this.u_fee = this.feePlaceholder.default
+    this.u_lockFee = this.feePlaceholder.default
   },
   methods: {
     u_deleteCosignatory (index) {

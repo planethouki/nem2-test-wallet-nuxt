@@ -63,6 +63,7 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'address', 'account', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder']),
     forbidLink () {
       return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
     },
@@ -70,6 +71,9 @@ export default {
       if (this.forbidLink) { return 'Please try another account.' }
       return ''
     }
+  },
+  mounted () {
+    this.fee = this.feePlaceholder.default
   },
   methods: {
     announceHandler (event) {

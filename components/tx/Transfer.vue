@@ -88,11 +88,13 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
-      'mosaicPlaceholder'
+      'mosaicPlaceholder',
+      'feePlaceholder'
     ])
   },
   mounted () {
     this.t_mosaics = this.mosaicPlaceholder.transfer
+    this.t_fee = this.feePlaceholder.default
   },
   methods: {
     t_announceHandler (event) {

@@ -89,10 +89,14 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'publicAccount']),
     ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder']),
     mosaicId () {
       const mosaicNonce = MosaicNonce.createFromHex(`00000000${Number(this.m_nonce).toString(16)}`.substr(-8))
       return MosaicId.createFromNonce(mosaicNonce, this.publicAccount)
     }
+  },
+  mounted () {
+    this.m_fee = this.feePlaceholder.default
   },
   methods: {
     m_announceHandler (event) {

@@ -84,7 +84,10 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['mosaicPlaceholder'])
+    ...mapGetters('env', [
+      'mosaicPlaceholder',
+      'feePlaceholder'
+    ])
   },
   watch: {
     l_hashType: {
@@ -99,6 +102,7 @@ export default {
   },
   mounted () {
     this.l_mosaic = this.mosaicPlaceholder.currency10
+    this.l_fee = this.feePlaceholder.default
   },
   methods: {
     l_announceHandler (event) {

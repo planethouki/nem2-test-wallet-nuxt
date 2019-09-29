@@ -123,10 +123,15 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'account', 'network', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['mosaicPlaceholder'])
+    ...mapGetters('env', [
+      'mosaicPlaceholder',
+      'feePlaceholder'
+    ])
   },
   mounted () {
     this.d_lockMosaic = this.mosaicPlaceholder.currency10
+    this.d_fee = this.feePlaceholder.default
+    this.d_lockFee = this.feePlaceholder.default
   },
   methods: {
     d_deleteModification (index) {
