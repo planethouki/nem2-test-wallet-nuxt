@@ -9,12 +9,22 @@
           v-model="t_recipientAddress"
           required
           placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
-        v-text-field(
-          label="Mosaics"
-          v-model="t_mosaics"
-          required
-          :placeholder="`ex). ${mosaicPlaceholder.transfer}`")
-        v-radio-group(label="Message Type" v-model="t_messageType" row)
+        div.body-1 Mosaics
+        .d-flex.align-baseline.mt-1(v-for="(t_mosaic, index) in t_mosaics" v-bind:key="index")
+          v-text-field(
+            label="Mosaic"
+            v-model="t_mosaic.mosaicStr"
+            required
+            :placeholder="`ex). ${mosaicPlaceholder.transfer} or 4A1B0170C0E51B73::0`")
+          v-btn(
+            fab
+            small
+            v-on:click="t_deleteMosaic(index)")
+            v-icon delete_forever
+        v-btn(
+          @click="t_addMosaic"
+          x-small) Add Mosaic
+        v-radio-group(label="Message Type" v-model="t_messageType" row).mt-5
           v-radio(
             v-for="mt in t_messageTypes"
             :key="mt.type"
@@ -68,7 +78,7 @@ export default {
     return {
       t_recipientAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       t_recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
-      t_mosaics: '',
+      t_mosaics: [],
       t_messageType: 0,
       t_messageTypes: [
         { type: 0, label: 'Plain' },
@@ -93,15 +103,30 @@ export default {
     ])
   },
   mounted () {
-    this.t_mosaics = this.mosaicPlaceholder.transfer
+    this.t_mosaics = [{
+      mosaicStr: this.mosaicPlaceholder.transfer
+    }]
     this.t_fee = this.feePlaceholder.default
   },
   methods: {
+    t_deleteMosaic (index) {
+      this.t_mosaics.splice(index, 1)
+    },
+    t_addMosaic (event) {
+      this.t_mosaics.push({
+        mosaicStr: '4A1B0170C0E51B73::0'
+      })
+    },
     t_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.endpoint
       const recipient = this.$parser.parseAddress(this.t_recipientAddress)
-      const mosaics = this.$parser.parseMosaics(this.t_mosaics)
+      const mosaics = this.t_mosaics
+        .map(x => this.$parser.parseMosaic(x.mosaicStr))
+        .sort((a, b) => {
+          if (a.id.equals(b.id)) { return 0 }
+          return a.id.toHex() > b.id.toHex() ? 1 : -1
+        })
       const message = (() => {
         if (this.t_messageType === 0) {
           return PlainMessage.create(this.t_message)
@@ -109,7 +134,11 @@ export default {
           const recipientPublicAccount = PublicAccount.createFromPublicKey(
             this.t_recipientPublicKey,
             account.address.networkType)
-          return EncryptedMessage.create(this.t_message, recipientPublicAccount, account.privateKey)
+          return EncryptedMessage.create(
+            this.t_message,
+            recipientPublicAccount,
+            account.privateKey,
+            account.address.network)
         }
       })()
       const tx = TransferTransaction.create(

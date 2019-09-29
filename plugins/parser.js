@@ -4,33 +4,18 @@ import convert from '~/lib/convert'
 import base32 from '~/lib/base32'
 
 Vue.prototype.$parser = {
-  parseMosaics (str) {
-    const mosaics = str.split(',').map((mosaicRawStr) => {
-      const idAndAmount = mosaicRawStr.trim().split('::')
-      let mosaicId
-      if (idAndAmount[0].startsWith('@')) {
-        mosaicId = new NamespaceId(idAndAmount[0].substr(1))
-      } else {
-        mosaicId = new MosaicId(idAndAmount[0])
-      }
-      return new Mosaic(
-        mosaicId,
-        UInt64.fromUint(Number(idAndAmount[1]))
-      )
-    })
-    return mosaics
-  },
   parseMosaic (str) {
-    return this.parseMosaics(str)[0]
-  },
-  async resolveIfNamespace (namespaceHttp, mosaic) {
-    const isNamespace = (mosaic.id.id.higher >>> 31) === 1
-    if (isNamespace) {
-      const mosaicId = await namespaceHttp.getLinkedMosaicId(mosaic.id).toPromise()
-      return new Mosaic(mosaicId, mosaic.amount)
+    const idAndAmount = str.trim().split('::')
+    let mosaicId
+    if (idAndAmount[0].startsWith('@')) {
+      mosaicId = new NamespaceId(idAndAmount[0].substr(1))
     } else {
-      return mosaic
+      mosaicId = new MosaicId(idAndAmount[0])
     }
+    return new Mosaic(
+      mosaicId,
+      UInt64.fromUint(Number(idAndAmount[1]))
+    )
   },
   parseAddress (str) {
     let address

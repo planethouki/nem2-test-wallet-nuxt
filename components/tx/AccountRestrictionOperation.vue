@@ -10,42 +10,36 @@
             :key="pt.type"
             :label="pt.label"
             :value="pt.type")
-        .d-flex.align-baseline.mt-4(v-for="(modification, index) in modifications" v-bind:key="modification.hexOperation" row wrap)
-          span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
+        div.body-1 Modifications
+        .d-flex.align-baseline.mt-1(v-for="(modification, index) in modifications" v-bind:key="index")
+          span {{ (index + 1) }}
+          v-select(
+            :items="modificationTypes"
+            item-text="label"
+            item-value="isAdd"
+            v-model="modification.isAdd"
+            label="Modification Type").flex-grow-0.ml-2
+          v-select(
+            :items="operations"
+            item-text="label"
+            item-value="entityType"
+            v-model="modification.entityType"
+            label="Transaction Name").ml-2
           v-text-field(
-          v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Entity Type: ' + (index + 1)"
-          v-bind:value="modification.hexOperation"
-          disabled)
+          label="Entity Type"
+          v-bind:value="Number(modification.entityType).toString(16).toUpperCase()"
+          disabled).ml-2
           v-btn(
           fab
           small
           v-on:click="deleteModification(index)")
             v-icon delete_forever
-        .d-flex.align-baseline
-          v-checkbox(
-          v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-          hide-details
-          off-icon="remove_circle"
-          on-icon="add_circle"
-          v-model="additionalModification.isAdd")
-          v-text-field(
-            v-bind:label="`Hex Entity Type Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-            v-model="additionalModification.hexOperation"
-            placeholder="ex). 4152").ml-2
-          v-select(
-            :items="operations"
-            item-text="label"
-            item-value="hexOperation"
-            v-model="additionalModification.hexOperation"
-            label="(Option) Select From").ml-2
-          v-btn(
-          fab
-          small
-          v-on:click="addModification")
-            v-icon add_box
+        v-btn(
+          @click="addModification"
+          x-small) Add Modification
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee").mt-5
       v-card-actions
         v-btn(
           color="blue"
@@ -59,7 +53,7 @@
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, AccountRestrictionType, TransactionHttp,
   AccountRestrictionModificationAction, AccountRestrictionModification,
-  AccountOperationRestrictionTransaction } from 'nem2-sdk'
+  AccountOperationRestrictionTransaction, TransactionType } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -84,16 +78,16 @@ export default {
         { type: AccountRestrictionType.BlockIncomingTransactionType, label: 'Block Incoming' },
         { type: AccountRestrictionType.BlockOutgoingTransactionType, label: 'Block Outgoing' }
       ],
+      modificationTypes: [
+        { isAdd: true, label: 'Add' },
+        { isAdd: false, label: 'Remove' }
+      ],
       modifications: [
         {
           isAdd: true,
-          hexOperation: '4152'
+          entityType: TransactionType.SECRET_LOCK
         }
       ],
-      additionalModification: {
-        isAdd: true,
-        hexOperation: '4152'
-      },
       fee: 0,
       history: []
     }
@@ -103,9 +97,7 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['feePlaceholder']),
     operations () {
-      return this.$transactionTypes.map((x) => {
-        return { label: x.label, operation: x.entityType, hexOperation: x.entityType.toString(16).toUpperCase() }
-      })
+      return this.$transactionTypes
     }
   },
   mounted () {
@@ -117,10 +109,9 @@ export default {
     },
     addModification () {
       this.modifications.push({
-        hexOperation: this.additionalModification.hexOperation,
-        isAdd: this.additionalModification.isAdd
+        entityType: TransactionType.SECRET_LOCK,
+        isAdd: true
       })
-      this.additionalModification.rawAddress = '4152'
     },
     announceHandler (event) {
       const account = this.$store.getters['wallet/account']
@@ -131,7 +122,7 @@ export default {
         this.modifications.map((modification) => {
           return AccountRestrictionModification.createForOperation(
             modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
-            Number('0x'.concat(modification.hexOperation))
+            modification.entityType
           )
         }),
         account.address.networkType,

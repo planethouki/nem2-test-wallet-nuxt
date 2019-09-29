@@ -20,7 +20,7 @@
             item-text="label"
             item-value="type"
             v-model="previousRestrictionType"
-            label="Previous Restriction Type")
+            label="Previous Restriction Type").flex-grow-0
           v-text-field(
             label="Previous Restriction Value"
             v-model="previousRestrictionValue"
@@ -32,7 +32,7 @@
             item-text="label"
             item-value="type"
             v-model="newRestrictionType"
-            label="New Restriction Type")
+            label="New Restriction Type").flex-grow-0
           v-text-field(
             label="New Restriction Value"
             v-model="newRestrictionValue"

@@ -23,10 +23,10 @@ if (process.env.isNf) {
   ]
   defaultEndpoint = 'http://elephant3.48gh23s.xyz:3000'
   mosaicPlaceholder = {
-    transfer: '@cat.currency::0, 1292A7F2F8AA2DE6::0',
+    transfer: '@cat.currency::0',
     currency10: '@cat.currency::10000000',
-    escrow1: '@cat.currency::0, 1292A7F2F8AA2DE6::0',
-    escrow2: '35DA50B9E4FD465F::0, @cat.harvest::0'
+    escrow1: '@cat.currency::0',
+    escrow2: '@cat.harvest::0'
   }
   feePlaceholder = {
     default: 100000

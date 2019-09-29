@@ -10,38 +10,29 @@
             :key="pt.type"
             :label="pt.label"
             :value="pt.type")
-        .d-flex.align-baseline.mt-4(
-          v-for="(modification, index) in modifications"
-          v-bind:key="modification.hexMosaicId")
-          span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
+        div.body-1 Modifications
+        .d-flex.align-baseline.mt-1(v-for="(modification, index) in modifications" v-bind:key="index")
+          span {{ (index + 1) }}
+          v-select(
+            :items="modificationTypes"
+            item-text="label"
+            item-value="isAdd"
+            v-model="modification.isAdd"
+            label="Modification Type").flex-grow-0.ml-2
           v-text-field(
-            v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Mosaic: ' + (index + 1)"
-            v-bind:value="modification.hexMosaicId"
-            disabled)
+            label="Mosaic ID"
+            v-model="modification.hexMosaicId").ml-2
           v-btn(
             fab
             small
             v-on:click="deleteModification(index)")
               v-icon delete_forever
-        .d-flex.align-baseline
-          v-checkbox(
-          v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-          hide-details
-          off-icon="remove_circle"
-          on-icon="add_circle"
-          v-model="additionalModification.isAdd").mr-2
-          v-text-field(
-          v-bind:label="`Hex Mosaic ID Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-          v-model="additionalModification.hexMosaicId"
-          placeholder="ex). 41BC54DEB7515742")
-          v-btn(
-          fab
-          small
-          v-on:click="addModification")
-            v-icon add_box
+        v-btn(
+          @click="addModification"
+          x-small) Add Modification
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee").mt-5
       v-card-actions
         v-btn(
           color="blue"
@@ -78,16 +69,16 @@ export default {
         { type: AccountRestrictionType.AllowMosaic, label: 'Allow' },
         { type: AccountRestrictionType.BlockMosaic, label: 'Block' }
       ],
+      modificationTypes: [
+        { isAdd: true, label: 'Add' },
+        { isAdd: false, label: 'Remove' }
+      ],
       modifications: [
         {
           isAdd: true,
           hexMosaicId: '41BC54DEB7515742'
         }
       ],
-      additionalModification: {
-        isAdd: true,
-        hexMosaicId: '41BC54DEB7515742'
-      },
       fee: 0,
       history: []
     }
@@ -106,10 +97,9 @@ export default {
     },
     addModification () {
       this.modifications.push({
-        hexMosaicId: this.additionalModification.hexMosaicId,
-        isAdd: this.additionalModification.isAdd
+        hexMosaicId: '41BC54DEB7515742',
+        isAdd: true
       })
-      this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
     announceHandler (event) {
       const account = this.account

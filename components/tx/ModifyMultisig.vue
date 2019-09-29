@@ -22,41 +22,33 @@
           required
           type="number"
           placeholder="ex). 2")
-        .d-flex.align-baseline.mt-4(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey")
-          span.grey--text.mr-1.pr-1 {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
+        div.body-1 Modifications
+        .d-flex.align-baseline.mt-1(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="index")
+          span {{ (index + 1) }}
+          v-select(
+            :items="d_modificationTypes"
+            item-text="label"
+            item-value="isAdd"
+            v-model="d_cosignatory.isAdd"
+            label="Cosignatory Modification Action").flex-grow-0.ml-2
           v-text-field(
-            v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
+            label="Cosignatory PublicKey"
             v-bind:value="d_cosignatory.pubKey"
             required
-            :counter="64"
-            disabled)
+            :counter="64").ml-2
           v-btn(
             fab
             small
             v-on:click="d_deleteModification(index)")
               v-icon delete_forever
-        .d-flex.align-baseline
-          v-checkbox(
-            v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
-            hide-details
-            off-icon="remove_circle"
-            on-icon="add_circle"
-            v-model="d_additionalModificationType")
-          v-text-field(
-            v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
-            v-model="d_additionalModificationPubkey"
-            :counter="64"
-            placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0").ml-2
-          v-btn(
-            fab
-            small
-            v-on:click="d_addModification").ml-2
-              v-icon add_box
+        v-btn(
+          @click="d_addModification"
+          x-small) Add Modification
         v-text-field(
           label="Max Fee"
           v-model="d_fee"
           required
-          type="number")
+          type="number").mt-5
         v-text-field(
           label="Lock Funds Mosaic"
           :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
@@ -109,15 +101,17 @@ export default {
       d_cosignatories: [
         { pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C', isAdd: false }
       ],
-      d_additionalModificationType: false,
-      d_additionalModificationPubkey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
       d_minApprovalDelta: -1,
       d_minRemovalDelta: -1,
       d_history: [],
       d_fee: 0,
       d_lockFee: 0,
       d_lockMosaic: '',
-      d_lockDuration: 480
+      d_lockDuration: 480,
+      d_modificationTypes: [
+        { isAdd: true, label: 'Add' },
+        { isAdd: false, label: 'Remove' }
+      ]
     }
   },
   computed: {
@@ -139,11 +133,9 @@ export default {
     },
     d_addModification (event) {
       this.d_cosignatories.push({
-        pubKey: this.d_additionalModificationPubkey,
-        isAdd: this.d_additionalModificationType
+        pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
+        isAdd: false
       })
-      this.d_additionalModificationPubkey = ''
-      this.d_additionalModificationType = false
     },
     d_announceHandler (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
