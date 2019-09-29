@@ -34,39 +34,39 @@
                 v-list-item-subtitle {{ endpoint }}
               v-list-item-action
                 v-btn(
-                  fab
-                  small
+                  icon
+                  x-small
                   @click="copyEndpointHandler")
-                  v-icon filter_none
+                  v-icon(x-small) filter_none
             v-list-item(v-if="address")
               v-list-item-content
                 v-list-item-title Address
                 v-list-item-subtitle {{ address.pretty() }}
               v-list-item-action
                 v-btn(
-                  fab
-                  small
+                  icon
+                  x-small
                   @click="copyAddressHandler")
-                  v-icon filter_none
+                  v-icon(x-small) filter_none
             v-list-item(v-if="publicAccount")
               v-list-item-content
                 v-list-item-title Public Key
                 v-list-item-subtitle {{ publicAccount.publicKey }}
               v-list-item-action
                 v-btn(
-                  fab
-                  small
+                  icon
+                  x-small
                   @click="copyPublicKeyHandler")
-                  v-icon filter_none
+                  v-icon(x-small) filter_none
             v-list-item(v-if="account")
               v-list-item-content
                 v-list-item-title Private Key
                 v-list-item-subtitle
-                  span ********
+                  span ****************************************************************
               v-list-item-action
                 v-btn(
-                  fab
-                  small
+                  icon
+                  x-small
                   @click="copyPrivateKeyHandler")
                   v-icon filter_none
       v-dialog(
