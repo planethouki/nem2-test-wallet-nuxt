@@ -10,38 +10,30 @@
             :key="pt.type"
             :label="pt.label"
             :value="pt.type")
-        .d-flex.align-baseline.mt-4(
-          v-for="(modification, index) in modifications"
-          v-bind:key="modification.rawAddress")
-          span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
+        div.body-1 Modifications
+        .d-flex.align-baseline.mt-1(v-for="(modification, index) in modifications" v-bind:key="index")
+          span {{ (index + 1) }}
+          v-select(
+            :items="modificationTypes"
+            item-text="label"
+            item-value="isAdd"
+            v-model="modification.isAdd"
+            label="Modification Type").flex-grow-0.ml-2
           v-text-field(
-            v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Address: ' + (index + 1)"
-            v-bind:value="modification.rawAddress"
-            disabled)
+            label="Address"
+            v-model="modification.rawAddress").ml-2
           v-btn(
-          fab
-          small
+          icon
           v-on:click="deleteModification(index)")
             v-icon delete_forever
-        .d-flex.align-baseline
-          v-checkbox(
-            v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-            hide-details
-            off-icon="remove_circle"
-            on-icon="add_circle"
-            v-model="additionalModification.isAdd").mr-2
-          v-text-field(
-            v-bind:label="`Address Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-            v-model="additionalModification.rawAddress"
-            placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
-          v-btn(
-            fab
-            small
-            v-on:click="addModification")
-            v-icon add_box
+        v-btn(
+          @click="addModification"
+          x-small) Add Modification
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee"
+          min="0"
+          type="number").mt-5
       v-card-actions
         v-btn(
           color="blue"
@@ -80,23 +72,27 @@ export default {
         { type: AccountRestrictionType.BlockIncomingAddress, label: 'Block Incoming' },
         { type: AccountRestrictionType.BlockOutgoingAddress, label: 'Block Outgoing' }
       ],
+      modificationTypes: [
+        { isAdd: true, label: 'Add' },
+        { isAdd: false, label: 'Remove' }
+      ],
       modifications: [
         {
           isAdd: true,
           rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
         }
       ],
-      additionalModification: {
-        isAdd: true,
-        rawAddress: ''
-      },
       fee: 0,
       history: []
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'account']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.fee = this.feePlaceholder.default
   },
   methods: {
     deleteModification (index) {
@@ -104,10 +100,9 @@ export default {
     },
     addModification () {
       this.modifications.push({
-        rawAddress: this.additionalModification.rawAddress,
-        isAdd: this.additionalModification.isAdd
+        rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
+        isAdd: true
       })
-      this.additionalModification.rawAddress = ''
     },
     announceHandler (event) {
       const account = this.account

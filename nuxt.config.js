@@ -42,7 +42,8 @@ module.exports = {
     '@/plugins/hash',
     '@/plugins/crypto',
     '@/plugins/parser',
-    '@/plugins/transactionType'
+    '@/plugins/transactionType',
+    '@/plugins/mosaicRestrictionType'
   ],
 
   /*

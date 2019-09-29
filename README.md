@@ -44,7 +44,13 @@ http://walletdragon.z31.web.core.windows.net/
 - Cosignature Transaction of Multisig
 - Mosaic Alias Transaction
 - Address Alias Transaction
-- Account Property Address Transaction
-- Account Property Mosaic Transaction
-- Account Property EntityType Transaction
+- Account Restriction Address Transaction
+- Account Restriction Mosaic Transaction
+- Account Restriction Operation Transaction
 - Account Link Transaction
+- Persistent Delegation Request Transaction
+- Account Metadata Transaction
+- Namespace Metadata Transaction
+- Mosaic Metadata Transaction
+- Mosaic Global Restriction Transaction
+- Mosaic Address Restriction Transaction

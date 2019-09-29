@@ -16,7 +16,9 @@
           placeholder="ex). foo")
         v-text-field(
           label="Max Fee"
-          v-model="s_fee")
+          v-model="s_fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -54,7 +56,11 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.s_fee = this.feePlaceholder.default
   },
   methods: {
     s_announceHandler (event) {
