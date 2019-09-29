@@ -19,6 +19,9 @@
       AccountRestrictionMosaic(navTargetId="accountRestrictionMosaic")
       AccountRestrictionOperation(navTargetId="accountRestrictionOperation")
       AccountLink(navTargetId="accountLink")
+      AccountMetadata(navTargetId="accountMetadata")
+      NamespaceMetadata(navTargetId="namespaceMetadata")
+      MosaicMetadata(navTargetId="mosaicMetadata")
     v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
       Sidebar(:nav="nav" :active="navActive")
 </template>
@@ -42,6 +45,9 @@ import AccountRestrictionAddress from '~/components/tx/AccountRestrictionAddress
 import AccountRestrictionMosaic from '~/components/tx/AccountRestrictionMosaic.vue'
 import AccountRestrictionOperation from '~/components/tx/AccountRestrictionOperation.vue'
 import AccountLink from '~/components/tx/AccountLink.vue'
+import AccountMetadata from '~/components/tx/AccountMetadata.vue'
+import NamespaceMetadata from '~/components/tx/NamespaceMetadata.vue'
+import MosaicMetadata from '~/components/tx/MosaicMetadata.vue'
 
 import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
@@ -66,7 +72,10 @@ export default {
     AccountRestrictionAddress,
     AccountRestrictionMosaic,
     AccountRestrictionOperation,
-    AccountLink
+    AccountLink,
+    AccountMetadata,
+    NamespaceMetadata,
+    MosaicMetadata
   },
   computed: {
     ...mapGetters('env', [
@@ -100,7 +109,10 @@ export default {
         { icon: 'person_add', title: 'Account Restriction Address', target: '#accountRestrictionAddress', offset: 48 },
         { icon: 'person_add', title: 'Account Restriction Mosaic', target: '#accountRestrictionMosaic', offset: 48 },
         { icon: 'person_add', title: 'Account Restriction Operation', target: '#accountRestrictionOperation', offset: 48 },
-        { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 48 }
+        { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 48 },
+        { icon: 'comment', title: 'Account Metadata', target: '#accountMetadata', offset: 48 },
+        { icon: 'comment', title: 'Namespace Metadata', target: '#namespaceMetadata', offset: 48 },
+        { icon: 'comment', title: 'Mosaic Metadata', target: '#mosaicMetadata', offset: 48 }
       ],
       navActive: ''
     }

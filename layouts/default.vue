@@ -4,6 +4,16 @@
       v-toolbar-title Catapult Account Interface
       v-spacer
       v-menu(
+        v-model="restLinkMenu"
+        :close-on-content-click="false"
+        offset-y)
+        template(v-slot:activator="{ on }")
+          v-btn(
+            icon
+            v-on="on")
+            v-icon usb
+        TheRestLink
+      v-menu(
         v-model="settingMenu"
         :close-on-content-click="false"
         offset-y)
@@ -59,22 +69,23 @@
                   small
                   @click="copyPrivateKeyHandler")
                   v-icon filter_none
-      v-menu(
+      v-dialog(
         v-model="logoutMenu"
         :close-on-content-click="false"
+        width="500"
         offset-y)
         template(v-slot:activator="{ on }")
           v-btn(
             icon
             v-on="on")
             v-icon exit_to_app
-        v-card(style="width: 300px;")
-          v-card-actions
-            v-layout(justify-center)
-              v-btn(
-                color="pink"
-                class="white--text"
-                @click="logoutWallet") logout
+        v-card
+          v-card-text.text-center
+            div.headline.pa-3 Confirm
+            v-btn(
+              color="pink"
+              class="white--text"
+              @click="logoutWallet") logout
     v-content
       v-container(fluid fill-height)
         nuxt
@@ -84,11 +95,16 @@
 <script>
 import { mapGetters } from 'vuex'
 import TransactionListener from '~/components/TheTransactionListener.vue'
+import TheRestLink from '~/components/TheRestLink.vue'
 
 export default {
   middleware: 'checkLogin',
-  components: { TransactionListener },
+  components: {
+    TransactionListener,
+    TheRestLink
+  },
   data: () => ({
+    restLinkMenu: false,
     settingMenu: false,
     logoutMenu: false,
     privateKey: null
