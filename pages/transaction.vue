@@ -19,9 +19,12 @@
       AccountRestrictionMosaic(navTargetId="accountRestrictionMosaic")
       AccountRestrictionOperation(navTargetId="accountRestrictionOperation")
       AccountLink(navTargetId="accountLink")
+      PersistentDelegationRequest(navTargetId="persistentDelegationRequest")
       AccountMetadata(navTargetId="accountMetadata")
       NamespaceMetadata(navTargetId="namespaceMetadata")
       MosaicMetadata(navTargetId="mosaicMetadata")
+      MosaicGlobalRestriction(navTargetId="mosaicGlobalRestriction")
+      MosaicAddressRestriction(navTargetId="mosaicAddressRestriction")
     v-flex#sidebar(hidden-sm-and-down style="width: 250px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;")
       Sidebar(:nav="nav" :active="navActive")
 </template>
@@ -45,9 +48,12 @@ import AccountRestrictionAddress from '~/components/tx/AccountRestrictionAddress
 import AccountRestrictionMosaic from '~/components/tx/AccountRestrictionMosaic.vue'
 import AccountRestrictionOperation from '~/components/tx/AccountRestrictionOperation.vue'
 import AccountLink from '~/components/tx/AccountLink.vue'
+import PersistentDelegationRequest from '~/components/tx/PersistentDelegationRequest.vue'
 import AccountMetadata from '~/components/tx/AccountMetadata.vue'
 import NamespaceMetadata from '~/components/tx/NamespaceMetadata.vue'
 import MosaicMetadata from '~/components/tx/MosaicMetadata.vue'
+import MosaicGlobalRestriction from '~/components/tx/MosaicGlobalRestriction.vue'
+import MosaicAddressRestriction from '~/components/tx/MosaicAddressRestriction.vue'
 
 import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
@@ -73,9 +79,12 @@ export default {
     AccountRestrictionMosaic,
     AccountRestrictionOperation,
     AccountLink,
+    PersistentDelegationRequest,
     AccountMetadata,
     NamespaceMetadata,
-    MosaicMetadata
+    MosaicMetadata,
+    MosaicGlobalRestriction,
+    MosaicAddressRestriction
   },
   computed: {
     ...mapGetters('env', [
@@ -110,9 +119,12 @@ export default {
         { icon: 'person_add', title: 'Account Restriction Mosaic', target: '#accountRestrictionMosaic', offset: 48 },
         { icon: 'person_add', title: 'Account Restriction Operation', target: '#accountRestrictionOperation', offset: 48 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 48 },
+        { icon: 'people', title: 'Persistent Delegation Request', target: '#persistentDelegationRequest', offset: 48 },
         { icon: 'comment', title: 'Account Metadata', target: '#accountMetadata', offset: 48 },
         { icon: 'comment', title: 'Namespace Metadata', target: '#namespaceMetadata', offset: 48 },
-        { icon: 'comment', title: 'Mosaic Metadata', target: '#mosaicMetadata', offset: 48 }
+        { icon: 'comment', title: 'Mosaic Metadata', target: '#mosaicMetadata', offset: 48 },
+        { icon: 'web', title: 'Mosaic Global Restriction', target: '#mosaicGlobalRestriction', offset: 48 },
+        { icon: 'web', title: 'Mosaic Address Restriction', target: '#mosaicAddressRestriction', offset: 48 }
       ],
       navActive: ''
     }
