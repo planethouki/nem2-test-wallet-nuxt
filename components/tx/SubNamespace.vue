@@ -16,7 +16,9 @@
           placeholder="ex). foo")
         v-text-field(
           label="Max Fee"
-          v-model="s_fee")
+          v-model="s_fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"

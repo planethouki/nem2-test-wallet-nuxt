@@ -23,8 +23,7 @@
             label="Address"
             v-model="modification.rawAddress").ml-2
           v-btn(
-          fab
-          small
+          icon
           v-on:click="deleteModification(index)")
             v-icon delete_forever
         v-btn(
@@ -32,7 +31,9 @@
           x-small) Add Modification
         v-text-field(
           label="Max Fee"
-          v-model="fee").mt-5
+          v-model="fee"
+          min="0"
+          type="number").mt-5
       v-card-actions
         v-btn(
           color="blue"

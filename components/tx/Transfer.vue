@@ -17,8 +17,7 @@
             required
             :placeholder="`ex). ${mosaicPlaceholder.transfer} or 4A1B0170C0E51B73::0`")
           v-btn(
-            fab
-            small
+            icon
             v-on:click="t_deleteMosaic(index)")
             v-icon delete_forever
         v-btn(
@@ -43,7 +42,9 @@
           placeholder="ex) Thank you.")
         v-text-field(
           label="Max Fee"
-          v-model="t_fee")
+          v-model="t_fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"

@@ -21,7 +21,9 @@
           required)
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"

@@ -17,6 +17,7 @@
         v-text-field(
           label="Max Fee"
           type="number"
+          min="0"
           v-model="fee")
       v-card-actions
         v-btn(

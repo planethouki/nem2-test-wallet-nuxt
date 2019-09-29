@@ -22,8 +22,7 @@
                   required
                   :placeholder="`ex). ${mosaicPlaceholder.escrow1} or 4A1B0170C0E51B73::0`")
                 v-btn(
-                  fab
-                  small
+                  icon
                   v-on:click="e_deleteMosaic1(index)")
                   v-icon delete_forever
               v-btn(
@@ -53,8 +52,7 @@
                   required
                   :placeholder="`ex). ${mosaicPlaceholder.escrow2} or 4A1B0170C0E51B73::0`")
                 v-btn(
-                  fab
-                  small
+                  icon
                   v-on:click="e_deleteMosaic2(index)").mt-5
                   v-icon delete_forever
               v-btn(
@@ -64,11 +62,13 @@
                 label="Message"
                 v-model="e_message2"
                 :counter="1023"
-                placeholder="ex). escrow invoice")
+                placeholder="ex). escrow invoice").mt-5
         v-flex.pt-3
           v-text-field(
             label="Max Fee"
-            v-model="e_fee")
+            v-model="e_fee"
+            min="0"
+            type="number")
         v-flex.pt-3
           v-text-field(
             label="Lock Funds Mosaic"
@@ -78,10 +78,13 @@
             label="Lock Funds Duration In Blocks"
             v-model="e_lockDuration"
             type="number"
+            min="0"
             placeholder="ex). 480")
           v-text-field(
             label="Lock Funds Max Fee"
-            v-model="e_fee")
+            v-model="e_fee"
+            min="0"
+            type="number")
       v-card-actions
         v-btn(
           color="blue"

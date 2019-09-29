@@ -28,6 +28,7 @@
         v-text-field(
           label="Max Fee"
           type="number"
+          min="0"
           v-model="fee")
         v-text-field(
           label="Lock Funds Mosaic"
@@ -39,11 +40,13 @@
           placeholder="ex). 480"
           v-model="lockDuration"
           type="number"
+          min="0"
           required)
         v-text-field(
           label="Lock Funds Max Fee"
           v-model="lockFee"
           required
+          min="0"
           type="number")
       v-card-actions
         v-btn(

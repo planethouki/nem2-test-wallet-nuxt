@@ -10,14 +10,19 @@
           :key="ht.type"
           :label="ht.label"
           :value="ht.type")
+        .d-flex.align-baseline
+          v-text-field(
+            label="Proof"
+            v-model="p_proof"
+            required
+            counter
+            placeholder="ex). 095B4FCD1F88F1785E59")
+          v-btn(
+            icon
+            v-on:click="p_regenProof")
+            v-icon cached
         v-text-field(
-          label="Proof"
-          v-model="p_proof"
-          required
-          counter
-          placeholder="ex). 095B4FCD1F88F1785E59")
-        v-text-field(
-          label="Hash"
+          label="Secret"
           v-model="p_secret"
           disabled)
         v-text-field(
@@ -29,6 +34,7 @@
           label="Max Fee"
           v-model="p_fee"
           required
+          min="0"
           type="number")
       v-card-actions
         v-btn(
@@ -98,6 +104,9 @@ export default {
     this.p_fee = this.feePlaceholder.default
   },
   methods: {
+    p_regenProof () {
+      this.p_proof = this.$crypto.random10()
+    },
     p_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']

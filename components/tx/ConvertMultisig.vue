@@ -9,12 +9,14 @@
           v-model="u_minApprovalDelta"
           required
           type="number"
+          min="0"
           placeholder="ex). 2")
         v-text-field(
           label="Min Removal"
           v-model="u_minRemovalDelta"
           required
           type="number"
+          min="0"
           placeholder="ex). 2")
         div.body-1 Cosignatories
         .d-flex.align-baseline.mt-3(v-for="(u_cosignatory, index) in u_cosignatories" v-bind:key="index")
@@ -25,8 +27,7 @@
             required
             :counter="64").ml-2
           v-btn(
-            fab
-            small
+            icon
             v-on:click="u_deleteCosignatory(index)")
               v-icon delete_forever
         v-btn(
@@ -36,6 +37,7 @@
           label="Max Fee"
           v-model="u_fee"
           required
+          min="0"
           type="number").mt-5
         v-flex.pt-4
           v-text-field(
@@ -47,11 +49,14 @@
             label="Lock Funds Duration In Blocks"
             placeholder="ex). 480"
             v-model="u_lockDuration"
-            required)
+            required
+            min="0"
+            type="number")
           v-text-field(
             label="Lock Funds Max Fee"
             v-model="u_lockFee"
             required
+            min="0"
             type="number")
       v-card-actions
         v-btn(

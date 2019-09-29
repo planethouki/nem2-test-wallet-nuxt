@@ -23,10 +23,11 @@
           label="New Restriction Value"
           v-model="newRestrictionValue"
           required
-          placeholder="ex). 0000000000000001")
+          placeholder="ex). 70AB4D9B3B6F0BE0")
         v-text-field(
           label="Max Fee"
           type="number"
+          min="0"
           v-model="fee")
       v-card-actions
         v-btn(
@@ -62,7 +63,7 @@ export default {
     return {
       mosaicId: '4A1B0170C0E51B73',
       restrictionKey: '00000000000000c1',
-      newRestrictionValue: '0000000000000001',
+      newRestrictionValue: '00000000000000d3',
       targetAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       fee: 0,
       history: []

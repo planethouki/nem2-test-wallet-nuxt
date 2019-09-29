@@ -13,7 +13,7 @@
           label="Restriction Key"
           v-model="restrictionKey"
           required
-          placeholder="ex). 00000000000000c1")
+          placeholder="ex). 64A1AF497F3D71DE")
         .d-flex
           v-select(
             :items="mosaicRestrictionTypes"
@@ -25,7 +25,7 @@
             label="Previous Restriction Value"
             v-model="previousRestrictionValue"
             required
-            placeholder="ex). 0000000000000000").ml-2
+            placeholder="ex). 70AB4D9B3B6F0BE0").ml-2
         .d-flex
           v-select(
             :items="mosaicRestrictionTypes"
@@ -37,7 +37,7 @@
             label="New Restriction Value"
             v-model="newRestrictionValue"
             required
-            placeholder="ex). 0000000000000001").ml-2
+            placeholder="ex). 2471F111DA236F1F").ml-2
         .d-flex
           v-switch(
             v-model="isReferenceMosaicId"
@@ -51,6 +51,7 @@
         v-text-field(
           label="Max Fee"
           type="number"
+          min="0"
           v-model="fee")
       v-card-actions
         v-btn(
@@ -86,9 +87,9 @@ export default {
     return {
       mosaicId: '4A1B0170C0E51B73',
       restrictionKey: '00000000000000c1',
-      previousRestrictionValue: '0000000000000000',
+      previousRestrictionValue: '00000000000000a3',
       previousRestrictionType: MosaicRestrictionType.EQ,
-      newRestrictionValue: '0000000000000001',
+      newRestrictionValue: '00000000000000b3',
       newRestrictionType: MosaicRestrictionType.EQ,
       referenceMosaicId: '4A1B0170C0E51B73',
       isReferenceMosaicId: false,

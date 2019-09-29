@@ -37,8 +37,7 @@
             required
             :counter="64").ml-2
           v-btn(
-            fab
-            small
+            icon
             v-on:click="d_deleteModification(index)")
               v-icon delete_forever
         v-btn(
@@ -48,6 +47,7 @@
           label="Max Fee"
           v-model="d_fee"
           required
+          min="0"
           type="number").mt-5
         v-text-field(
           label="Lock Funds Mosaic"
@@ -58,11 +58,14 @@
           label="Lock Funds Duration In Blocks"
           placeholder="ex). 480"
           v-model="d_lockDuration"
+          min="0"
+          type="number"
           required)
         v-text-field(
           label="Lock Funds Max Fee"
           v-model="d_lockFee"
           required
+          min="0"
           type="number")
         v-card-actions
           v-btn(

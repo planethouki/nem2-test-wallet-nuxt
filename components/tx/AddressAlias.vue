@@ -22,7 +22,9 @@
           placeholder="ex). SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE")
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"

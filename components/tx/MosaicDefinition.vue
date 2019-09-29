@@ -25,23 +25,27 @@
           v-model="m_delta"
           required
           type="number"
+          min="0"
           placeholder="ex). 100")
         v-text-field(
           label="Divisibility"
           v-model="m_divisibility"
           required
           type="number"
+          min="0"
           placeholder="ex). 0")
         v-text-field(
           label="Duration In Blocks"
           v-model="m_duration"
           required
           type="number"
+          min="0"
           placeholder="ex). 10")
         v-text-field(
           label="Max Fee"
           v-model="m_fee"
           required
+          min="0"
           type="number")
       v-card-actions
         v-btn(

@@ -13,11 +13,14 @@
           label="Duration In Blocks"
           v-model="n_duration"
           required
+          min="0"
           type="number"
           placeholder="ex). 10")
         v-text-field(
           label="Max Fee"
-          v-model="n_fee")
+          v-model="n_fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"

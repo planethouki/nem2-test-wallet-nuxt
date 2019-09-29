@@ -11,7 +11,7 @@
           :label="ht.label"
           :value="ht.type")
         v-text-field(
-          label="Hash"
+          label="Secret"
           :counter="l_hashStrLen"
           v-model="l_secret")
         v-text-field(
@@ -28,12 +28,14 @@
           label="Duration In Blocks"
           v-model="l_duration"
           required
+          min="0"
           type="number"
           placeholder="ex). 240")
         v-text-field(
           label="Max Fee"
           v-model="l_fee"
           required
+          min="0"
           type="number")
       v-card-actions
         v-btn(
