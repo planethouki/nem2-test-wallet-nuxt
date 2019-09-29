@@ -1,6 +1,6 @@
 {
   "name": "nem2-test-wallet-nuxt",
-  "version": "0.6.1-SNAPSHOT",
+  "version": "0.7.0-SNAPSHOT",
   "description": "",
   "author": "planethouki",
   "private": true,
@@ -17,7 +17,7 @@
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
     "cross-env": "^6.0.0",
-    "nem2-sdk": "^0.13.2",
+    "nem2-sdk": "^0.13.3",
     "nuxt": "^2.9.2",
     "rxjs": "^6.5.3",
     "secure-random": "^1.1.2"
