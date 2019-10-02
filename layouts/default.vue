@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform" lang="pug">
   v-app
     v-toolbar(color="indigo" dark app)
-      v-toolbar-title Catapult Account Interface
+      v-toolbar-title Catapult Account Interface (Elephant)
       v-spacer
       v-menu(
         v-model="partialMenu"

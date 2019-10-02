@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-toolbar color="indigo" dark app>
-      <v-toolbar-title>Catapult Account Interface</v-toolbar-title>
+      <v-toolbar-title>Catapult Account Interface (Elephant)</v-toolbar-title>
     </v-toolbar>
     <v-content>
       <v-container class="pa-0" fluid fill-height="true">

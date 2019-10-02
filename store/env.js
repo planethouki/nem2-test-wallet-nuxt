@@ -16,7 +16,8 @@ if (process.env.isNf) {
   }
 } else {
   endpointList = [
-    { url: 'http://elephant.48gh23s.xyz:3000', label: 'elephant.48gh23s.xyz' }
+    { url: 'http://elephant.48gh23s.xyz:3000', label: 'elephant.48gh23s.xyz' },
+    { url: 'http://elephant2.48gh23s.xyz:3000', label: 'elephant2.48gh23s.xyz' }
   ]
   defaultEndpoint = 'http://elephant.48gh23s.xyz:3000'
   mosaicPlaceholder = {
