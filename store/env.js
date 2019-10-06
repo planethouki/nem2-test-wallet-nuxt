@@ -19,9 +19,9 @@ if (process.env.isNf) {
   }
 } else {
   endpointList = [
-    { url: 'http://elephant3.48gh23s.xyz:3000', label: 'elephant3.48gh23s.xyz' }
+    { url: 'http://fushicho.48gh23s.xyz:3000', label: 'fushicho.48gh23s.xyz' }
   ]
-  defaultEndpoint = 'http://elephant3.48gh23s.xyz:3000'
+  defaultEndpoint = 'http://fushicho.48gh23s.xyz:3000'
   mosaicPlaceholder = {
     transfer: '@cat.currency::0',
     currency10: '@cat.currency::10000000',
