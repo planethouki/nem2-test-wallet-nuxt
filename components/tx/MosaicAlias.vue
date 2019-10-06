@@ -21,7 +21,9 @@
           required)
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -33,7 +35,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, NamespaceId, MosaicId, AliasActionType, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, NamespaceId, MosaicId, AliasAction, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -51,10 +53,10 @@ export default {
   },
   data () {
     return {
-      actionType: AliasActionType.Link,
+      actionType: AliasAction.Link,
       actionTypes: [
-        { type: AliasActionType.Link, label: 'Link' },
-        { type: AliasActionType.Unlink, label: 'Unlink' }
+        { type: AliasAction.Link, label: 'Link' },
+        { type: AliasAction.Unlink, label: 'Unlink' }
       ],
       namespaceName: 'foo',
       hexMosaicId: '79DC0ABC22594941',
@@ -64,7 +66,11 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.fee = this.feePlaceholder.default
   },
   methods: {
     announceHandler (event) {

@@ -16,6 +16,7 @@
           required
           :counter="64"
           placeholder="ex). 2EE75F50BCF5384738350AC19A562841450F0B5E2F58B79FF641D1DEAE6B13EB")
+        div {{ g_message }}
       v-card-actions
         v-btn(
           color="blue"
@@ -46,9 +47,10 @@ export default {
   },
   data () {
     return {
-      g_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
+      g_multisigPublicKey: '',
       g_hash: '',
-      g_history: []
+      g_history: [],
+      g_message: ''
     }
   },
   computed: {
@@ -58,6 +60,7 @@ export default {
   },
   methods: {
     g_announceHandler (event) {
+      this.g_message = ''
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const network = account.address.networkType
@@ -65,7 +68,7 @@ export default {
       const hash = this.g_hash
       const txHttp = new TransactionHttp(endpoint)
       const accountHttp = new AccountHttp(endpoint)
-      accountHttp.aggregateBondedTransactions(multisigPublicAccount).pipe(
+      accountHttp.aggregateBondedTransactions(multisigPublicAccount.address).pipe(
         mergeMap(_ => _),
         filter(_ => !_.signedByAccount(account.publicAccount)),
         throwIfEmpty(() => new Error('can not find that transaction hash'))
@@ -79,6 +82,8 @@ export default {
           apiStatusUrl: `${endpoint}/transaction/${hash}/status`
         }
         this.g_history.push(historyData)
+      }).catch((e) => {
+        this.c_message = e.message
       })
     }
   }

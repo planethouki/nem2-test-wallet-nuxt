@@ -10,6 +10,7 @@
           required
           :counter="64"
           placeholder="ex). 19DFEF268B382252CCAA9FAF282EDDEF846BA57232AAF9875C2209103E51799E")
+        div {{ c_message }}
       v-card-actions
         v-btn(
           color="blue"
@@ -41,7 +42,8 @@ export default {
   data () {
     return {
       c_hash: '',
-      c_history: []
+      c_history: [],
+      c_message: ''
     }
   },
   computed: {
@@ -51,12 +53,13 @@ export default {
   },
   methods: {
     c_announceHandler (event) {
+      this.c_message = ''
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const hash = this.c_hash
       const txHttp = new TransactionHttp(endpoint)
       const accountHttp = new AccountHttp(endpoint)
-      accountHttp.aggregateBondedTransactions(account.publicAccount).pipe(
+      accountHttp.aggregateBondedTransactions(account.publicAccount.address).pipe(
         mergeMap(_ => _),
         filter(_ => !_.signedByAccount(account.publicAccount)),
         throwIfEmpty(() => new Error('can not find that transaction hash'))
@@ -70,6 +73,8 @@ export default {
           apiStatusUrl: `${endpoint}/transaction/${hash}/status`
         }
         this.c_history.push(historyData)
+      }).catch((e) => {
+        this.c_message = e.message
       })
     }
   }

@@ -13,11 +13,14 @@
           label="Duration In Blocks"
           v-model="n_duration"
           required
+          min="0"
           type="number"
           placeholder="ex). 10")
         v-text-field(
           label="Max Fee"
-          v-model="n_fee")
+          v-model="n_fee"
+          min="0"
+          type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -29,7 +32,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, TransactionHttp, RegisterNamespaceTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, TransactionHttp, NamespaceRegistrationTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -55,21 +58,25 @@ export default {
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.n_fee = this.feePlaceholder.default
   },
   methods: {
     n_announceHandler (event) {
       const namespaceName = this.n_name
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
-      const registerNamespaceTransaction = RegisterNamespaceTransaction.createRootNamespace(
+      const namespaceRegistrationTransaction = NamespaceRegistrationTransaction.createRootNamespace(
         Deadline.create(),
         namespaceName,
         UInt64.fromUint(this.n_duration),
         account.address.networkType,
         UInt64.fromUint(this.n_fee)
       )
-      const signedTx = account.sign(registerNamespaceTransaction, this.generationHash)
+      const signedTx = account.sign(namespaceRegistrationTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

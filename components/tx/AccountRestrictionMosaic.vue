@@ -10,43 +10,30 @@
             :key="pt.type"
             :label="pt.label"
             :value="pt.type")
-        v-flex.pt-4
-          v-layout(v-for="(modification, index) in modifications" v-bind:key="modification.hexMosaicId" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                span.grey--text.mr-1.pr-1 {{ modification.isAdd ? 'Add' : 'Remove' }}
-                v-flex
-                  v-text-field(
-                  v-bind:label="`${modification.isAdd ? 'Add' : 'Remove'}` + ' Modification Mosaic: ' + (index + 1)"
-                  v-bind:value="modification.hexMosaicId"
-                  disabled)
-                v-btn(
-                fab
-                small
-                v-on:click="deleteModification(index)")
-                  v-icon delete_forever
-        v-flex
-          v-layout(align-baseline)
-            div.mr-1.pr-1
-              v-checkbox(
-              v-bind:label="`${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              hide-details
-              off-icon="remove_circle"
-              on-icon="add_circle"
-              v-model="additionalModification.isAdd")
-            v-flex
-              v-text-field(
-              v-bind:label="`Hex Mosaic ID Modification: ${additionalModification.isAdd ? 'Add' : 'Remove'}`"
-              v-model="additionalModification.hexMosaicId"
-              placeholder="ex). 41BC54DEB7515742")
-            v-btn(
-            fab
-            small
-            v-on:click="addModification")
-              v-icon add_box
+        div.body-1 Modifications
+        .d-flex.align-baseline.mt-1(v-for="(modification, index) in modifications" v-bind:key="index")
+          span {{ (index + 1) }}
+          v-select(
+            :items="modificationTypes"
+            item-text="label"
+            item-value="isAdd"
+            v-model="modification.isAdd"
+            label="Modification Type").flex-grow-0.ml-2
+          v-text-field(
+            label="Mosaic ID"
+            v-model="modification.hexMosaicId").ml-2
+          v-btn(
+            icon
+            v-on:click="deleteModification(index)")
+              v-icon delete_forever
+        v-btn(
+          @click="addModification"
+          x-small) Add Modification
         v-text-field(
           label="Max Fee"
-          v-model="fee")
+          v-model="fee"
+          min="0"
+          type="number").mt-5
       v-card-actions
         v-btn(
           color="blue"
@@ -58,8 +45,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, MosaicId, RestrictionType, TransactionHttp,
-  RestrictionModificationType, AccountRestrictionModification, ModifyAccountRestrictionMosaicTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, MosaicId, AccountRestrictionType, TransactionHttp,
+  AccountRestrictionModificationAction, AccountRestrictionModification,
+  AccountMosaicRestrictionTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -77,10 +65,14 @@ export default {
   },
   data () {
     return {
-      restrictionType: RestrictionType.AllowMosaic,
+      restrictionType: AccountRestrictionType.AllowMosaic,
       restrictionTypes: [
-        { type: RestrictionType.AllowMosaic, label: 'Allow' },
-        { type: RestrictionType.BlockMosaic, label: 'Block' }
+        { type: AccountRestrictionType.AllowMosaic, label: 'Allow' },
+        { type: AccountRestrictionType.BlockMosaic, label: 'Block' }
+      ],
+      modificationTypes: [
+        { isAdd: true, label: 'Add' },
+        { isAdd: false, label: 'Remove' }
       ],
       modifications: [
         {
@@ -88,17 +80,17 @@ export default {
           hexMosaicId: '41BC54DEB7515742'
         }
       ],
-      additionalModification: {
-        isAdd: true,
-        hexMosaicId: '41BC54DEB7515742'
-      },
       fee: 0,
       history: []
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'account', 'endpoint']),
-    ...mapGetters('chain', ['generationHash'])
+    ...mapGetters('chain', ['generationHash']),
+    ...mapGetters('env', ['feePlaceholder'])
+  },
+  mounted () {
+    this.fee = this.feePlaceholder.default
   },
   methods: {
     deleteModification (index) {
@@ -106,27 +98,26 @@ export default {
     },
     addModification () {
       this.modifications.push({
-        hexMosaicId: this.additionalModification.hexMosaicId,
-        isAdd: this.additionalModification.isAdd
+        hexMosaicId: '41BC54DEB7515742',
+        isAdd: true
       })
-      this.additionalModification.hexMosaicId = '41BC54DEB7515742'
     },
     announceHandler (event) {
       const account = this.account
       const endpoint = this.endpoint
-      const modifyAccountRestrictionMosaicTransaction = ModifyAccountRestrictionMosaicTransaction.create(
+      const accountMosaicRestrictionTransaction = AccountMosaicRestrictionTransaction.create(
         Deadline.create(),
         this.restrictionType,
         this.modifications.map((modification) => {
           return AccountRestrictionModification.createForMosaic(
-            modification.isAdd ? RestrictionModificationType.Add : RestrictionModificationType.Remove,
+            modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
             new MosaicId(modification.hexMosaicId)
           )
         }),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
-      const signedTx = account.sign(modifyAccountRestrictionMosaicTransaction, this.generationHash)
+      const signedTx = account.sign(accountMosaicRestrictionTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
       txHttp.announce(signedTx)
       const historyData = {

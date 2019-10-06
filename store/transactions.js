@@ -1,9 +1,7 @@
-import { AccountHttp, QueryParams } from 'nem2-sdk'
-
 export const state = () => ({
-  unconfirmedTransactions: null,
-  aggregateBondedTransactions: null,
-  confirmedTransactions: null
+  unconfirmedTransactions: [],
+  aggregateBondedTransactions: [],
+  confirmedTransactions: []
 })
 
 export const getters = {
@@ -31,27 +29,6 @@ export const mutations = {
 }
 
 export const actions = {
-  async update ({ commit, rootGetters }) {
-    const endpoint = rootGetters['wallet/endpoint']
-    const publicAccount = rootGetters['wallet/publicAccount']
-    const accountHttp = new AccountHttp(endpoint, publicAccount.address.networkType)
-    const unconfirmedTransactions = await accountHttp.unconfirmedTransactions(publicAccount).toPromise()
-    commit('unconfirmedTransactions', { unconfirmedTransactions })
-    const aggregateBondedTransactions = await accountHttp.aggregateBondedTransactions(publicAccount).toPromise()
-    commit('aggregateBondedTransactions', { aggregateBondedTransactions })
-    const allConfirmedTransactions = []
-    let metaId
-    for (let i = 0; i < 10; i++) {
-      const confirmedTransactions = await accountHttp.transactions(publicAccount, new QueryParams(10, metaId)).toPromise()
-      if (confirmedTransactions.length > 0) {
-        metaId = confirmedTransactions[confirmedTransactions.length - 1].transactionInfo.id
-        allConfirmedTransactions.push(...confirmedTransactions)
-      } else {
-        break
-      }
-    }
-    commit('confirmedTransactions', { confirmedTransactions: allConfirmedTransactions })
-  },
   unconfirmedAdded ({ state, commit }, { transaction }) {
     const unconfirmed = state.unconfirmedTransactions.slice()
     unconfirmed.push(transaction)

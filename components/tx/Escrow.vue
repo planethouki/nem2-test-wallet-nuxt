@@ -7,61 +7,84 @@
         v-flex
           v-card
             v-card-title
-              div.subheading Payment
+              .body-1 Payment
             v-card-text
               v-text-field(
                 label="To Address"
                 v-model="e_recipient1"
                 required
                 placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
-              v-text-field(
-                label="Mosaics"
-                v-model="e_mosaics1"
-                required
-                :placeholder="`ex). ${mosaicPlaceholder.escrow1}`")
+              div.body-1 Mosaics
+              .d-flex.align-baseline.mt-1(v-for="(e_mosaic1, index) in e_mosaics1" v-bind:key="index")
+                v-text-field(
+                  label="Mosaic"
+                  v-model="e_mosaic1.mosaicStr"
+                  required
+                  :placeholder="`ex). ${mosaicPlaceholder.escrow1} or 4A1B0170C0E51B73::0`")
+                v-btn(
+                  icon
+                  v-on:click="e_deleteMosaic1(index)")
+                  v-icon delete_forever
+              v-btn(
+                @click="e_addMosaic1"
+                x-small) Add Mosaic
               v-text-field(
                 label="Message"
                 v-model="e_message1"
                 :counter="1023"
-                placeholder="ex). escrow payment")
+                placeholder="ex). escrow payment").mt-5
         v-flex.pt-3
           v-card
             v-card-title
-              div.subheading Invoice
+              .body-1 Invoice
             v-card-text
               v-text-field(
                 label="Partner PublicKey"
-                v-model="e_pubkey2"
+                v-model="e_publicKey2"
                 required
                 :counter="64"
                 placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993")
-              v-text-field(
-                label="Mosaics (hexMosaicId::absoluteAmount) (comma separated)"
-                v-model="e_mosaics2"
-                required
-                :placeholder="`ex). ${mosaicPlaceholder.escrow2}`")
+              div.body-1 Mosaics
+              .d-flex.align-baseline.mt-1(v-for="(e_mosaic2, index) in e_mosaics2" v-bind:key="index")
+                v-text-field(
+                  label="Mosaic"
+                  v-model="e_mosaic2.mosaicStr"
+                  required
+                  :placeholder="`ex). ${mosaicPlaceholder.escrow2} or 4A1B0170C0E51B73::0`")
+                v-btn(
+                  icon
+                  v-on:click="e_deleteMosaic2(index)").mt-5
+                  v-icon delete_forever
+              v-btn(
+                @click="e_addMosaic2"
+                x-small) Add Mosaic
               v-text-field(
                 label="Message"
                 v-model="e_message2"
                 :counter="1023"
-                placeholder="ex). escrow invoice")
+                placeholder="ex). escrow invoice").mt-5
         v-flex.pt-3
           v-text-field(
             label="Max Fee"
-            v-model="e_fee")
+            v-model="e_fee"
+            min="0"
+            type="number")
         v-flex.pt-3
           v-text-field(
             label="Lock Funds Mosaic"
-            v-model="e_mosaic3"
+            v-model="e_lockMosaic"
             :placeholder="`ex). ${mosaicPlaceholder.currency10}`")
           v-text-field(
             label="Lock Funds Duration In Blocks"
-            v-model="e_duration3"
+            v-model="e_lockDuration"
             type="number"
+            min="0"
             placeholder="ex). 480")
           v-text-field(
             label="Lock Funds Max Fee"
-            v-model="e_fee3")
+            v-model="e_fee"
+            min="0"
+            type="number")
       v-card-actions
         v-btn(
           color="blue"
@@ -95,52 +118,85 @@ export default {
   data () {
     return {
       e_recipient1: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
-      e_mosaics1: '',
+      e_mosaics1: [],
       e_message1: 'escrow payment',
-      e_pubkey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
-      e_mosaics2: '',
+      e_publicKey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
+      e_mosaics2: [],
       e_message2: 'escrow invoice',
-      e_mosaic3: '',
-      e_duration3: 480,
+      e_lockMosaic: '',
+      e_lockDuration: 480,
       e_history: [],
       e_fee: 0,
-      e_fee3: 0
+      e_lockFee: 0
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['mosaicPlaceholder'])
+    ...mapGetters('env', [
+      'mosaicPlaceholder',
+      'feePlaceholder'
+    ])
   },
   mounted () {
-    this.e_mosaics1 = this.mosaicPlaceholder.escrow1
-    this.e_mosaics2 = this.mosaicPlaceholder.escrow2
-    this.e_mosaic3 = this.mosaicPlaceholder.currency10
+    this.e_mosaics1 = [{ mosaicStr: this.mosaicPlaceholder.escrow1 }]
+    this.e_mosaics2 = [{ mosaicStr: this.mosaicPlaceholder.escrow2 }]
+    this.e_lockMosaic = this.mosaicPlaceholder.currency10
+    this.e_fee = this.feePlaceholder.default
+    this.e_lockFee = this.feePlaceholder.default
   },
   methods: {
+    e_deleteMosaic1 (index) {
+      this.e_mosaics1.splice(index, 1)
+    },
+    e_addMosaic1 (event) {
+      this.e_mosaics1.push({
+        mosaicStr: '4A1B0170C0E51B73::0'
+      })
+    },
+    e_deleteMosaic2 (index) {
+      this.e_mosaics2.splice(index, 1)
+    },
+    e_addMosaic2 (event) {
+      this.e_mosaics2.push({
+        mosaicStr: '4A1B0170C0E51B73::0'
+      })
+    },
     e_announceHandler (event) {
       const endpoint = this.$store.getters['wallet/endpoint']
       const account = this.$store.getters['wallet/account']
       const network = account.address.networkType
       const paySender = account.publicAccount
-      const invSender = PublicAccount.createFromPublicKey(this.e_pubkey2, network)
-      const lockFundsMosaic = this.$parser.parseMosaic(this.e_mosaic3)
+      const invSender = PublicAccount.createFromPublicKey(this.e_publicKey2, network)
+      const lockFundsMosaic = this.$parser.parseMosaic(this.e_lockMosaic)
+      const payMosaics = this.e_mosaics1
+        .map(x => this.$parser.parseMosaic(x.mosaicStr))
+        .sort((a, b) => {
+          if (a.id.equals(b.id)) { return 0 }
+          return a.id.toHex() > b.id.toHex() ? 1 : -1
+        })
+      const invMosaics = this.e_mosaics2
+        .map(x => this.$parser.parseMosaic(x.mosaicStr))
+        .sort((a, b) => {
+          if (a.id.equals(b.id)) { return 0 }
+          return a.id.toHex() > b.id.toHex() ? 1 : -1
+        })
       const paymentTx = TransferTransaction.create(
         Deadline.create(),
         this.$parser.parseAddress(this.e_recipient1),
-        this.$parser.parseMosaics(this.e_mosaics1),
+        payMosaics,
         PlainMessage.create(this.e_message1),
         network
       )
       const invoiceTx = TransferTransaction.create(
         Deadline.create(),
         account.address,
-        this.$parser.parseMosaics(this.e_mosaics2),
+        invMosaics,
         PlainMessage.create(this.e_message2),
         network
       )
       const aggregateTx = AggregateTransaction.createBonded(
-        Deadline.create(23),
+        Deadline.create(),
         [
           paymentTx.toAggregate(paySender),
           invoiceTx.toAggregate(invSender)
@@ -153,10 +209,10 @@ export default {
       const lockFundsTx = LockFundsTransaction.create(
         Deadline.create(),
         lockFundsMosaic,
-        UInt64.fromUint(this.e_duration3),
+        UInt64.fromUint(this.e_lockDuration),
         signedAggregateTx,
         network,
-        UInt64.fromUint(this.e_fee3)
+        UInt64.fromUint(this.e_lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)

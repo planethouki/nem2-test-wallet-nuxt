@@ -3,7 +3,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { Listener } from 'nem2-sdk'
-
 export default {
   name: 'TransactionListener',
   data () {
@@ -52,7 +51,7 @@ export default {
           this.listener.close()
           this.listener = null
           // eslint-disable-next-line
-          console.log('connection close')
+            console.log('connection close')
         }
       }
     },

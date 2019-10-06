@@ -22,65 +22,51 @@
           required
           type="number"
           placeholder="ex). 2")
-        v-flex.pt-4
-          v-layout(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="d_cosignatory.pubKey" row wrap)
-            v-flex
-              v-layout(align-baseline)
-                span.grey--text.mr-1.pr-1 {{ d_cosignatory.isAdd ? 'Add' : 'Remove' }}
-                v-flex
-                  v-text-field(
-                    v-bind:label="`${d_cosignatory.isAdd ? 'Add' : 'Remove'}` + ' Cosignatory PublicKey: ' + (index + 1)"
-                    v-bind:value="d_cosignatory.pubKey"
-                    required
-                    :counter="64"
-                    disabled)
-                v-btn(
-                  fab
-                  small
-                  v-on:click="d_deleteModification(index)")
-                    v-icon delete_forever
-        v-flex
-          v-layout(align-baseline)
-            div.mr-1.pr-1
-              v-checkbox(
-                v-bind:label="`${d_additionalModificationType ? 'Add' : 'Remove'}`"
-                hide-details
-                off-icon="remove_circle"
-                on-icon="add_circle"
-                v-model="d_additionalModificationType")
-            v-flex
-              v-text-field(
-                v-bind:label="`Modification: ${d_additionalModificationType ? 'Add' : 'Remove'} Cosignatory PublicKey`"
-                v-model="d_additionalModificationPubkey"
-                :counter="64"
-                placeholder="ex). C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0")
-            v-btn(
-              fab
-              small
-              v-on:click="d_addModification")
-                v-icon add_box
-        v-flex
+        div.body-1 Modifications
+        .d-flex.align-baseline.mt-1(v-for="(d_cosignatory, index) in d_cosignatories" v-bind:key="index")
+          span {{ (index + 1) }}
+          v-select(
+            :items="d_modificationTypes"
+            item-text="label"
+            item-value="isAdd"
+            v-model="d_cosignatory.isAdd"
+            label="Cosignatory Modification Action").flex-grow-0.ml-2
           v-text-field(
-            label="Max Fee"
-            v-model="d_fee"
+            label="Cosignatory PublicKey"
+            v-bind:value="d_cosignatory.pubKey"
             required
-            type="number")
-        v-flex.pt-4
-          v-text-field(
-            label="Lock Funds Mosaic"
-            :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
-            v-model="d_lockMosaic"
-            required)
-          v-text-field(
-            label="Lock Funds Duration In Blocks"
-            placeholder="ex). 480"
-            v-model="d_lockDuration"
-            required)
-          v-text-field(
-            label="Lock Funds Max Fee"
-            v-model="d_lockFee"
-            required
-            type="number")
+            :counter="64").ml-2
+          v-btn(
+            icon
+            v-on:click="d_deleteModification(index)")
+              v-icon delete_forever
+        v-btn(
+          @click="d_addModification"
+          x-small) Add Modification
+        v-text-field(
+          label="Max Fee"
+          v-model="d_fee"
+          required
+          min="0"
+          type="number").mt-5
+        v-text-field(
+          label="Lock Funds Mosaic"
+          :placeholder="`ex). ${mosaicPlaceholder.currency10}`"
+          v-model="d_lockMosaic"
+          required).mt-4
+        v-text-field(
+          label="Lock Funds Duration In Blocks"
+          placeholder="ex). 480"
+          v-model="d_lockDuration"
+          min="0"
+          type="number"
+          required)
+        v-text-field(
+          label="Lock Funds Max Fee"
+          v-model="d_lockFee"
+          required
+          min="0"
+          type="number")
         v-card-actions
           v-btn(
             color="blue"
@@ -93,8 +79,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import {
-  Deadline, UInt64, TransactionHttp, AggregateTransaction, ModifyMultisigAccountTransaction, MultisigCosignatoryModification,
-  MultisigCosignatoryModificationType, PublicAccount, LockFundsTransaction
+  Deadline, UInt64, TransactionHttp, AggregateTransaction,
+  MultisigAccountModificationTransaction, MultisigCosignatoryModification,
+  CosignatoryModificationAction, PublicAccount, LockFundsTransaction
 } from 'nem2-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
@@ -117,24 +104,31 @@ export default {
       d_cosignatories: [
         { pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C', isAdd: false }
       ],
-      d_additionalModificationType: false,
-      d_additionalModificationPubkey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
       d_minApprovalDelta: -1,
       d_minRemovalDelta: -1,
       d_history: [],
       d_fee: 0,
       d_lockFee: 0,
       d_lockMosaic: '',
-      d_lockDuration: 480
+      d_lockDuration: 480,
+      d_modificationTypes: [
+        { isAdd: true, label: 'Add' },
+        { isAdd: false, label: 'Remove' }
+      ]
     }
   },
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'account', 'network', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['mosaicPlaceholder'])
+    ...mapGetters('env', [
+      'mosaicPlaceholder',
+      'feePlaceholder'
+    ])
   },
   mounted () {
     this.d_lockMosaic = this.mosaicPlaceholder.currency10
+    this.d_fee = this.feePlaceholder.default
+    this.d_lockFee = this.feePlaceholder.default
   },
   methods: {
     d_deleteModification (index) {
@@ -142,11 +136,9 @@ export default {
     },
     d_addModification (event) {
       this.d_cosignatories.push({
-        pubKey: this.d_additionalModificationPubkey,
-        isAdd: this.d_additionalModificationType
+        pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
+        isAdd: false
       })
-      this.d_additionalModificationPubkey = ''
-      this.d_additionalModificationType = false
     },
     d_announceHandler (event) {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
@@ -156,22 +148,22 @@ export default {
       const minApprovalDelta = this.d_minApprovalDelta
       const minRemovalDelta = this.d_minRemovalDelta
       const cosignatories = this.d_cosignatories
-      const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
+      const multisigAccountModificationTransaction = MultisigAccountModificationTransaction.create(
         Deadline.create(),
         minApprovalDelta,
         minRemovalDelta,
         cosignatories.map((co) => {
           return new MultisigCosignatoryModification(
-            co.isAdd ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
+            co.isAdd ? CosignatoryModificationAction.Add : CosignatoryModificationAction.Remove,
             PublicAccount.createFromPublicKey(co.pubKey, network)
           )
         }),
         network
       )
       const aggregateTx = AggregateTransaction.createBonded(
-        Deadline.create(23),
+        Deadline.create(),
         [
-          modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
+          multisigAccountModificationTransaction.toAggregate(multisigPublicAccount)
         ],
         network,
         [],
