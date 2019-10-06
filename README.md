@@ -6,6 +6,8 @@ This wallet keep private keys in memory.
 
 No save accounts. Reload(F5) initialize all.
 
+NEM2 Catapult Fushicho compatible
+
 ## Build Setup
 
 ``` bash
@@ -27,7 +29,7 @@ For detailed explanation on how things work, checkout [Nuxt.js docs](https://nux
 
 ## Demo
 
-http://walletdragon.z31.web.core.windows.net/
+http://walletfushicho.z31.web.core.windows.net/
 
 ## Function
 
@@ -44,13 +46,13 @@ http://walletdragon.z31.web.core.windows.net/
 - Cosignature Transaction of Multisig
 - Mosaic Alias Transaction
 - Address Alias Transaction
-- Account Restriction Address Transaction
-- Account Restriction Mosaic Transaction
-- Account Restriction Operation Transaction
+- Account Property Address Transaction
+- Account Property Mosaic Transaction
+- Account Property Operation Transaction
 - Account Link Transaction
-- Persistent Delegation Request Transaction
-- Account Metadata Transaction
-- Namespace Metadata Transaction
-- Mosaic Metadata Transaction
-- Mosaic Global Restriction Transaction
-- Mosaic Address Restriction Transaction
+- Persistent Delegation Request
+- Account Metadata
+- Namespace Metadata
+- Mosaic Metadata
+- Mosaic Global Restriction
+- Mosaic Address Restriction
