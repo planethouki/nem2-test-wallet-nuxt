@@ -17,8 +17,8 @@
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
     "cross-env": "^6.0.3",
-    "nem2-sdk": "^0.13.4",
-    "nuxt": "^2.10.0",
+    "nem2-sdk": "^0.14.0",
+    "nuxt": "^2.10.1",
     "rxjs": "^6.5.3",
     "secure-random": "^1.1.2"
   },
@@ -31,7 +31,7 @@
     "eslint-config-standard": ">=14.1.0",
     "eslint-loader": "^3.0.2",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^22.17.0",
+    "eslint-plugin-jest": "^22.19.0",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": ">=4.2.1",
     "eslint-plugin-standard": ">=4.0.1",
