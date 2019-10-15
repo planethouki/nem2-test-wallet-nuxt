@@ -83,7 +83,7 @@ export default {
         }
         this.g_history.push(historyData)
       }).catch((e) => {
-        this.c_message = e.message
+        this.g_message = e.message
       })
     }
   }

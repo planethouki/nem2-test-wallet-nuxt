@@ -20,6 +20,11 @@
           required
           placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC")
         v-text-field(
+          label="Previous Restriction Value"
+          v-model="previousRestrictionValue"
+          required
+          placeholder="ex). 70AB4D9B3B6F0BE0")
+        v-text-field(
           label="New Restriction Value"
           v-model="newRestrictionValue"
           required
@@ -64,6 +69,7 @@ export default {
       mosaicId: '4A1B0170C0E51B73',
       restrictionKey: '00000000000000c1',
       newRestrictionValue: '00000000000000d3',
+      previousRestrictionValue: 'FFFFFFFFFFFFFFFF',
       targetAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
       fee: 0,
       history: []
@@ -99,6 +105,7 @@ export default {
         Address.createFromRawAddress(this.targetAddress),
         UInt64.fromHex(this.newRestrictionValue),
         account.address.networkType,
+        UInt64.fromHex(this.previousRestrictionValue),
         UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(tx, this.generationHash)

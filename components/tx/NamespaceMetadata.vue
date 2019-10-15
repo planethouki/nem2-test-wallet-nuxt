@@ -10,7 +10,7 @@
           required
           placeholder="ex). 82A9D1AC587EC054")
         v-text-field(
-          label="Target Mosaic Owner PublicKey"
+          label="Target Namespace Owner PublicKey"
           v-model="targetPublicKey"
           required
           placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")

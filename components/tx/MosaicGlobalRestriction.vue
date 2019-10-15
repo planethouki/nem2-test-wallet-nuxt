@@ -128,8 +128,8 @@ export default {
         this.previousRestrictionType,
         UInt64.fromHex(this.newRestrictionValue),
         this.newRestrictionType,
-        this.isReferenceMosaicId ? this.referenceMosaicId : new MosaicId(UInt64.fromUint(0).toDTO()),
         account.address.networkType,
+        this.isReferenceMosaicId ? this.referenceMosaicId : new MosaicId(UInt64.fromUint(0).toDTO()),
         UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(tx, this.generationHash)
