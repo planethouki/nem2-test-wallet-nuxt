@@ -17,7 +17,7 @@
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
     "cross-env": "^6.0.3",
-    "nem2-sdk": "^0.14.0",
+    "nem2-sdk": "^0.14.1",
     "nuxt": "^2.10.1",
     "rxjs": "^6.5.3",
     "secure-random": "^1.1.2"
@@ -36,7 +36,7 @@
     "eslint-plugin-promise": ">=4.2.1",
     "eslint-plugin-standard": ">=4.0.1",
     "eslint-plugin-vue": "^5.2.3",
-    "jsdom": "^15.1.1",
+    "jsdom": "^15.2.0",
     "nodemon": "^1.19.3",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0"
