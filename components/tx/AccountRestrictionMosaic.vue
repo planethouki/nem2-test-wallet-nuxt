@@ -45,8 +45,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, MosaicId, AccountRestrictionType, TransactionHttp,
-  AccountRestrictionModificationAction, AccountRestrictionModification,
+import { Deadline, UInt64, MosaicId, AccountRestrictionFlags, TransactionHttp,
   AccountMosaicRestrictionTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
@@ -65,10 +64,10 @@ export default {
   },
   data () {
     return {
-      restrictionType: AccountRestrictionType.AllowMosaic,
+      restrictionType: AccountRestrictionFlags.AllowMosaic,
       restrictionTypes: [
-        { type: AccountRestrictionType.AllowMosaic, label: 'Allow' },
-        { type: AccountRestrictionType.BlockMosaic, label: 'Block' }
+        { type: AccountRestrictionFlags.AllowMosaic, label: 'Allow' },
+        { type: AccountRestrictionFlags.BlockMosaic, label: 'Block' }
       ],
       modificationTypes: [
         { isAdd: true, label: 'Add' },
@@ -108,12 +107,12 @@ export default {
       const accountMosaicRestrictionTransaction = AccountMosaicRestrictionTransaction.create(
         Deadline.create(),
         this.restrictionType,
-        this.modifications.map((modification) => {
-          return AccountRestrictionModification.createForMosaic(
-            modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
-            new MosaicId(modification.hexMosaicId)
-          )
-        }),
+        this.modifications
+          .filter(modification => modification.isAdd)
+          .map(modification => new MosaicId(modification.hexMosaicId)),
+        this.modifications
+          .filter(modification => !modification.isAdd)
+          .map(modification => new MosaicId(modification.hexMosaicId)),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
