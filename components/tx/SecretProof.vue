@@ -110,7 +110,7 @@ export default {
     p_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
-      const recipient = this.$parser.parseAddressSecretLock(this.p_recipient)
+      const recipient = this.$parser.parseAddress(this.p_recipient)
       const secretProofTransaction = SecretProofTransaction.create(
         Deadline.create(),
         this.p_hashType,

@@ -112,7 +112,7 @@ export default {
       const endpoint = this.$store.getters['wallet/endpoint']
       const duration = this.l_duration
       const secret = this.l_secret
-      const recipient = this.$parser.parseAddressSecretLock(this.l_recipient)
+      const recipient = this.$parser.parseAddress(this.l_recipient)
       const mosaic = this.$parser.parseMosaic(this.l_mosaic)
       const secretLockTransaction = SecretLockTransaction.create(
         Deadline.create(),

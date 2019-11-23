@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import { Mosaic, MosaicId, NamespaceId, UInt64, Address } from 'nem2-sdk'
-import convert from '~/lib/convert'
-import base32 from '~/lib/base32'
 
 Vue.prototype.$parser = {
   parseMosaic (str) {
@@ -21,22 +19,6 @@ Vue.prototype.$parser = {
     let address
     if (str.startsWith('@')) {
       address = new NamespaceId(str.substr(1))
-    } else {
-      address = Address.createFromRawAddress(str)
-    }
-    return address
-  },
-  parseAddressSecretLock (str) {
-    let address
-    if (str.startsWith('@')) {
-      const namespaceId = new NamespaceId(str.substr(1))
-      const uint8ns = convert.hexToUint8(namespaceId.toHex())
-      const hexAddress = '91' + convert.uint8ToHex(uint8ns.reverse()) + '00000000000000000000000000000000'
-      address = {
-        plain () {
-          return base32.encode(convert.hexToUint8(hexAddress))
-        }
-      }
     } else {
       address = Address.createFromRawAddress(str)
     }
