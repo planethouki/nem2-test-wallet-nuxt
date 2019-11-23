@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar color="indigo" dark app>
-      <v-toolbar-title>Catapult Transaction Interface (Fushicho)</v-toolbar-title>
+      <v-toolbar-title>Catapult Transaction Interface (Fushicho2)</v-toolbar-title>
     </v-app-bar>
     <v-content>
       <v-container fill-height>
