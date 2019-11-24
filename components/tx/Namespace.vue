@@ -66,10 +66,11 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['feePlaceholder']),
     n_namespaceId () {
-      if (!this.n_name) {
+      try {
+        return (new NamespaceId(this.n_name)).toHex().toUpperCase()
+      } catch (e) {
         return ''
       }
-      return (new NamespaceId(this.n_name)).toHex().toUpperCase()
     }
   },
   mounted () {

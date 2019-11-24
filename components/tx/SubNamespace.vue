@@ -64,10 +64,11 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['feePlaceholder']),
     s_namespaceId () {
-      if (!this.s_name) {
+      try {
+        return (new NamespaceId(`${this.s_parentNamespace}.${this.s_name}`)).toHex().toUpperCase()
+      } catch (e) {
         return ''
       }
-      return (new NamespaceId(`${this.s_parentNamespace}.${this.s_name}`)).toHex().toUpperCase()
     }
   },
   mounted () {
