@@ -59,7 +59,7 @@ export default {
       const hash = this.c_hash
       const txHttp = new TransactionHttp(endpoint)
       const accountHttp = new AccountHttp(endpoint)
-      accountHttp.aggregateBondedTransactions(account.publicAccount.address).pipe(
+      accountHttp.getAccountPartialTransactions(account.publicAccount.address).pipe(
         mergeMap(_ => _),
         filter(_ => !_.signedByAccount(account.publicAccount)),
         throwIfEmpty(() => new Error('can not find that transaction hash'))
