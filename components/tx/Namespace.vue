@@ -66,6 +66,9 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['feePlaceholder']),
     n_namespaceId () {
+      if (!this.n_name) {
+        return ''
+      }
       return (new NamespaceId(this.n_name)).toHex().toUpperCase()
     }
   },
