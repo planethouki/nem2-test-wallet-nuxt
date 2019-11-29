@@ -5,8 +5,13 @@
         div.title Persistent Delegation Request Transaction
       v-card-text
         v-text-field(
-          label="Harvester Public Key"
-          v-model="harvesterPublicKey"
+          label="Delegated Private Key"
+          v-model="delegatedPrivateKey"
+          required
+          placeholder="ex). 77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF")
+        v-text-field(
+          label="Recipient Public Key"
+          v-model="recipientPublicKey"
           required
           placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")
         v-text-field(
@@ -51,8 +56,9 @@ export default {
   },
   data () {
     return {
-      harvesterPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
       senderPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
+      delegatedPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
       fee: 0,
       history: []
     }
@@ -79,7 +85,8 @@ export default {
       const endpoint = this.endpoint
       const tx = PersistentDelegationRequestTransaction.createPersistentDelegationRequestTransaction(
         Deadline.create(),
-        this.harvesterPublicKey,
+        this.delegatedPrivateKey,
+        this.recipientPublicKey,
         this.senderPrivateKey,
         account.address.networkType,
         UInt64.fromUint(this.fee)

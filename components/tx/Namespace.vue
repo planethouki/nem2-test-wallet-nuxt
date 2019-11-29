@@ -4,11 +4,16 @@
       v-card-title
         div.title Register Namespace
       v-card-text
-        v-text-field(
-          label="Namespace Name"
-          v-model="n_name"
-          required
-          placeholder="ex). foo")
+        div.d-flex
+          v-text-field(
+            label="Namespace Name"
+            v-model="n_name"
+            required
+            placeholder="ex). foo")
+          v-text-field(
+            label="Namespace ID"
+            :value="n_namespaceId"
+            disabled).ml-2
         v-text-field(
           label="Duration In Blocks"
           v-model="n_duration"
@@ -32,7 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, TransactionHttp, NamespaceRegistrationTransaction } from 'nem2-sdk'
+import { Deadline, UInt64, TransactionHttp, NamespaceId, NamespaceRegistrationTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -59,7 +64,14 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['feePlaceholder'])
+    ...mapGetters('env', ['feePlaceholder']),
+    n_namespaceId () {
+      try {
+        return (new NamespaceId(this.n_name)).toHex().toUpperCase()
+      } catch (e) {
+        return ''
+      }
+    }
   },
   mounted () {
     this.n_fee = this.feePlaceholder.default

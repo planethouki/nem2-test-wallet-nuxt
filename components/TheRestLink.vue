@@ -26,7 +26,7 @@
         <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/transactions/partial`" target="_blank" small>
           partial
         </v-btn>
-        <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/restrictions`" target="_blank" small>
+        <v-btn :href="`${endpoint}/restrictions/account/${publicAccount.publicKey}`" target="_blank" small>
           restrictions
         </v-btn>
         <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/multisig`" target="_blank" small>

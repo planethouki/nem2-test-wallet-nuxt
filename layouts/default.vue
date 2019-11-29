@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform" lang="pug">
   v-app
     v-app-bar(color="indigo" dark app)
-      v-toolbar-title Catapult Transaction Interface (Fushicho)
+      v-toolbar-title Catapult Transaction Interface (Fushicho2)
       v-spacer
       v-menu(
         v-model="restLinkMenu"

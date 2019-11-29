@@ -52,8 +52,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Deadline, UInt64, AccountRestrictionType, TransactionHttp,
-  AccountRestrictionModificationAction, AccountRestrictionModification,
+import { Deadline, UInt64, AccountRestrictionFlags, TransactionHttp,
   AccountOperationRestrictionTransaction, TransactionType } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
@@ -72,12 +71,10 @@ export default {
   },
   data () {
     return {
-      restrictionType: AccountRestrictionType.AllowIncomingTransactionType,
+      restrictionType: AccountRestrictionFlags.AllowOutgoingTransactionType,
       restrictionTypes: [
-        { type: AccountRestrictionType.AllowIncomingTransactionType, label: 'Allow Incoming' },
-        { type: AccountRestrictionType.AllowOutgoingTransactionType, label: 'Allow Outgoing' },
-        { type: AccountRestrictionType.BlockIncomingTransactionType, label: 'Block Incoming' },
-        { type: AccountRestrictionType.BlockOutgoingTransactionType, label: 'Block Outgoing' }
+        { type: AccountRestrictionFlags.AllowOutgoingTransactionType, label: 'Allow Outgoing' },
+        { type: AccountRestrictionFlags.BlockOutgoingTransactionType, label: 'Block Outgoing' }
       ],
       modificationTypes: [
         { isAdd: true, label: 'Add' },
@@ -120,12 +117,12 @@ export default {
       const accountOperationRestrictionTransaction = AccountOperationRestrictionTransaction.create(
         Deadline.create(),
         this.restrictionType,
-        this.modifications.map((modification) => {
-          return AccountRestrictionModification.createForOperation(
-            modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
-            modification.entityType
-          )
-        }),
+        this.modifications
+          .filter(modification => modification.isAdd)
+          .map(modification => modification.entityType),
+        this.modifications
+          .filter(modification => !modification.isAdd)
+          .map(modification => modification.entityType),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )

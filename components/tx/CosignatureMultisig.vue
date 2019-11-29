@@ -68,7 +68,7 @@ export default {
       const hash = this.g_hash
       const txHttp = new TransactionHttp(endpoint)
       const accountHttp = new AccountHttp(endpoint)
-      accountHttp.aggregateBondedTransactions(multisigPublicAccount.address).pipe(
+      accountHttp.getAccountPartialTransactions(multisigPublicAccount.address).pipe(
         mergeMap(_ => _),
         filter(_ => !_.signedByAccount(account.publicAccount)),
         throwIfEmpty(() => new Error('can not find that transaction hash'))
@@ -83,7 +83,7 @@ export default {
         }
         this.g_history.push(historyData)
       }).catch((e) => {
-        this.c_message = e.message
+        this.g_message = e.message
       })
     }
   }

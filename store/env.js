@@ -3,9 +3,9 @@ import { NetworkType } from 'nem2-sdk'
 let endpointList, defaultEndpoint, mosaicPlaceholder, feePlaceholder
 if (process.env.isNf) {
   endpointList = [
-    { url: 'http://103.3.60.174:3000', label: 'my-8' },
-    { url: 'http://13.114.200.132:3000', label: 'jp-5' },
-    { url: 'http://47.108.88.254:3000', label: 'cn-3' }
+    { url: 'http://103.3.60.174:3000', label: 'my (103.3.60.174)' },
+    { url: 'http://13.114.200.132:3000', label: 'jp (13.114.200.132)' },
+    { url: 'http://47.107.245.217:3000', label: 'cn (47.107.245.217)' }
   ]
   defaultEndpoint = 'http://103.3.60.174:3000'
   mosaicPlaceholder = {
@@ -19,9 +19,9 @@ if (process.env.isNf) {
   }
 } else {
   endpointList = [
-    { url: 'http://fushicho.48gh23s.xyz:3000', label: 'fushicho.48gh23s.xyz' }
+    { url: 'http://localhost:3000', label: 'localhost' }
   ]
-  defaultEndpoint = 'http://fushicho.48gh23s.xyz:3000'
+  defaultEndpoint = 'http://localhost:3000'
   mosaicPlaceholder = {
     transfer: '@cat.currency::0',
     currency10: '@cat.currency::10000000',

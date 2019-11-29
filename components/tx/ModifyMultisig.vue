@@ -80,8 +80,8 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction,
-  MultisigAccountModificationTransaction, MultisigCosignatoryModification,
-  CosignatoryModificationAction, PublicAccount, LockFundsTransaction
+  MultisigAccountModificationTransaction,
+  PublicAccount, LockFundsTransaction
 } from 'nem2-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
@@ -152,12 +152,12 @@ export default {
         Deadline.create(),
         minApprovalDelta,
         minRemovalDelta,
-        cosignatories.map((co) => {
-          return new MultisigCosignatoryModification(
-            co.isAdd ? CosignatoryModificationAction.Add : CosignatoryModificationAction.Remove,
-            PublicAccount.createFromPublicKey(co.pubKey, network)
-          )
-        }),
+        cosignatories
+          .filter(co => co.isAdd)
+          .map(co => PublicAccount.createFromPublicKey(co.pubKey, network)),
+        cosignatories
+          .filter(co => !co.isAdd)
+          .map(co => PublicAccount.createFromPublicKey(co.pubKey, network)),
         network
       )
       const aggregateTx = AggregateTransaction.createBonded(

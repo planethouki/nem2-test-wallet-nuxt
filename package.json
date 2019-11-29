@@ -1,6 +1,6 @@
 {
   "name": "nem2-test-wallet-nuxt",
-  "version": "0.8.0-SNAPSHOT",
+  "version": "0.9.0-SNAPSHOT",
   "description": "",
   "author": "planethouki",
   "private": true,
@@ -17,8 +17,8 @@
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
     "cross-env": "^6.0.3",
-    "nem2-sdk": "^0.13.4",
-    "nuxt": "^2.10.0",
+    "nem2-sdk": "^0.15.0",
+    "nuxt": "^2.10.2",
     "rxjs": "^6.5.3",
     "secure-random": "^1.1.2"
   },
@@ -27,17 +27,17 @@
     "@nuxtjs/vuetify": "^1.9.0",
     "ava": "^2.4.0",
     "babel-eslint": "^10.0.3",
-    "eslint": "^6.5.1",
+    "eslint": "^6.7.0",
     "eslint-config-standard": ">=14.1.0",
     "eslint-loader": "^3.0.2",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^22.17.0",
+    "eslint-plugin-jest": "^23.0.4",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": ">=4.2.1",
     "eslint-plugin-standard": ">=4.0.1",
-    "eslint-plugin-vue": "^5.2.3",
-    "jsdom": "^15.1.1",
-    "nodemon": "^1.19.3",
+    "eslint-plugin-vue": "^6.0.1",
+    "jsdom": "^15.2.1",
+    "nodemon": "^2.0.1",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0"
   }

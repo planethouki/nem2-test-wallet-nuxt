@@ -45,8 +45,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Address, Deadline, UInt64, AccountRestrictionType, TransactionHttp,
-  AccountRestrictionModificationAction, AccountRestrictionModification,
+import { Address, Deadline, UInt64, AccountRestrictionFlags, TransactionHttp,
   AccountAddressRestrictionTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
@@ -65,12 +64,12 @@ export default {
   },
   data () {
     return {
-      restrictionType: AccountRestrictionType.AllowIncomingAddress,
+      restrictionType: AccountRestrictionFlags.AllowIncomingAddress,
       restrictionTypes: [
-        { type: AccountRestrictionType.AllowIncomingAddress, label: 'Allow Incoming' },
-        { type: AccountRestrictionType.AllowOutgoingAddress, label: 'Allow Outgoing' },
-        { type: AccountRestrictionType.BlockIncomingAddress, label: 'Block Incoming' },
-        { type: AccountRestrictionType.BlockOutgoingAddress, label: 'Block Outgoing' }
+        { type: AccountRestrictionFlags.AllowIncomingAddress, label: 'Allow Incoming' },
+        { type: AccountRestrictionFlags.AllowOutgoingAddress, label: 'Allow Outgoing' },
+        { type: AccountRestrictionFlags.BlockIncomingAddress, label: 'Block Incoming' },
+        { type: AccountRestrictionFlags.BlockOutgoingAddress, label: 'Block Outgoing' }
       ],
       modificationTypes: [
         { isAdd: true, label: 'Add' },
@@ -110,12 +109,12 @@ export default {
       const accountAddressRestrictionTransaction = AccountAddressRestrictionTransaction.create(
         Deadline.create(),
         this.restrictionType,
-        this.modifications.map((modification) => {
-          return AccountRestrictionModification.createForAddress(
-            modification.isAdd ? AccountRestrictionModificationAction.Add : AccountRestrictionModificationAction.Remove,
-            Address.createFromRawAddress(modification.rawAddress)
-          )
-        }),
+        this.modifications
+          .filter(modification => modification.isAdd)
+          .map(modification => Address.createFromRawAddress(modification.rawAddress)),
+        this.modifications
+          .filter(modification => !modification.isAdd)
+          .map(modification => Address.createFromRawAddress(modification.rawAddress)),
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
