@@ -1,6 +1,5 @@
 <template lang="pug">
   v-layout(column)
-    NemFoundation(v-if="isNf")
     v-flex(mb-5)
       v-card
         v-card-text
@@ -43,13 +42,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import NemFoundation from '~/components/NemFoundation.vue'
 
 export default {
   layout: 'login',
-  components: {
-    NemFoundation
-  },
   head () {
     return {
       meta: [
@@ -77,7 +72,7 @@ export default {
       'defaultEndpoint',
       'defaultPrivateKey',
       'defaultNetworkType',
-      'isNf'
+      'isNemXem'
     ]),
     endpoint () {
       let endpoint = this.predefinedEndpoint === 'other' ? this.userEndpoint : this.predefinedEndpoint

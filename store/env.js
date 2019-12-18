@@ -1,7 +1,7 @@
 import { NetworkType } from 'nem2-sdk'
 
 let endpointList, defaultEndpoint, mosaicPlaceholder, feePlaceholder
-if (process.env.isNf) {
+if (process.env.isNemXem) {
   endpointList = [
     { url: 'http://103.3.60.174:3000', label: 'my (103.3.60.174)' },
     { url: 'http://13.114.200.132:3000', label: 'jp (13.114.200.132)' },
@@ -38,7 +38,7 @@ export const state = () => ({
   defaultEndpoint,
   defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
   defaultNetworkType: NetworkType.MIJIN_TEST,
-  isNf: process.env.isNf,
+  isNemXem: process.env.isNemXem,
   mosaicPlaceholder,
   feePlaceholder
 })
@@ -56,8 +56,8 @@ export const getters = {
   endpointList (state) {
     return state.endpointList
   },
-  isNf (state) {
-    return state.isNf
+  isNemXem (state) {
+    return state.isNemXem
   },
   mosaicPlaceholder (state) {
     return state.mosaicPlaceholder

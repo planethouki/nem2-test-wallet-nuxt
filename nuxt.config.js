@@ -95,6 +95,6 @@ module.exports = {
   },
 
   env: {
-    isNf: false
+    isNemXem: false
   }
 }

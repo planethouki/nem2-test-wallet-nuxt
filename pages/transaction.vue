@@ -1,7 +1,6 @@
 <template lang="pug">
   v-layout(row)
     v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
-      NemFoundation(v-if="isNf")
       Transfer(navTargetId="transfer")
       Namespace(navTargetId="namespace")
       SubNamespace(navTargetId="subnamespace")
@@ -55,7 +54,6 @@ import MosaicMetadata from '~/components/tx/MosaicMetadata.vue'
 import MosaicGlobalRestriction from '~/components/tx/MosaicGlobalRestriction.vue'
 import MosaicAddressRestriction from '~/components/tx/MosaicAddressRestriction.vue'
 
-import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
 
 export default {
@@ -88,7 +86,7 @@ export default {
   },
   computed: {
     ...mapGetters('env', [
-      'isNf'
+      'isNemXem'
     ]),
     existsAccount () {
       return this.$store.getters['wallet/existsAccount']
