@@ -45,11 +45,9 @@ import { mapGetters } from 'vuex'
 
 export default {
   layout: 'login',
-  head () {
-    return {
-      meta: [
-        { hid: 'top', name: 'top', content: 'top' }
-      ]
+  asyncData ({ store, redirect }) {
+    if (store.getters['wallet/existsAccount']) {
+      redirect('/transaction')
     }
   },
   data () {
@@ -73,6 +71,13 @@ export default {
       'defaultPrivateKey',
       'defaultNetworkType'
     ]),
+    head () {
+      return {
+        meta: [
+          { hid: 'top', name: 'top', content: 'top' }
+        ]
+      }
+    },
     endpoint () {
       let endpoint = this.predefinedEndpoint === 'other' ? this.userEndpoint : this.predefinedEndpoint
       if (endpoint.match(/:\d+$/) === null) {
@@ -82,11 +87,6 @@ export default {
         endpoint = `http://${endpoint}`
       }
       return endpoint
-    }
-  },
-  asyncData ({ store, redirect }) {
-    if (store.getters['wallet/existsAccount']) {
-      redirect('/transaction')
     }
   },
   created () {

@@ -82,16 +82,6 @@ export default {
     MosaicGlobalRestriction,
     MosaicAddressRestriction
   },
-  computed: {
-    existsAccount () {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    breakPoint () {
-      return this.$vuetify.breakpoint.name
-    }
-  },
-  watch: {
-  },
   asyncData () {
     return {
       nav: [
@@ -121,6 +111,16 @@ export default {
       ],
       navActive: ''
     }
+  },
+  computed: {
+    existsAccount () {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    breakPoint () {
+      return this.$vuetify.breakpoint.name
+    }
+  },
+  watch: {
   },
   created () {
     window.addEventListener('scroll', this.onScroll)

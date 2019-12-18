@@ -16,11 +16,13 @@
   },
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
+    "bufferutil": "^4.0.1",
     "cross-env": "^6.0.3",
     "nem2-sdk": "^0.16.0",
     "nuxt": "^2.11.0",
     "rxjs": "^6.5.3",
-    "secure-random": "^1.1.2"
+    "secure-random": "^1.1.2",
+    "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",
