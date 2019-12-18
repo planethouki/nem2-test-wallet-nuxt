@@ -71,8 +71,7 @@ export default {
       'endpointList',
       'defaultEndpoint',
       'defaultPrivateKey',
-      'defaultNetworkType',
-      'isNemXem'
+      'defaultNetworkType'
     ]),
     endpoint () {
       let endpoint = this.predefinedEndpoint === 'other' ? this.userEndpoint : this.predefinedEndpoint

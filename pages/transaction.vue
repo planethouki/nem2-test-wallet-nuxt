@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import Transfer from '~/components/tx/Transfer.vue'
 import Namespace from '~/components/tx/Namespace.vue'
 import SubNamespace from '~/components/tx/SubNamespace.vue'
@@ -84,9 +83,6 @@ export default {
     MosaicAddressRestriction
   },
   computed: {
-    ...mapGetters('env', [
-      'isNemXem'
-    ]),
     existsAccount () {
       return this.$store.getters['wallet/existsAccount']
     },
