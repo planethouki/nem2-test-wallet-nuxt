@@ -8,7 +8,7 @@
           label="Target PublicKey"
           v-model="targetPublicKey"
           required
-          placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")
+          :placeholder="`ex). ${publicKeyPlaceholder.alice}`")
         v-text-field(
           label="Scoped Metadata Key"
           v-model="scopedMetadataKey"
@@ -81,7 +81,7 @@ export default {
   data () {
     return {
       scopedMetadataKey: '00000000000000a1',
-      targetPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      targetPublicKey: '',
       valueSizeDelta: 23,
       metadataValue: 'sample account metadata',
       fee: 0,
@@ -101,6 +101,7 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])

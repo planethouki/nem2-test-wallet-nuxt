@@ -73,7 +73,7 @@ export default {
         { type: HashType.Op_Hash_160, label: 'Hash160' }
       ],
       p_proof: '',
-      p_recipient: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
+      p_recipient: '',
       p_fee: 0,
       p_history: []
     }
@@ -95,13 +95,14 @@ export default {
     },
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['feePlaceholder'])
+    ...mapGetters('env', ['addressPlaceholder', 'feePlaceholder'])
   },
   created () {
     this.p_proof = this.$crypto.random10()
   },
   mounted () {
     this.p_fee = this.feePlaceholder.default
+    this.p_recipient = this.addressPlaceholder.alice
   },
   methods: {
     p_regenProof () {

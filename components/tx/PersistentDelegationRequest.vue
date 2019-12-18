@@ -13,7 +13,7 @@
           label="Recipient Public Key"
           v-model="recipientPublicKey"
           required
-          placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")
+          :placeholder="`ex). ${publicKeyPlaceholder.alice}`")
         v-text-field(
           label="Sender Private Key"
           v-model="senderPrivateKey"
@@ -56,7 +56,7 @@ export default {
   },
   data () {
     return {
-      recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      recipientPublicKey: '',
       senderPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
       delegatedPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
       fee: 0,
@@ -72,12 +72,15 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
+      'accountPlaceholder',
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.recipientPublicKey = this.publicKeyPlaceholder.alice
   },
   methods: {
     announceHandler (event) {

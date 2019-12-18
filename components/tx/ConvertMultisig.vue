@@ -94,10 +94,7 @@ export default {
   },
   data () {
     return {
-      u_cosignatories: [
-        { publicKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C' },
-        { publicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57' }
-      ],
+      u_cosignatories: [],
       u_minApprovalDelta: 2,
       u_minRemovalDelta: 2,
       u_history: [],
@@ -112,11 +109,13 @@ export default {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'address']),
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', [
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ]),
     u_forbidMultisig () {
-      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
+      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2' ||
+        this.address.plain() === 'TDYF3QKKPYMXTGZODND6X3O5FLVB3GBYMFQG4PEU'
     },
     u_announceDisabledMessage () {
       if (this.u_forbidMultisig) { return 'Please try another account.' }
@@ -129,6 +128,10 @@ export default {
     this.u_lockMosaic = this.mosaicPlaceholder.currency10
     this.u_fee = this.feePlaceholder.default
     this.u_lockFee = this.feePlaceholder.default
+    this.u_cosignatories = [
+      { publicKey: this.publicKeyPlaceholder.alice },
+      { publicKey: this.publicKeyPlaceholder.bob }
+    ]
   },
   methods: {
     u_deleteCosignatory (index) {
@@ -136,7 +139,7 @@ export default {
     },
     u_addCosignatory (event) {
       this.u_cosignatories.push({
-        publicKey: 'C36F5BDDE8B2B586D17A4E6F4B999DD36EBD114023C1231E38ABCB1976B938C0'
+        publicKey: this.publicKeyPlaceholder.carol
       })
     },
     u_announceHandler (event) {

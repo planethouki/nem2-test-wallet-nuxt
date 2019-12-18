@@ -52,7 +52,7 @@ export default {
   },
   data () {
     return {
-      remoteAccountKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
+      remoteAccountKey: '',
       linkAction: LinkAction.Link,
       linkActions: [
         { type: LinkAction.Link, label: 'Link' },
@@ -67,7 +67,8 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', ['feePlaceholder']),
     forbidLink () {
-      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2'
+      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2' ||
+       this.address.plain() === 'TDYF3QKKPYMXTGZODND6X3O5FLVB3GBYMFQG4PEU'
     },
     announceDisabledMessage () {
       if (this.forbidLink) { return 'Please try another account.' }

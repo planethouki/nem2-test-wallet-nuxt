@@ -60,7 +60,7 @@ export default {
         { type: AliasAction.Unlink, label: 'Unlink' }
       ],
       namespaceName: 'foo',
-      rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
+      rawAddress: '',
       fee: 0,
       history: []
     }
@@ -68,10 +68,11 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['feePlaceholder'])
+    ...mapGetters('env', ['feePlaceholder', 'addressPlaceholder'])
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.rawAddress = this.addressPlaceholder.alice
   },
   methods: {
     announceHandler (event) {

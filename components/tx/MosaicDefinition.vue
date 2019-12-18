@@ -85,7 +85,7 @@ export default {
       m_transferable: true,
       m_restrictable: true,
       m_divisibility: 0,
-      m_duration: 10,
+      m_duration: 0,
       m_delta: 100,
       m_fee: 0,
       m_history: []

@@ -9,7 +9,7 @@
           v-model="g_multisigPublicKey"
           required
           :counter="64"
-          placeholder="ex). AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26")
+          :placeholder="`ex). ${publicKeyPlaceholder.dan}`")
         v-text-field(
           label="Aggregate Bonded Transaction Hash"
           v-model="g_hash"
@@ -55,6 +55,9 @@ export default {
   computed: {
     existsAccount () {
       return this.$store.getters['wallet/existsAccount']
+    },
+    publicKeyPlaceholder () {
+      return this.$store.getters['env/publicKeyPlaceholder']
     }
   },
   methods: {

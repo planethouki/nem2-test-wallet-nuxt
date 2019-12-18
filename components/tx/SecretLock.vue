@@ -75,7 +75,7 @@ export default {
         { type: HashType.Op_Hash_160, label: 'Hash160', strLen: '40' }
       ],
       l_mosaic: '',
-      l_recipient: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
+      l_recipient: '',
       l_duration: 240,
       l_history: [],
       l_secret: '2B9DC1E6C02C96E690D4BC2E50BA8E8A0F3C065D98668D545C20E1A97B141B9D',
@@ -86,6 +86,7 @@ export default {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', [
+      'addressPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
@@ -104,6 +105,7 @@ export default {
   mounted () {
     this.l_mosaic = this.mosaicPlaceholder.currency10
     this.l_fee = this.feePlaceholder.default
+    this.l_recipient = this.addressPlaceholder.alice
   },
   methods: {
     l_announceHandler (event) {

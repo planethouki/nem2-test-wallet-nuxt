@@ -13,7 +13,7 @@
                 label="To Address"
                 v-model="e_recipient1"
                 required
-                placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC or @alice")
+                :placeholder="`ex). ${addressPlaceholder.alice} or @alice`")
               div.body-1 Mosaics
               .d-flex.align-baseline.mt-1(v-for="(e_mosaic1, index) in e_mosaics1" v-bind:key="index")
                 v-text-field(
@@ -43,7 +43,7 @@
                 v-model="e_publicKey2"
                 required
                 :counter="64"
-                placeholder="ex). CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993")
+                :placeholder="`ex). ${publicKeyPlaceholder.bob}`")
               div.body-1 Mosaics
               .d-flex.align-baseline.mt-1(v-for="(e_mosaic2, index) in e_mosaics2" v-bind:key="index")
                 v-text-field(
@@ -117,10 +117,10 @@ export default {
   },
   data () {
     return {
-      e_recipient1: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
+      e_recipient1: '',
       e_mosaics1: [],
       e_message1: 'escrow payment',
-      e_publicKey2: 'CC9E167E28CA4227F5C461BF40AEC60EFB98E200C998F86BEBCD68D4FC66D993',
+      e_publicKey2: '',
       e_mosaics2: [],
       e_message2: 'escrow invoice',
       e_lockMosaic: '',
@@ -134,6 +134,8 @@ export default {
     ...mapGetters('wallet', ['existsAccount']),
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', [
+      'addressPlaceholder',
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
@@ -144,6 +146,8 @@ export default {
     this.e_lockMosaic = this.mosaicPlaceholder.currency10
     this.e_fee = this.feePlaceholder.default
     this.e_lockFee = this.feePlaceholder.default
+    this.e_recipient1 = this.addressPlaceholder.alice
+    this.e_publicKey2 = this.publicKeyPlaceholder.bob
   },
   methods: {
     e_deleteMosaic1 (index) {
