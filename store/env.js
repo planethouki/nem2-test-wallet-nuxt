@@ -3,11 +3,9 @@ import { NetworkType } from 'nem2-sdk'
 let endpointList, defaultEndpoint, mosaicPlaceholder, feePlaceholder
 if (process.env.isNemXem) {
   endpointList = [
-    { url: 'http://103.3.60.174:3000', label: 'my (103.3.60.174)' },
-    { url: 'http://13.114.200.132:3000', label: 'jp (13.114.200.132)' },
-    { url: 'http://47.107.245.217:3000', label: 'cn (47.107.245.217)' }
+    { url: 'https://test-api.48gh23s.xyz:3001', label: 'https://test-api.48gh23s.xyz:3001' }
   ]
-  defaultEndpoint = 'http://103.3.60.174:3000'
+  defaultEndpoint = 'https://test-api.48gh23s.xyz:3001'
   mosaicPlaceholder = {
     transfer: '@nem.xem::0',
     currency10: '@nem.xem::10000000',

@@ -59,7 +59,6 @@ import Sidebar from '~/components/Sidebar.vue'
 export default {
   components: {
     Sidebar,
-    NemFoundation,
     Transfer,
     Namespace,
     SubNamespace,
