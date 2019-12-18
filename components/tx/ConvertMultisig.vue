@@ -75,7 +75,8 @@ import { mapGetters } from 'vuex'
 import {
   Deadline, TransactionHttp, MultisigAccountModificationTransaction,
   PublicAccount, UInt64, AggregateTransaction,
-  LockFundsTransaction } from 'nem2-sdk'
+  LockFundsTransaction
+} from 'nem2-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {

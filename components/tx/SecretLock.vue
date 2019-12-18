@@ -48,8 +48,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import {
-  Deadline, UInt64, SecretLockTransaction, HashType, TransactionHttp } from 'nem2-sdk'
+import { Deadline, UInt64, SecretLockTransaction, HashType, TransactionHttp } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {

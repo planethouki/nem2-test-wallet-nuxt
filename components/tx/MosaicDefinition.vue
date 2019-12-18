@@ -61,7 +61,8 @@ import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicFlags, MosaicSupplyChangeAction,
-  AggregateTransaction } from 'nem2-sdk'
+  AggregateTransaction
+} from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {

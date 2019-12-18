@@ -27,8 +27,7 @@
 </template>
 
 <script>
-import {
-  AccountHttp, TransactionHttp, PublicAccount, CosignatureTransaction } from 'nem2-sdk'
+import { AccountHttp, TransactionHttp, PublicAccount, CosignatureTransaction } from 'nem2-sdk'
 import { throwIfEmpty, filter, mergeMap } from 'rxjs/operators'
 import TxHistory from '../history/TxHistory.vue'
 
