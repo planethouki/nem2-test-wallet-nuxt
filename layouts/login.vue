@@ -1,22 +1,5 @@
 <template>
   <v-app>
-    <v-app-bar color="indigo" dark app>
-      <v-toolbar-title>Catapult Transaction Interface (Fushicho2)</v-toolbar-title>
-    </v-app-bar>
-    <v-content>
-      <v-container fill-height>
-        <nuxt />
-      </v-container>
-    </v-content>
+    <nuxt />
   </v-app>
 </template>
-
-<script>
-
-export default {
-  data: () => ({
-  }),
-  methods: {
-  }
-}
-</script>

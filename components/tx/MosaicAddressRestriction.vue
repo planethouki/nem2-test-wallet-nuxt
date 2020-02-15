@@ -18,7 +18,7 @@
           label="Target Address"
           v-model="targetAddress"
           required
-          placeholder="ex). SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC")
+          :placeholder="`ex). ${addressPlaceholder.alice}`")
         v-text-field(
           label="Previous Restriction Value"
           v-model="previousRestrictionValue"
@@ -44,12 +44,12 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, MosaicAddressRestrictionTransaction, MosaicId, Address,
   TransactionHttp
 } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'MosaicAddressRestriction',
@@ -70,7 +70,7 @@ export default {
       restrictionKey: '00000000000000c1',
       newRestrictionValue: '00000000000000d3',
       previousRestrictionValue: 'FFFFFFFFFFFFFFFF',
-      targetAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
+      targetAddress: '',
       fee: 0,
       history: []
     }
@@ -84,6 +84,7 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
+      'addressPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ]),
@@ -93,6 +94,7 @@ export default {
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.targetAddress = this.addressPlaceholder.alice
   },
   methods: {
     announceHandler (event) {

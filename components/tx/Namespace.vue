@@ -36,9 +36,9 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, TransactionHttp, NamespaceId, NamespaceRegistrationTransaction } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'Namespace',
@@ -56,7 +56,7 @@ export default {
   data () {
     return {
       n_name: 'foo',
-      n_duration: 60,
+      n_duration: 180000,
       n_fee: 0,
       n_history: []
     }

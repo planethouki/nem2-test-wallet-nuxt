@@ -44,10 +44,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { Address, Deadline, UInt64, AccountRestrictionFlags, TransactionHttp,
-  AccountAddressRestrictionTransaction } from 'nem2-sdk'
 import TxHistory from '../history/TxHistory.vue'
+import { mapGetters } from 'vuex'
+import {
+  Address, Deadline, UInt64, AccountRestrictionFlags, TransactionHttp,
+  AccountAddressRestrictionTransaction
+} from 'nem2-sdk'
 
 export default {
   name: 'AccountRestrictionAddress',
@@ -75,12 +77,7 @@ export default {
         { isAdd: true, label: 'Add' },
         { isAdd: false, label: 'Remove' }
       ],
-      modifications: [
-        {
-          isAdd: true,
-          rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE'
-        }
-      ],
+      modifications: [],
       fee: 0,
       history: []
     }
@@ -88,10 +85,14 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'endpoint', 'account']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['feePlaceholder'])
+    ...mapGetters('env', ['addressPlaceholder', 'feePlaceholder'])
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.modifications = [{
+      isAdd: true,
+      rawAddress: this.addressPlaceholder.alice
+    }]
   },
   methods: {
     deleteModification (index) {

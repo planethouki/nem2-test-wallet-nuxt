@@ -1,7 +1,6 @@
 <template lang="pug">
   v-layout(row)
     v-flex#content.pt-3.px-3(style="width: calc(100% - 250px);")
-      NemFoundation(v-if="isNf")
       Transfer(navTargetId="transfer")
       Namespace(navTargetId="namespace")
       SubNamespace(navTargetId="subnamespace")
@@ -30,7 +29,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import Transfer from '~/components/tx/Transfer.vue'
 import Namespace from '~/components/tx/Namespace.vue'
 import SubNamespace from '~/components/tx/SubNamespace.vue'
@@ -55,13 +53,11 @@ import MosaicMetadata from '~/components/tx/MosaicMetadata.vue'
 import MosaicGlobalRestriction from '~/components/tx/MosaicGlobalRestriction.vue'
 import MosaicAddressRestriction from '~/components/tx/MosaicAddressRestriction.vue'
 
-import NemFoundation from '~/components/NemFoundation.vue'
 import Sidebar from '~/components/Sidebar.vue'
 
 export default {
   components: {
     Sidebar,
-    NemFoundation,
     Transfer,
     Namespace,
     SubNamespace,
@@ -85,19 +81,6 @@ export default {
     MosaicMetadata,
     MosaicGlobalRestriction,
     MosaicAddressRestriction
-  },
-  computed: {
-    ...mapGetters('env', [
-      'isNf'
-    ]),
-    existsAccount () {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    breakPoint () {
-      return this.$vuetify.breakpoint.name
-    }
-  },
-  watch: {
   },
   asyncData () {
     return {
@@ -128,6 +111,16 @@ export default {
       ],
       navActive: ''
     }
+  },
+  computed: {
+    existsAccount () {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    breakPoint () {
+      return this.$vuetify.breakpoint.name
+    }
+  },
+  watch: {
   },
   created () {
     window.addEventListener('scroll', this.onScroll)

@@ -13,12 +13,7 @@
           label="Recipient Public Key"
           v-model="recipientPublicKey"
           required
-          placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")
-        v-text-field(
-          label="Sender Private Key"
-          v-model="senderPrivateKey"
-          required
-          placeholder="ex). 77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF")
+          :placeholder="`ex). ${publicKeyPlaceholder.alice}`")
         v-text-field(
           label="Max Fee"
           type="number"
@@ -34,12 +29,12 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PersistentDelegationRequestTransaction,
   TransactionHttp
 } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'PersistentDelegationRequest',
@@ -56,8 +51,7 @@ export default {
   },
   data () {
     return {
-      recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
-      senderPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
+      recipientPublicKey: '',
       delegatedPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
       fee: 0,
       history: []
@@ -72,12 +66,15 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
+      'accountPlaceholder',
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.recipientPublicKey = this.publicKeyPlaceholder.alice
   },
   methods: {
     announceHandler (event) {
@@ -87,7 +84,6 @@ export default {
         Deadline.create(),
         this.delegatedPrivateKey,
         this.recipientPublicKey,
-        this.senderPrivateKey,
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )

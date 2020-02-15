@@ -77,13 +77,13 @@
 </template>
 
 <script>
+import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, AggregateTransaction,
   MultisigAccountModificationTransaction,
   PublicAccount, LockFundsTransaction
 } from 'nem2-sdk'
-import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
   name: 'ModifyMultisig',
@@ -100,10 +100,8 @@ export default {
   },
   data () {
     return {
-      d_multisigPublicKey: 'AC1A6E1D8DE5B17D2C6B1293F1CAD3829EEACF38D09311BB3C8E5A880092DE26',
-      d_cosignatories: [
-        { pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C', isAdd: false }
-      ],
+      d_multisigPublicKey: '',
+      d_cosignatories: [],
       d_minApprovalDelta: -1,
       d_minRemovalDelta: -1,
       d_history: [],
@@ -121,6 +119,7 @@ export default {
     ...mapGetters('wallet', ['existsAccount', 'account', 'network', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', [
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
@@ -129,6 +128,8 @@ export default {
     this.d_lockMosaic = this.mosaicPlaceholder.currency10
     this.d_fee = this.feePlaceholder.default
     this.d_lockFee = this.feePlaceholder.default
+    this.d_multisigPublicKey = this.publicKeyPlaceholder.dan
+    this.d_cosignatories = [{ pubKey: this.publicKeyPlaceholder.alice, isAdd: false }]
   },
   methods: {
     d_deleteModification (index) {
@@ -136,7 +137,7 @@ export default {
     },
     d_addModification (event) {
       this.d_cosignatories.push({
-        pubKey: '5D9513282B65A12A1B68DCB67DB64245721F7AE7822BE441FE813173803C512C',
+        pubKey: this.publicKeyPlaceholder.bob,
         isAdd: false
       })
     },

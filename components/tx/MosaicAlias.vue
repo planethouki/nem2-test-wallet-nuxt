@@ -34,9 +34,9 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import { Deadline, UInt64, NamespaceId, MosaicId, AliasAction, TransactionHttp, MosaicAliasTransaction } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'MosaicAlias',

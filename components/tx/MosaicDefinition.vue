@@ -57,12 +57,13 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, TransactionHttp, MosaicId, MosaicNonce,
   MosaicDefinitionTransaction, MosaicSupplyChangeTransaction, MosaicFlags, MosaicSupplyChangeAction,
-  AggregateTransaction } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
+  AggregateTransaction
+} from 'nem2-sdk'
 
 export default {
   name: 'MosaicDefinition',
@@ -84,7 +85,7 @@ export default {
       m_transferable: true,
       m_restrictable: true,
       m_divisibility: 0,
-      m_duration: 10,
+      m_duration: 0,
       m_delta: 100,
       m_fee: 0,
       m_history: []

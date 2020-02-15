@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform" lang="pug">
   v-app
     v-app-bar(color="indigo" dark app)
-      v-toolbar-title Catapult Transaction Interface (Fushicho2)
+      v-toolbar-title Catapult Transaction Interface ({{ mileStone }})
       v-spacer
       v-menu(
         v-model="restLinkMenu"
@@ -35,11 +35,11 @@
             v-icon exit_to_app
         v-card
           v-card-text.text-center
-            div.headline.pa-3 Confirm
+            div.headline.pa-3 Logout?
             v-btn(
               color="pink"
               class="white--text"
-              @click="logoutWallet") logout
+              @click="logoutWallet") OK
     v-content
       v-container(fluid fill-height)
         nuxt
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import TransactionListener from '~/components/TheTransactionListener.vue'
 import TheRestLink from '~/components/TheRestLink.vue'
 import TheWallet from '~/components/TheWallet.vue'
@@ -63,6 +64,11 @@ export default {
     settingMenu: false,
     logoutMenu: false
   }),
+  computed: {
+    ...mapGetters('env', [
+      'mileStone'
+    ])
+  },
   methods: {
     logoutWallet (event) {
       this.$router.push('/logout')

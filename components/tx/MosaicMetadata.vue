@@ -60,12 +60,12 @@
 </template>
 
 <script>
+import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, AggregateTransaction, MosaicMetadataTransaction,
   TransactionHttp, LockFundsTransaction, PublicAccount, MosaicId
 } from 'nem2-sdk'
-import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
   name: 'MosaicMetadata',

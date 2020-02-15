@@ -55,12 +55,12 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
   TransactionHttp, EncryptedMessage, PublicAccount
 } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'Transfer',
@@ -77,8 +77,8 @@ export default {
   },
   data () {
     return {
-      t_recipientAddress: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
-      t_recipientPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      t_recipientAddress: '',
+      t_recipientPublicKey: '',
       t_mosaics: [],
       t_messageType: 0,
       t_messageTypes: [
@@ -99,6 +99,8 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
+      'addressPlaceholder',
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
@@ -108,6 +110,8 @@ export default {
       mosaicStr: this.mosaicPlaceholder.transfer
     }]
     this.t_fee = this.feePlaceholder.default
+    this.t_recipientAddress = this.addressPlaceholder.alice
+    this.t_recipientPublicKey = this.publicKeyPlaceholder.alice
   },
   methods: {
     t_deleteMosaic (index) {
