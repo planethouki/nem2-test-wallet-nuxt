@@ -19,10 +19,10 @@ if (process.env.isNemXem) {
     dan: 'DB23B23154133F1177FF52FEDC3463E94735FDD75BA8BC0B7BEEFC098C4116CC'
   }
   mosaicPlaceholder = {
-    transfer: '@nem.xem::0',
-    currency10: '@nem.xem::10000000',
-    escrow1: '@nem.xem::20000000',
-    escrow2: '@nem.xem::10000000'
+    transfer: '@symbol.xym::0',
+    currency10: '@symbol.xym::10000000',
+    escrow1: '@symbol.xym::20000000',
+    escrow2: '@symbol.xym::10000000'
   }
   feePlaceholder = {
     default: 100000
