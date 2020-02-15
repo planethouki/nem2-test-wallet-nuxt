@@ -1,11 +1,22 @@
 import { NetworkType } from 'nem2-sdk'
 
-let endpointList, defaultEndpoint, mosaicPlaceholder, feePlaceholder, addressPlaceholder, publicKeyPlaceholder
+let endpointList,
+  defaultEndpoint,
+  defaultNetworkType,
+  mosaicPlaceholder,
+  feePlaceholder,
+  addressPlaceholder,
+  publicKeyPlaceholder
+
+const defaultPrivateKey = '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E'
+const mileStone = 'Fushicho4'
+
 if (process.env.isNemXem) {
   endpointList = [
     { url: 'https://test-api.48gh23s.xyz:3001', label: 'https://test-api.48gh23s.xyz:3001' }
   ]
   defaultEndpoint = 'https://test-api.48gh23s.xyz:3001'
+  defaultNetworkType = NetworkType.TEST_NET
   addressPlaceholder = {
     alice: 'TD4ZKE-4P3HMB-M45K5O-3DMTIO-R4F5SZ-4CMFWG-PJZC',
     bob: 'TBQM77-CO6Y5B-XFPS4B-GR2WTM-ZYKBN4-MBKDBD-ZE43',
@@ -32,6 +43,7 @@ if (process.env.isNemXem) {
     { url: 'http://localhost:3000', label: 'localhost' }
   ]
   defaultEndpoint = 'http://localhost:3000'
+  defaultNetworkType = NetworkType.MIJIN_TEST
   addressPlaceholder = {
     alice: 'SBWEUW-ON6IBH-CW5IC4-EI6V6S-MTVJGC-JWGLF5-7UGK',
     bob: 'SB2Y5N-D4FDLB-IO5KHX-TKRWOD-DG2QHI-N73DTY-T2PC',
@@ -58,8 +70,9 @@ if (process.env.isNemXem) {
 export const state = () => ({
   endpointList,
   defaultEndpoint,
-  defaultPrivateKey: '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E',
-  defaultNetworkType: NetworkType.MIJIN_TEST,
+  defaultPrivateKey,
+  defaultNetworkType,
+  mileStone,
   addressPlaceholder,
   publicKeyPlaceholder,
   mosaicPlaceholder,
@@ -75,6 +88,9 @@ export const getters = {
   },
   defaultNetworkType (state) {
     return state.defaultNetworkType
+  },
+  mileStone (state) {
+    return state.mileStone
   },
   endpointList (state) {
     return state.endpointList
