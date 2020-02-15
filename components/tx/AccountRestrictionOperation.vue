@@ -51,12 +51,12 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, AccountRestrictionFlags, TransactionHttp,
   AccountOperationRestrictionTransaction, TransactionType
 } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'AccountRestrictionOperation',

@@ -33,9 +33,9 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import { LinkAction, AccountLinkTransaction, Deadline, UInt64, TransactionHttp } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'AccountLink',

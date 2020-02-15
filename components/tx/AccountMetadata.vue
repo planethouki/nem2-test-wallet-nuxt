@@ -58,12 +58,12 @@
 </template>
 
 <script>
+import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, AggregateTransaction, AccountMetadataTransaction,
   TransactionHttp, LockFundsTransaction, PublicAccount
 } from 'nem2-sdk'
-import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
   name: 'AccountMetadata',

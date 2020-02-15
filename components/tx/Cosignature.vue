@@ -21,9 +21,9 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { AccountHttp, TransactionHttp, CosignatureTransaction } from 'nem2-sdk'
 import { throwIfEmpty, filter, mergeMap } from 'rxjs/operators'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'Cosignature',

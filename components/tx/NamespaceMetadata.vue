@@ -63,12 +63,12 @@
 </template>
 
 <script>
+import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, AggregateTransaction, NamespaceMetadataTransaction,
   TransactionHttp, LockFundsTransaction, PublicAccount, NamespaceId
 } from 'nem2-sdk'
-import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
 export default {
   name: 'NamespaceMetadata',

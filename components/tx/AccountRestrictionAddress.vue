@@ -44,12 +44,12 @@
 </template>
 
 <script>
+import TxHistory from '../history/TxHistory.vue'
 import { mapGetters } from 'vuex'
 import {
   Address, Deadline, UInt64, AccountRestrictionFlags, TransactionHttp,
   AccountAddressRestrictionTransaction
 } from 'nem2-sdk'
-import TxHistory from '../history/TxHistory.vue'
 
 export default {
   name: 'AccountRestrictionAddress',
