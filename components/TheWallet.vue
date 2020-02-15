@@ -1,9 +1,10 @@
 <template lang="pug">
   v-card(style="width: 300px;")
-    div(style="opacity:0;position:absolute;font-size:0px;" ref="endpoint") {{ endpoint }}
-    div(style="opacity:0;position:absolute;font-size:0px;" ref="address") {{ address.pretty() }}
-    div(style="opacity:0;position:absolute;font-size:0px;" ref="publicKey") {{ publicAccount.publicKey }}
-    div(style="opacity:0;position:absolute;font-size:0px;" ref="privateKey") {{ privateKey }}
+    div.invisible
+      div(ref="endpoint") {{ endpoint }}
+      div(ref="address") {{ address.pretty() }}
+      div(ref="publicKey") {{ publicAccount.publicKey }}
+      div(ref="privateKey") {{ privateKey }}
     v-list(dense two-line)
       v-list-item(v-if="endpoint")
         v-list-item-content
@@ -112,5 +113,9 @@ export default {
 </script>
 
 <style scoped>
-
+.invisible > div {
+  opacity: 0;
+  position: absolute;
+  font-size: 0;
+}
 </style>

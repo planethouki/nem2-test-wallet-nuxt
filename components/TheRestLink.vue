@@ -32,10 +32,16 @@
         <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/multisig`" target="_blank" small>
           multisig
         </v-btn>
+        <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/multisig/graph`" target="_blank" small>
+          multisig graph
+        </v-btn>
         <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/namespaces`" target="_blank" small>
           namespaces
         </v-btn>
-        <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/metadata`" target="_blank" small>
+        <v-btn :href="`${endpoint}/account/${publicAccount.publicKey}/mosaics`" target="_blank" small>
+          mosaics
+        </v-btn>
+        <v-btn :href="`${endpoint}/metadata/account/${publicAccount.publicKey}`" target="_blank" small>
           metadata
         </v-btn>
       </div>
@@ -49,14 +55,26 @@
         <v-btn :href="`${endpoint}/chain/score`" target="_blank" small>
           score
         </v-btn>
-        <v-btn :href="`${endpoint}/diagnostic/storage`" target="_blank" small>
+        <v-btn :href="`${endpoint}/node/health`" target="_blank" small>
+          health
+        </v-btn>
+        <v-btn :href="`${endpoint}/node/info`" target="_blank" small>
+          info
+        </v-btn>
+        <v-btn :href="`${endpoint}/node/server`" target="_blank" small>
+          server
+        </v-btn>
+        <v-btn :href="`${endpoint}/node/storage`" target="_blank" small>
           storage
         </v-btn>
-        <v-btn :href="`${endpoint}/diagnostic/server`" target="_blank" small>
-          server
+        <v-btn :href="`${endpoint}/node/time`" target="_blank" small>
+          time
         </v-btn>
         <v-btn :href="`${endpoint}/network`" target="_blank" small>
           network
+        </v-btn>
+        <v-btn :href="`${endpoint}/network/fees`" target="_blank" small>
+          fees
         </v-btn>
       </div>
     </v-card-text>
