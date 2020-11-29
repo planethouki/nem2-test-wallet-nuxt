@@ -1,7 +1,7 @@
 {
   "name": "nem2-test-wallet-nuxt",
-  "version": "0.11.0-SNAPSHOT",
-  "description": "",
+  "version": "1.0.0",
+  "description": "My ace Nuxt.js project",
   "author": "planethouki",
   "private": true,
   "scripts": {
@@ -9,37 +9,23 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "lint:fix": "eslint --ext .js,.vue --ignore-path .gitignore --fix .",
-    "precommit": "npm run lint",
-    "test": "ava"
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
-    "@nuxtjs/pwa": "^2.6.0",
-    "bufferutil": "^4.0.1",
-    "nem2-sdk": "^0.16.5",
-    "nuxt": "^2.11.0",
-    "rxjs": "^6.5.4",
+    "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/pwa": "^3.2.2",
+    "nuxt": "^2.14.7",
     "secure-random": "^1.1.2",
-    "utf-8-validate": "^5.0.2"
+    "symbol-sdk": "^0.21.0"
   },
   "devDependencies": {
-    "@nuxtjs/eslint-config": "^2.0.0",
-    "@nuxtjs/vuetify": "^1.9.1",
-    "ava": "^2.4.0",
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.7.2",
-    "eslint-config-standard": ">=14.1.0",
-    "eslint-loader": "^3.0.3",
-    "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-jest": "^23.1.1",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-promise": ">=4.2.1",
-    "eslint-plugin-standard": ">=4.0.1",
-    "eslint-plugin-vue": "^6.0.1",
-    "jsdom": "^15.2.1",
-    "nodemon": "^2.0.2",
-    "pug": "^2.0.4",
+    "@nuxtjs/eslint-config": "^5.0.0",
+    "@nuxtjs/eslint-module": "^3.0.1",
+    "@nuxtjs/vuetify": "^1.11.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.14.0",
+    "eslint-plugin-nuxt": ">=2.0.0",
+    "pug": "^3.0.0",
     "pug-plain-loader": "^1.0.0"
   }
 }
