@@ -58,7 +58,8 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
-  TransactionHttp, EncryptedMessage, PublicAccount
+  TransactionHttp, EncryptedMessage, PublicAccount, MessageType,
+  EmptyMessage
 } from 'symbol-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
@@ -82,8 +83,8 @@ export default {
       t_mosaics: [],
       t_messageType: 0,
       t_messageTypes: [
-        { type: 0, label: 'Plain' },
-        { type: 1, label: 'Encrypted' }
+        { type: MessageType.PlainMessage, label: MessageType[MessageType.PlainMessage] },
+        { type: MessageType.EncryptedMessage, label: MessageType[MessageType.EncryptedMessage] }
       ],
       t_message: 'Hello Nem2!',
       t_fee: 0,
@@ -119,7 +120,7 @@ export default {
     },
     t_addMosaic (event) {
       this.t_mosaics.push({
-        mosaicStr: '4A1B0170C0E51B73::0'
+        mosaicStr: this.mosaicPlaceholder.transferAdd
       })
     },
     t_announceHandler (event) {
@@ -133,17 +134,18 @@ export default {
           return a.id.toHex() > b.id.toHex() ? 1 : -1
         })
       const message = (() => {
-        if (this.t_messageType === 0) {
+        if (this.t_messageType === MessageType.PlainMessage) {
           return PlainMessage.create(this.t_message)
-        } else {
+        } else if (this.t_messageType === MessageType.EncryptedMessage) {
           const recipientPublicAccount = PublicAccount.createFromPublicKey(
             this.t_recipientPublicKey,
             account.address.networkType)
           return EncryptedMessage.create(
             this.t_message,
             recipientPublicAccount,
-            account.privateKey,
-            account.address.network)
+            account.privateKey)
+        } else {
+          return EmptyMessage
         }
       })()
       const tx = TransferTransaction.create(
@@ -156,11 +158,10 @@ export default {
       )
       const signedTx = account.sign(tx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
+      txHttp.announce(signedTx).toPromise().then(console.log)
       const historyData = {
         hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`
       }
       this.t_history.push(historyData)
     }

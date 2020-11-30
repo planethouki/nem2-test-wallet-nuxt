@@ -9,8 +9,8 @@ export const state = () => ({
   account: null,
   publicAccount: null,
   mutateCount: 0,
-  currencyNamespaceName: 'cat.currency',
-  harvestNamespaceName: 'cat.harvest'
+  currencyNamespaceName: process.env.currencyNamespaceName,
+  harvestNamespaceName: process.env.harvestNamespaceName
 })
 
 export const getters = {

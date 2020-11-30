@@ -83,7 +83,7 @@ export default {
         case LockHashAlgorithm.Op_Sha3_256:
           return this.$hash.sha3(this.p_proof)
         case LockHashAlgorithm.Op_Keccak_256:
-          return this.$hash.keccac(this.p_proof)
+          return this.$hash.keccak(this.p_proof)
         case LockHashAlgorithm.Op_Hash_256:
           return this.$hash.hash256(this.p_proof)
         case LockHashAlgorithm.Op_Hash_160:

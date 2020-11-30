@@ -30,8 +30,8 @@ export const actions = {
     const chainHttp = repositoryFactoryHttp.createChainRepository()
     const blockHeight = (await chainHttp.getChainInfo().toPromise()).height.compact()
     commit('blockHeight', { blockHeight })
-    const blockHttp = repositoryFactoryHttp.createBlockRepository()
-    const generationHash = (await blockHttp.getBlockByHeight(1).toPromise()).generationHash
+    const nodeHttp = repositoryFactoryHttp.createNodeRepository()
+    const generationHash = (await nodeHttp.getNodeInfo().toPromise()).networkGenerationHashSeed
     commit('generationHash', { generationHash })
   },
   async updateBlockHeight ({ rootGetters, commit }) {

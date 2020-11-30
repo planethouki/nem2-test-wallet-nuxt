@@ -4,16 +4,6 @@
       v-toolbar-title Catapult Transaction Interface ({{ mileStone }})
       v-spacer
       v-menu(
-        v-model="restLinkMenu"
-        :close-on-content-click="false"
-        offset-y)
-        template(v-slot:activator="{ on }")
-          v-btn(
-            icon
-            v-on="on")
-            v-icon usb
-        TheRestLink
-      v-menu(
         v-model="settingMenu"
         :close-on-content-click="false"
         offset-y)
@@ -49,14 +39,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import TransactionListener from '~/components/TheTransactionListener.vue'
-import TheRestLink from '~/components/TheRestLink.vue'
 import TheWallet from '~/components/TheWallet.vue'
 
 export default {
   middleware: 'checkLogin',
   components: {
     TransactionListener,
-    TheRestLink,
     TheWallet
   },
   data: () => ({
