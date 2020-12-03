@@ -81,7 +81,7 @@ export default {
       }).then((result) => {
         const historyData = {
           hash,
-          apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+          apiStatusUrl: `${endpoint}/transactionStatus/${hash}`
         }
         this.g_history.push(historyData)
       }).catch((e) => {

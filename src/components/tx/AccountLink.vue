@@ -96,7 +96,7 @@ export default {
 
       const historyData = {
         hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`
       }
       this.history.push(historyData)
     }

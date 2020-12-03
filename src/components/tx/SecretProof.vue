@@ -12,7 +12,7 @@
           :value="ht.type")
         .d-flex.align-baseline
           v-text-field(
-            label="Proof"
+            label="Proof (Hex)"
             v-model="p_proof"
             required
             counter
@@ -82,8 +82,6 @@ export default {
       switch (this.p_hashType) {
         case LockHashAlgorithm.Op_Sha3_256:
           return this.$hash.sha3(this.p_proof)
-        case LockHashAlgorithm.Op_Keccak_256:
-          return this.$hash.keccak(this.p_proof)
         case LockHashAlgorithm.Op_Hash_256:
           return this.$hash.hash256(this.p_proof)
         case LockHashAlgorithm.Op_Hash_160:
@@ -97,7 +95,7 @@ export default {
     ...mapGetters('env', ['addressPlaceholder', 'feePlaceholder'])
   },
   created () {
-    this.p_proof = this.$crypto.random10()
+    this.p_proof = this.$crypto.random20()
   },
   mounted () {
     this.p_fee = this.feePlaceholder.default
@@ -105,7 +103,7 @@ export default {
   },
   methods: {
     p_regenProof () {
-      this.p_proof = this.$crypto.random10()
+      this.p_proof = this.$crypto.random20()
     },
     p_announceHandler (event) {
       const account = this.$store.getters['wallet/account']
@@ -122,11 +120,10 @@ export default {
       )
       const signedTx = account.sign(secretProofTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
+      txHttp.announce(signedTx)
       const historyData = {
         hash: signedTx.hash,
-        apiStatusUrl: `${endpoint}/transaction/${signedTx.hash}/status`
+        apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`
       }
       this.p_history.push(historyData)
     }

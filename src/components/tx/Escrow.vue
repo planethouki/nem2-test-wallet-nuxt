@@ -98,7 +98,7 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, PlainMessage, TransferTransaction,
-  TransactionHttp, AggregateTransaction, PublicAccount, LockFundsTransaction
+  RepositoryFactoryHttp, AggregateTransaction, PublicAccount, LockFundsTransaction
 } from 'symbol-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
@@ -153,20 +153,20 @@ export default {
     e_deleteMosaic1 (index) {
       this.e_mosaics1.splice(index, 1)
     },
-    e_addMosaic1 (event) {
+    e_addMosaic1 () {
       this.e_mosaics1.push({
-        mosaicStr: '4A1B0170C0E51B73::0'
+        mosaicStr: this.mosaicPlaceholder.escrow3
       })
     },
     e_deleteMosaic2 (index) {
       this.e_mosaics2.splice(index, 1)
     },
-    e_addMosaic2 (event) {
+    e_addMosaic2 () {
       this.e_mosaics2.push({
-        mosaicStr: '4A1B0170C0E51B73::0'
+        mosaicStr: this.mosaicPlaceholder.escrow3
       })
     },
-    e_announceHandler (event) {
+    async e_announceHandler () {
       const endpoint = this.$store.getters['wallet/endpoint']
       const account = this.$store.getters['wallet/account']
       const network = account.address.networkType
@@ -219,21 +219,44 @@ export default {
         UInt64.fromUint(this.e_lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
-      const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedLockFundsTx)
-      const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') { return }
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
-        txHttp.announceAggregateBonded(signedAggregateTx)
-        unsubscribe()
-      })
       const historyData = {
         agHash: signedAggregateTx.hash,
-        agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+        agApiStatusUrl: `${endpoint}/transactionStatus/${signedAggregateTx.hash}`,
         lfHash: signedLockFundsTx.hash,
-        lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`
+        lfApiStatusUrl: `${endpoint}/transactionStatus/${signedLockFundsTx.hash}`
       }
       this.e_history.push(historyData)
+
+      const repository = new RepositoryFactoryHttp(endpoint)
+      const txHttp = repository.createTransactionRepository()
+      const txStatusHttp = repository.createTransactionStatusRepository()
+      // eslint-disable-next-line no-console
+      await txHttp.announce(signedLockFundsTx).toPromise().then(console.log)
+      for (let i = 0; i < 120; i++) {
+        const st = await txStatusHttp
+          .getTransactionStatus(signedLockFundsTx.hash)
+          .toPromise()
+          .catch((e) => {
+            // eslint-disable-next-line no-console
+            console.log(e.message)
+            return {
+              group: 'unknown'
+            }
+          })
+        if (st.group === 'confirmed') {
+          await txHttp
+            .announceAggregateBonded(signedAggregateTx)
+            .toPromise()
+            // eslint-disable-next-line no-console
+            .then(console.log)
+          break
+        }
+        await new Promise((resolve) => {
+          // eslint-disable-next-line no-console
+          console.log('wait 1000')
+          setTimeout(resolve, 1000)
+        })
+      }
     }
   }
 }

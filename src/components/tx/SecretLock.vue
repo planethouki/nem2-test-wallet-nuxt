@@ -11,7 +11,7 @@
           :label="ht.label"
           :value="ht.type")
         v-text-field(
-          label="Secret"
+          label="Secret (Hex)"
           :counter="l_hashStrLen"
           v-model="l_secret")
         v-text-field(
@@ -126,12 +126,11 @@ export default {
       )
       const signedTx = account.sign(secretLockTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
+      txHttp.announce(signedTx)
       const hash = signedTx.hash
       const historyData = {
         hash,
-        apiStatusUrl: `${endpoint}/transaction/${hash}/status`
+        apiStatusUrl: `${endpoint}/transactionStatus/${hash}`
       }
       this.l_history.push(historyData)
     }

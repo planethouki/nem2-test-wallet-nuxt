@@ -30,7 +30,8 @@ const mosaicPlaceholder = {
   transferAdd: '4A1B0170C0E51B73::0',
   currency10: '@symbol.xym::10000000',
   escrow1: '@symbol.xym::20000000',
-  escrow2: '@symbol.xym::10000000'
+  escrow2: '@symbol.xym::10000000',
+  escrow3: '4A1B0170C0E51B73::0'
 }
 const feePlaceholder = {
   default: 100000

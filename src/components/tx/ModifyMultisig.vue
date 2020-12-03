@@ -32,8 +32,8 @@
             v-model="d_cosignatory.isAdd"
             label="Cosignatory Modification Action").flex-grow-0.ml-2
           v-text-field(
-            label="Cosignatory PublicKey"
-            v-bind:value="d_cosignatory.pubKey"
+            label="Cosignatory Address"
+            v-bind:value="d_cosignatory.address"
             required
             :counter="64").ml-2
           v-btn(
@@ -79,9 +79,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import {
-  Deadline, UInt64, TransactionHttp, AggregateTransaction,
+  Deadline, UInt64, RepositoryFactoryHttp, AggregateTransaction,
   MultisigAccountModificationTransaction,
-  PublicAccount, LockFundsTransaction
+  PublicAccount, LockFundsTransaction, Address
 } from 'symbol-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
@@ -120,6 +120,7 @@ export default {
     ...mapGetters('chain', ['generationHash']),
     ...mapGetters('env', [
       'publicKeyPlaceholder',
+      'addressPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
@@ -129,36 +130,36 @@ export default {
     this.d_fee = this.feePlaceholder.default
     this.d_lockFee = this.feePlaceholder.default
     this.d_multisigPublicKey = this.publicKeyPlaceholder.dan
-    this.d_cosignatories = [{ pubKey: this.publicKeyPlaceholder.alice, isAdd: false }]
+    this.d_cosignatories = [{ address: this.addressPlaceholder.alice, isAdd: false }]
   },
   methods: {
     d_deleteModification (index) {
       this.d_cosignatories.splice(index, 1)
     },
-    d_addModification (event) {
+    d_addModification () {
       this.d_cosignatories.push({
-        pubKey: this.publicKeyPlaceholder.bob,
+        address: this.addressPlaceholder.bob,
         isAdd: false
       })
     },
-    d_announceHandler (event) {
-      const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey)
+    async d_announceHandler () {
       const account = this.account
       const endpoint = this.endpoint
       const network = account.address.networkType
       const minApprovalDelta = this.d_minApprovalDelta
       const minRemovalDelta = this.d_minRemovalDelta
       const cosignatories = this.d_cosignatories
+      const multisigPublicAccount = PublicAccount.createFromPublicKey(this.d_multisigPublicKey, network)
       const multisigAccountModificationTransaction = MultisigAccountModificationTransaction.create(
         Deadline.create(),
         minApprovalDelta,
         minRemovalDelta,
         cosignatories
           .filter(co => co.isAdd)
-          .map(co => PublicAccount.createFromPublicKey(co.pubKey, network)),
+          .map(co => Address.createFromRawAddress(co.address)),
         cosignatories
           .filter(co => !co.isAdd)
-          .map(co => PublicAccount.createFromPublicKey(co.pubKey, network)),
+          .map(co => Address.createFromRawAddress(co.address)),
         network
       )
       const aggregateTx = AggregateTransaction.createBonded(
@@ -181,21 +182,45 @@ export default {
         UInt64.fromUint(this.d_lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
-      const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedLockFundsTx)
-      const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') { return }
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
-        txHttp.announceAggregateBonded(signedAggregateTx)
-        unsubscribe()
-      })
+
       const historyData = {
         agHash: signedAggregateTx.hash,
-        agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+        agApiStatusUrl: `${endpoint}/transactionStatus/${signedAggregateTx.hash}`,
         lfHash: signedLockFundsTx.hash,
-        lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`
+        lfApiStatusUrl: `${endpoint}/transactionStatus/${signedLockFundsTx.hash}`
       }
       this.d_history.push(historyData)
+
+      const repository = new RepositoryFactoryHttp(endpoint)
+      const txHttp = repository.createTransactionRepository()
+      const txStatusHttp = repository.createTransactionStatusRepository()
+      // eslint-disable-next-line no-console
+      await txHttp.announce(signedLockFundsTx).toPromise().then(console.log)
+      for (let i = 0; i < 120; i++) {
+        const st = await txStatusHttp
+          .getTransactionStatus(signedLockFundsTx.hash)
+          .toPromise()
+          .catch((e) => {
+            // eslint-disable-next-line no-console
+            console.log(e.message)
+            return {
+              group: 'unknown'
+            }
+          })
+        if (st.group === 'confirmed') {
+          await txHttp
+            .announceAggregateBonded(signedAggregateTx)
+            .toPromise()
+            // eslint-disable-next-line no-console
+            .then(console.log)
+          break
+        }
+        await new Promise((resolve) => {
+          // eslint-disable-next-line no-console
+          console.log('wait 1000')
+          setTimeout(resolve, 1000)
+        })
+      }
     }
   }
 }

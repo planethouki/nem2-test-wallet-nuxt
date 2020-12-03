@@ -153,7 +153,7 @@ export default {
       txHttp.announce(signedAggregateTx)
       const historyData = {
         agHash: signedAggregateTx.hash,
-        agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+        agApiStatusUrl: `${endpoint}/transactionStatus/${signedAggregateTx.hash}`,
         lfHash: 'omitted',
         lfApiStatusUrl: ''
       }
@@ -202,9 +202,9 @@ export default {
       })
       const historyData = {
         agHash: signedAggregateTx.hash,
-        agApiStatusUrl: `${endpoint}/transaction/${signedAggregateTx.hash}/status`,
+        agApiStatusUrl: `${endpoint}/transactionStatus/${signedAggregateTx.hash}`,
         lfHash: signedLockFundsTx.hash,
-        lfApiStatusUrl: `${endpoint}/transaction/${signedLockFundsTx.hash}/status`
+        lfApiStatusUrl: `${endpoint}/transactionStatus/${signedLockFundsTx.hash}`
       }
       this.history.push(historyData)
     }
