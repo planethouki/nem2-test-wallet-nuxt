@@ -114,7 +114,7 @@ export default {
       'feePlaceholder'
     ]),
     u_forbidMultisig () {
-      return this.address.plain() === 'TCZ5KXKSAJA74A5ECZCXMHOHKFVQ36YSONW4RSA'
+      return this.address.plain() === this.addressPlaceholder.self
     },
     u_announceDisabledMessage () {
       if (this.u_forbidMultisig) { return 'Please try another account.' }

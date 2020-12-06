@@ -9,10 +9,22 @@
           v-model="targetMosaicId"
           required
           placeholder="ex). 4A1B0170C0E51B73")
+        v-radio-group(label="Target Namespace Owner" v-model="isSelfTarget" row).mt-5
+          v-radio(
+            label="Self"
+            :value="true")
+          v-radio(
+            label="Other"
+            :value="false")
         v-text-field(
+          v-if="isSelfTarget"
+          :value="publicAccount.publicKey"
+          label="Target Mosaic Owner PublicKey"
+          disabled)
+        v-text-field(
+          v-else
           label="Target Mosaic Owner PublicKey"
           v-model="targetPublicKey"
-          required
           placeholder="ex). 3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57")
         v-text-field(
           label="Scoped Metadata Key"
@@ -63,7 +75,7 @@
 import { mapGetters } from 'vuex'
 import {
   Deadline, UInt64, AggregateTransaction, MosaicMetadataTransaction,
-  TransactionHttp, LockFundsTransaction, PublicAccount, MosaicId
+  TransactionHttp, LockFundsTransaction, PublicAccount, MosaicId, RepositoryFactoryHttp
 } from 'symbol-sdk'
 import AggregatetxHistory from '../history/AggregatetxHistory.vue'
 
@@ -76,15 +88,16 @@ export default {
     navTargetId: {
       type: String,
       default () {
-        return 'transfer'
+        return 'mosaicMetadata'
       }
     }
   },
   data () {
     return {
+      isSelfTarget: true,
       scopedMetadataKey: '00000000000000c1',
-      targetMosaicId: '4A1B0170C0E51B73',
-      targetPublicKey: '3390BF02D2BB59C8722297FF998CE89183D0906E469873284C091A5CDC22FD57',
+      targetMosaicId: '',
+      targetPublicKey: '',
       valueSizeDelta: 22,
       metadataValue: 'sample mosaic metadata',
       fee: 0,
@@ -104,6 +117,7 @@ export default {
       'generationHash'
     ]),
     ...mapGetters('env', [
+      'publicKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
@@ -112,11 +126,12 @@ export default {
     this.lockMosaic = this.mosaicPlaceholder.currency10
     this.fee = this.feePlaceholder.default
     this.lockFee = this.feePlaceholder.default
-    this.targetPublicKey = this.publicAccount.publicKey
+    this.targetPublicKey = this.publicKeyPlaceholder.alice
+    this.targetMosaicId = this.mosaicPlaceholder.metadata
   },
   methods: {
     announceHandler (event) {
-      if (this.targetPublicKey === this.publicAccount.publicKey) {
+      if (this.isSelfTarget) {
         this.announceComplete()
       } else {
         this.announceBonded()
@@ -128,7 +143,7 @@ export default {
       const network = account.address.networkType
       const tx = MosaicMetadataTransaction.create(
         Deadline.create(),
-        this.targetPublicKey,
+        account.address,
         UInt64.fromHex(this.scopedMetadataKey),
         new MosaicId(this.targetMosaicId),
         Number(this.valueSizeDelta),
@@ -139,7 +154,7 @@ export default {
       const aggregateTx = AggregateTransaction.createComplete(
         Deadline.create(),
         [
-          tx.toAggregate(PublicAccount.createFromPublicKey(this.targetPublicKey, network))
+          tx.toAggregate(account.publicAccount)
         ],
         network,
         [],
@@ -156,13 +171,14 @@ export default {
       }
       this.history.push(historyData)
     },
-    announceBonded () {
+    async announceBonded () {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.endpoint
       const network = account.address.networkType
+      const targetPublicAccount = PublicAccount.createFromPublicKey(this.targetPublicKey, network)
       const tx = MosaicMetadataTransaction.create(
         Deadline.create(),
-        this.targetPublicKey,
+        targetPublicAccount.address,
         UInt64.fromHex(this.scopedMetadataKey),
         new MosaicId(this.targetMosaicId),
         Number(this.valueSizeDelta),
@@ -172,7 +188,7 @@ export default {
       const aggregateTx = AggregateTransaction.createBonded(
         Deadline.create(),
         [
-          tx.toAggregate(PublicAccount.createFromPublicKey(this.targetPublicKey, network))
+          tx.toAggregate(targetPublicAccount)
         ],
         network,
         [],
@@ -189,14 +205,7 @@ export default {
         UInt64.fromUint(this.lockFee)
       )
       const signedLockFundsTx = account.sign(lockFundsTx, this.generationHash)
-      const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedLockFundsTx)
-      const unsubscribe = this.$store.subscribeAction((action, state) => {
-        if (action.type !== 'transactions/confirmedAdded') { return }
-        if (action.payload.transaction.transactionInfo.hash !== signedLockFundsTx.hash) { return }
-        txHttp.announceAggregateBonded(signedAggregateTx)
-        unsubscribe()
-      })
+
       const historyData = {
         agHash: signedAggregateTx.hash,
         agApiStatusUrl: `${endpoint}/transactionStatus/${signedAggregateTx.hash}`,
@@ -204,6 +213,37 @@ export default {
         lfApiStatusUrl: `${endpoint}/transactionStatus/${signedLockFundsTx.hash}`
       }
       this.history.push(historyData)
+
+      const repository = new RepositoryFactoryHttp(endpoint)
+      const txHttp = repository.createTransactionRepository()
+      const txStatusHttp = repository.createTransactionStatusRepository()
+      // eslint-disable-next-line no-console
+      await txHttp.announce(signedLockFundsTx).toPromise().then(console.log)
+      for (let i = 0; i < 120; i++) {
+        const st = await txStatusHttp
+          .getTransactionStatus(signedLockFundsTx.hash)
+          .toPromise()
+          .catch((e) => {
+            // eslint-disable-next-line no-console
+            console.log(e.message)
+            return {
+              group: 'unknown'
+            }
+          })
+        if (st.group === 'confirmed') {
+          await txHttp
+            .announceAggregateBonded(signedAggregateTx)
+            .toPromise()
+            // eslint-disable-next-line no-console
+            .then(console.log)
+          break
+        }
+        await new Promise((resolve) => {
+          // eslint-disable-next-line no-console
+          console.log('wait 1000')
+          setTimeout(resolve, 1000)
+        })
+      }
     }
   }
 }

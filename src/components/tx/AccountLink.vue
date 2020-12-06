@@ -27,14 +27,14 @@
         @click="announceHandler"
         :disabled="forbidLink") announce
         v-flex
-          div(v-if="forbidLink") &nbsp; {{ announceDisabledMessage }}
+          div(v-if="forbidLink") &nbsp; Please try another account.
       v-card-text
         tx-history(v-bind:history="history")
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { LinkAction, AccountLinkTransaction, Deadline, UInt64, TransactionHttp } from 'symbol-sdk'
+import { LinkAction, AccountKeyLinkTransaction, Deadline, UInt64, TransactionHttp } from 'symbol-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -65,24 +65,20 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'address', 'account', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['feePlaceholder']),
+    ...mapGetters('env', ['feePlaceholder', 'addressPlaceholder', 'publicKeyPlaceholder']),
     forbidLink () {
-      return this.address.plain() === 'SCA7ZS2B7DEEBGU3THSILYHCRUR32YYE55ZBLYA2' ||
-       this.address.plain() === 'TDYF3QKKPYMXTGZODND6X3O5FLVB3GBYMFQG4PEU'
-    },
-    announceDisabledMessage () {
-      if (this.forbidLink) { return 'Please try another account.' }
-      return ''
+      return this.address.plain() === this.addressPlaceholder.self
     }
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.remoteAccountKey = this.publicKeyPlaceholder.alice
   },
   methods: {
     announceHandler (event) {
       const account = this.account
       const endpoint = this.endpoint
-      const accountLinkTransaction = AccountLinkTransaction.create(
+      const accountLinkTransaction = AccountKeyLinkTransaction.create(
         Deadline.create(),
         this.remoteAccountKey,
         this.linkAction,
@@ -91,9 +87,7 @@ export default {
       )
       const signedTx = account.sign(accountLinkTransaction, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
-
+      txHttp.announce(signedTx)
       const historyData = {
         hash: signedTx.hash,
         apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`

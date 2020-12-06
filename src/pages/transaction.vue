@@ -11,7 +11,6 @@
       ModifyMultisig(navTargetId="modifymultisig")
       Escrow(navTargetId="escrow")
       Cosignature(navTargetId="cosignature")
-      CosignatureMultisig(navTargetId="cosignaturemultisig")
       MosaicAlias(navTargetId="mosaicAlias")
       AddressAlias(navTargetId="addressAlias")
       AccountRestrictionAddress(navTargetId="accountRestrictionAddress")
@@ -39,7 +38,6 @@ import ConvertMultisig from '~/components/tx/ConvertMultisig.vue'
 import ModifyMultisig from '~/components/tx/ModifyMultisig.vue'
 import Escrow from '~/components/tx/Escrow.vue'
 import Cosignature from '~/components/tx/Cosignature.vue'
-import CosignatureMultisig from '~/components/tx/CosignatureMultisig.vue'
 import MosaicAlias from '~/components/tx/MosaicAlias.vue'
 import AddressAlias from '~/components/tx/AddressAlias.vue'
 import AccountRestrictionAddress from '~/components/tx/AccountRestrictionAddress.vue'
@@ -68,7 +66,6 @@ export default {
     ModifyMultisig,
     Escrow,
     Cosignature,
-    CosignatureMultisig,
     MosaicAlias,
     AddressAlias,
     AccountRestrictionAddress,
@@ -105,7 +102,6 @@ export default {
         { icon: 'menu', title: 'Modify Multisig', target: '#modifymultisig', offset: 20 },
         { icon: 'compare_arrows', title: 'Escrow with Aggregate', target: '#escrow', offset: 20 },
         { icon: 'edit', title: 'Cosignature', target: '#cosignature', offset: 20 },
-        { icon: 'edit', title: 'Cosignature Multisig', target: '#cosignaturemultisig', offset: 20 },
         { icon: 'text_rotation_none', title: 'Mosaic Alias', target: '#mosaicAlias', offset: 20 },
         { icon: 'text_rotation_none', title: 'Address Alias', target: '#addressAlias', offset: 20 },
         { icon: 'person_add', title: 'Account Restriction Address', target: '#accountRestrictionAddress', offset: 20 },
@@ -123,13 +119,13 @@ export default {
     }
   },
   created () {
-    this.hoge()
+    this.addOnScroll()
   },
   destroyed () {
     window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    hoge () {
+    addOnScroll () {
       window.addEventListener('scroll', this.onScroll)
     },
     onScroll (e) {

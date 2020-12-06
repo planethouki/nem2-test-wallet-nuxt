@@ -66,7 +66,7 @@ export default {
   },
   data () {
     return {
-      mosaicId: '4A1B0170C0E51B73',
+      mosaicId: '',
       restrictionKey: '00000000000000c1',
       newRestrictionValue: '00000000000000d3',
       previousRestrictionValue: 'FFFFFFFFFFFFFFFF',
@@ -95,6 +95,7 @@ export default {
   mounted () {
     this.fee = this.feePlaceholder.default
     this.targetAddress = this.addressPlaceholder.alice
+    this.mosaicId = this.mosaicPlaceholder.restriction
   },
   methods: {
     announceHandler (event) {
@@ -112,8 +113,7 @@ export default {
       )
       const signedTx = account.sign(tx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
+      txHttp.announce(signedTx)
       const historyData = {
         hash: signedTx.hash,
         apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`

@@ -21,8 +21,7 @@
 </template>
 
 <script>
-import { AccountHttp, TransactionHttp, CosignatureTransaction } from 'symbol-sdk'
-import { throwIfEmpty, filter, mergeMap } from 'rxjs/operators'
+import { CosignatureTransaction, RepositoryFactoryHttp, TransactionGroup } from 'symbol-sdk'
 import TxHistory from '../history/TxHistory.vue'
 
 export default {
@@ -51,30 +50,27 @@ export default {
     }
   },
   methods: {
-    c_announceHandler (event) {
+    async c_announceHandler (event) {
       this.c_message = ''
       const account = this.$store.getters['wallet/account']
       const endpoint = this.$store.getters['wallet/endpoint']
       const hash = this.c_hash
-      const txHttp = new TransactionHttp(endpoint)
-      const accountHttp = new AccountHttp(endpoint)
-      accountHttp.getAccountPartialTransactions(account.publicAccount.address).pipe(
-        mergeMap(_ => _),
-        filter(_ => !_.signedByAccount(account.publicAccount)),
-        throwIfEmpty(() => new Error('can not find that transaction hash'))
-      ).toPromise().then((aggregateTx) => {
-        const cosigTx = CosignatureTransaction.create(aggregateTx)
-        const signedTx = account.signCosignatureTransaction(cosigTx)
-        return txHttp.announceAggregateBondedCosignature(signedTx).toPromise()
-      }).then((result) => {
-        const historyData = {
-          hash,
-          apiStatusUrl: `${endpoint}/transactionStatus/${hash}`
-        }
-        this.c_history.push(historyData)
-      }).catch((e) => {
-        this.c_message = e.message
-      })
+      const repositoryFactoryHttp = new RepositoryFactoryHttp(endpoint)
+      const txHttp = repositoryFactoryHttp.createTransactionRepository()
+      const aggregateTx = await txHttp
+        .getTransaction(hash, TransactionGroup.Partial)
+        .toPromise()
+        .catch((e) => {
+          this.c_message = e.message
+        })
+      const cosigTx = CosignatureTransaction.create(aggregateTx)
+      const signedTx = account.signCosignatureTransaction(cosigTx)
+      txHttp.announceAggregateBondedCosignature(signedTx)
+      const historyData = {
+        hash,
+        apiStatusUrl: `${endpoint}/transactionStatus/${hash}`
+      }
+      this.c_history.push(historyData)
     }
   }
 }

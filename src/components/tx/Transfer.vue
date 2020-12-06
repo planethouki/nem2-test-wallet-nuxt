@@ -81,7 +81,7 @@ export default {
       t_recipientAddress: '',
       t_recipientPublicKey: '',
       t_mosaics: [],
-      t_messageType: 0,
+      t_messageType: MessageType.PlainMessage,
       t_messageTypes: [
         { type: MessageType.PlainMessage, label: MessageType[MessageType.PlainMessage] },
         { type: MessageType.EncryptedMessage, label: MessageType[MessageType.EncryptedMessage] }

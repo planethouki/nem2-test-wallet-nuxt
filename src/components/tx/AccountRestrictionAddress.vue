@@ -100,7 +100,7 @@ export default {
     },
     addModification () {
       this.modifications.push({
-        rawAddress: 'SCCVQQ-3N3AOW-DOL6FD-TLSQZY-UHL4SH-XKJEJX-2URE',
+        rawAddress: this.addressPlaceholder.bob,
         isAdd: true
       })
     },

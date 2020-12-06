@@ -87,11 +87,11 @@ export default {
     return {
       mosaicId: '4A1B0170C0E51B73',
       restrictionKey: '00000000000000c1',
-      previousRestrictionValue: '00000000000000a3',
-      previousRestrictionType: MosaicRestrictionType.EQ,
+      previousRestrictionValue: '0000000000000000',
+      previousRestrictionType: MosaicRestrictionType.NONE,
       newRestrictionValue: '00000000000000b3',
       newRestrictionType: MosaicRestrictionType.EQ,
-      referenceMosaicId: '4A1B0170C0E51B73',
+      referenceMosaicId: '',
       isReferenceMosaicId: false,
       fee: 0,
       history: []
@@ -115,11 +115,16 @@ export default {
   },
   mounted () {
     this.fee = this.feePlaceholder.default
+    this.mosaicId = this.mosaicPlaceholder.restriction
+    this.referenceMosaicId = this.mosaicPlaceholder.restriction
   },
   methods: {
     announceHandler (event) {
       const account = this.$store.getters['wallet/account']
       const endpoint = this.endpoint
+      const referenceMosaicId = this.isReferenceMosaicId
+        ? new MosaicId(this.referenceMosaicId)
+        : new MosaicId(UInt64.fromUint(0).toDTO())
       const tx = MosaicGlobalRestrictionTransaction.create(
         Deadline.create(),
         new MosaicId(this.mosaicId),
@@ -129,13 +134,12 @@ export default {
         UInt64.fromHex(this.newRestrictionValue),
         this.newRestrictionType,
         account.address.networkType,
-        this.isReferenceMosaicId ? new MosaicId(this.referenceMosaicId) : new MosaicId(UInt64.fromUint(0).toDTO()),
+        referenceMosaicId,
         UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(tx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
+      txHttp.announce(signedTx).toPromise()
       const historyData = {
         hash: signedTx.hash,
         apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`

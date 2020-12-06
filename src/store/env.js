@@ -14,6 +14,7 @@ const endpointList = [
 const defaultEndpoint = 'http://api-01.ap-northeast-1.0.10.0.x.symboldev.network:3000'
 const defaultNetworkType = NetworkType.TEST_NET
 const addressPlaceholder = {
+  self: 'TCZ5KXKSAJA74A5ECZCXMHOHKFVQ36YSONW4RSA',
   alice: 'TAGX3ALCJEQZOKV2FAWAPPLY4KT2EYRUHBUZTFQ',
   bob: 'TDJBJZC5IS64DYZWSVXJGZVJHOVAGWGMWCBTN6Q',
   carol: 'TDUTG33ZLYL4GLL7KE7DMIOFBQMLF75DZB6FARI',
@@ -25,13 +26,24 @@ const publicKeyPlaceholder = {
   carol: '1680F6071E93C036B192180E2E8C9050B6A30276D3B4433EBEA47ABAF75E1126',
   dan: '713FA4446275F62173186194F4FE898917BC2C05C9273E000461951A3557A255'
 }
+const privateKeyPlaceholder = {
+  alice: 'F795C52F65E5AC4CDAF0CC4BC9F5427D11E6A9B003072C911C42CBE8912C57F7',
+  bob: 'A3F49555E0C749A61D133D6E8ABC204AB6A3E5EC6B77C1087B1E85BCC5415914',
+  carol: '1A5070493BD8D1D11D42AA8E628CB3E85EEF0C9F6689B2B7E60741516AF48900',
+  dan: 'D3F7D6AD37D2F7380445ADB537181BB1C48D8294BA197AE1C14304736B442250'
+}
 const mosaicPlaceholder = {
   transfer: '@symbol.xym::0',
   transferAdd: '4A1B0170C0E51B73::0',
   currency10: '@symbol.xym::10000000',
   escrow1: '@symbol.xym::20000000',
   escrow2: '@symbol.xym::10000000',
-  escrow3: '4A1B0170C0E51B73::0'
+  escrow3: '4A1B0170C0E51B73::0',
+  restriction: '484CEFAE6A3F55CA',
+  metadata: '56A65CC5E67ED980'
+}
+const namespacePlaceholder = {
+  foo: '82A9D1AC587EC054'
 }
 const feePlaceholder = {
   default: 100000
@@ -45,6 +57,8 @@ export const state = () => ({
   mileStone,
   addressPlaceholder,
   publicKeyPlaceholder,
+  privateKeyPlaceholder,
+  namespacePlaceholder,
   mosaicPlaceholder,
   feePlaceholder
 })
@@ -65,14 +79,17 @@ export const getters = {
   endpointList (state) {
     return state.endpointList
   },
-  isNemXem (state) {
-    return state.isNemXem
-  },
   addressPlaceholder (state) {
     return state.addressPlaceholder
   },
   publicKeyPlaceholder (state) {
     return state.publicKeyPlaceholder
+  },
+  privateKeyPlaceholder (state) {
+    return state.privateKeyPlaceholder
+  },
+  namespacePlaceholder (state) {
+    return state.namespacePlaceholder
   },
   mosaicPlaceholder (state) {
     return state.mosaicPlaceholder

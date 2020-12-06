@@ -88,7 +88,7 @@ export default {
   computed: {
     ...mapGetters('wallet', ['existsAccount', 'account', 'endpoint']),
     ...mapGetters('chain', ['generationHash']),
-    ...mapGetters('env', ['feePlaceholder'])
+    ...mapGetters('env', ['feePlaceholder', 'mosaicPlaceholder'])
   },
   mounted () {
     this.fee = this.feePlaceholder.default
@@ -99,7 +99,7 @@ export default {
     },
     addModification () {
       this.modifications.push({
-        hexMosaicId: '41BC54DEB7515742',
+        hexMosaicId: this.mosaicPlaceholder.restriction,
         isAdd: true
       })
     },

@@ -6,14 +6,19 @@
       v-card-text
         v-text-field(
           label="Delegated Private Key"
-          v-model="delegatedPrivateKey"
+          v-model="signingPrivateKey"
           required
-          placeholder="ex). 77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF")
+          :placeholder="`ex). ${signingPrivateKey.bob}`")
         v-text-field(
-          label="Recipient Public Key"
-          v-model="recipientPublicKey"
+          label="Node Public Key"
+          v-model="nodePublicKey"
           required
           :placeholder="`ex). ${publicKeyPlaceholder.alice}`")
+        v-text-field(
+          label="VRF Private Key"
+          v-model="vrfPrivateKey"
+          required
+          :placeholder="`ex). ${privateKeyPlaceholder.carol}`")
         v-text-field(
           label="Max Fee"
           type="number"
@@ -51,8 +56,9 @@ export default {
   },
   data () {
     return {
-      recipientPublicKey: '',
-      delegatedPrivateKey: '77A43F2031BC8D77A5FF7922FC5A9D29D80F700AC834E912CE9FB0F19C397EEF',
+      nodePublicKey: '',
+      signingPrivateKey: '',
+      vrfPrivateKey: '',
       fee: 0,
       history: []
     }
@@ -68,13 +74,16 @@ export default {
     ...mapGetters('env', [
       'accountPlaceholder',
       'publicKeyPlaceholder',
+      'privateKeyPlaceholder',
       'mosaicPlaceholder',
       'feePlaceholder'
     ])
   },
   mounted () {
     this.fee = this.feePlaceholder.default
-    this.recipientPublicKey = this.publicKeyPlaceholder.alice
+    this.nodePublicKey = this.publicKeyPlaceholder.alice
+    this.signingPrivateKey = this.privateKeyPlaceholder.bob
+    this.vrfPrivateKey = this.privateKeyPlaceholder.carol
   },
   methods: {
     announceHandler (event) {
@@ -82,15 +91,15 @@ export default {
       const endpoint = this.endpoint
       const tx = PersistentDelegationRequestTransaction.createPersistentDelegationRequestTransaction(
         Deadline.create(),
-        this.delegatedPrivateKey,
-        this.recipientPublicKey,
+        this.signingPrivateKey,
+        this.vrfPrivateKey,
+        this.nodePublicKey,
         account.address.networkType,
         UInt64.fromUint(this.fee)
       )
       const signedTx = account.sign(tx, this.generationHash)
       const txHttp = new TransactionHttp(endpoint)
-      txHttp.announce(signedTx).toPromise().then((resolve, reject) => {
-      })
+      txHttp.announce(signedTx)
       const historyData = {
         hash: signedTx.hash,
         apiStatusUrl: `${endpoint}/transactionStatus/${signedTx.hash}`
