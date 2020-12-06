@@ -1,7 +1,7 @@
 {
   "name": "nem2-test-wallet-nuxt",
   "short_name": "nem2-test-wallet-nuxt",
-  "description": "My ace Nuxt.js project",
+  "description": "Symbol Testnet Test Wallet",
   "icons": [
     {
       "src": "/nem2-test-wallet-nuxt/n/icons/icon_64x64.5f6a36.png",
