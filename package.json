@@ -1,7 +1,7 @@
 {
   "name": "nem2-test-wallet-nuxt",
-  "version": "0.10.0.3.0",
-  "description": "My ace Nuxt.js project",
+  "version": "1.0.0",
+  "description": "Symbol Testnet Test Wallet",
   "author": "planethouki",
   "private": true,
   "scripts": {
