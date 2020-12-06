@@ -1,6 +1,14 @@
 # nem2-test-wallet-nuxt
 
-> My ace Nuxt.js project
+symbol testnet 0.10.0.x compatible
+
+This wallet keeps private keys in memory.
+
+No save accounts. Reload(F5) initialize all.
+
+## live demo
+
+https://planethouki.github.io/nem2-test-wallet-nuxt/
 
 ## Build Setup
 

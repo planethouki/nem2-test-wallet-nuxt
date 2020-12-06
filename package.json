@@ -1,6 +1,6 @@
 {
   "name": "nem2-test-wallet-nuxt",
-  "version": "1.0.0",
+  "version": "0.10.0.3.0",
   "description": "My ace Nuxt.js project",
   "author": "planethouki",
   "private": true,
@@ -9,7 +9,8 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "deploy": "npm run generate && gh-pages -d dist"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.12.2",
@@ -25,6 +26,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.14.0",
     "eslint-plugin-nuxt": ">=2.0.0",
+    "gh-pages": "^3.1.0",
     "pug": "^3.0.0",
     "pug-plain-loader": "^1.0.0"
   }

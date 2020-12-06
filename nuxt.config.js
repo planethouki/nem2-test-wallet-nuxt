@@ -6,7 +6,7 @@ export default {
   ** Headers of the page
   */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
+    titleTemplate: '%s',
     title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
@@ -92,7 +92,9 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
-    }
+    },
+
+    publicPath: '/n/'
   },
 
   srcDir: 'src/',
@@ -101,5 +103,9 @@ export default {
     walletVersionText: '0.10.0.x',
     currencyNamespaceName: 'symbol.xym',
     harvestNamespaceName: 'symbol.xym'
+  },
+
+  router: {
+    base: `/${process.env.npm_package_name}/`
   }
 }
