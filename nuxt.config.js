@@ -35,7 +35,6 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/convert',
     '@/plugins/hash',
     '@/plugins/crypto',
     '@/plugins/parser',
