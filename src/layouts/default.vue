@@ -33,7 +33,6 @@
     v-content
       v-container(fluid fill-height)
         nuxt
-    TransactionListener
 </template>
 
 <script>

@@ -111,8 +111,8 @@ export default {
       mosaicStr: this.mosaicPlaceholder.transfer
     }]
     this.t_fee = this.feePlaceholder.default
-    this.t_recipientAddress = this.addressPlaceholder.alice
-    this.t_recipientPublicKey = this.publicKeyPlaceholder.alice
+    this.t_recipientAddress = this.addressPlaceholder.dan
+    this.t_recipientPublicKey = this.publicKeyPlaceholder.dan
   },
   methods: {
     t_deleteMosaic (index) {

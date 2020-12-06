@@ -4,14 +4,17 @@ const defaultPrivateKey = '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2
 const mileStone = process.env.walletVersionText
 
 const endpointList = [
-  { url: 'http://api-01.ap-northeast-1.0.10.0.x.symboldev.network:3000', label: 'ap-northeast-1' },
-  { url: 'http://api-01.ap-southeast-1.0.10.0.x.symboldev.network:3000', label: 'ap-southeast-1' },
-  { url: 'http://api-01.eu-central-1.0.10.0.x.symboldev.network:3000', label: 'eu-central-1' },
-  { url: 'http://api-01.eu-west-1.0.10.0.x.symboldev.network:3000', label: 'eu-west-1' },
-  { url: 'http://api-01.us-east-1.0.10.0.x.symboldev.network:3000', label: 'us-east-1' },
-  { url: 'http://api-01.us-west-1.0.10.0.x.symboldev.network:3000', label: 'us-west-1' }
+  { url: 'https://d2o8j5pgb7wqnq.cloudfront.net:443', label: 'default (d2o8j5pgb7wqnq.cloudfront.net)' }
 ]
-const defaultEndpoint = 'http://api-01.ap-northeast-1.0.10.0.x.symboldev.network:3000'
+// const endpointList = [
+//   { url: 'http://api-01.ap-northeast-1.0.10.0.x.symboldev.network:3000', label: 'ap-northeast-1' },
+//   { url: 'http://api-01.ap-southeast-1.0.10.0.x.symboldev.network:3000', label: 'ap-southeast-1' },
+//   { url: 'http://api-01.eu-central-1.0.10.0.x.symboldev.network:3000', label: 'eu-central-1' },
+//   { url: 'http://api-01.eu-west-1.0.10.0.x.symboldev.network:3000', label: 'eu-west-1' },
+//   { url: 'http://api-01.us-east-1.0.10.0.x.symboldev.network:3000', label: 'us-east-1' },
+//   { url: 'http://api-01.us-west-1.0.10.0.x.symboldev.network:3000', label: 'us-west-1' }
+// ]
+const defaultEndpoint = endpointList[0].url
 const defaultNetworkType = NetworkType.TEST_NET
 const addressPlaceholder = {
   self: 'TCZ5KXKSAJA74A5ECZCXMHOHKFVQ36YSONW4RSA',
@@ -33,8 +36,8 @@ const privateKeyPlaceholder = {
   dan: 'D3F7D6AD37D2F7380445ADB537181BB1C48D8294BA197AE1C14304736B442250'
 }
 const mosaicPlaceholder = {
-  transfer: '@symbol.xym::0',
-  transferAdd: '4A1B0170C0E51B73::0',
+  transfer: '@symbol.xym::1000000',
+  transferAdd: '4A1B0170C0E51B73::1000000',
   currency10: '@symbol.xym::10000000',
   escrow1: '@symbol.xym::20000000',
   escrow2: '@symbol.xym::10000000',
