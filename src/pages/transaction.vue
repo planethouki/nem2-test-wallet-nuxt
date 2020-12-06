@@ -16,7 +16,10 @@
       AccountRestrictionAddress(navTargetId="accountRestrictionAddress")
       AccountRestrictionMosaic(navTargetId="accountRestrictionMosaic")
       AccountRestrictionOperation(navTargetId="accountRestrictionOperation")
-      AccountLink(navTargetId="accountLink")
+      LinkAccountKey(navTargetId="accountLink")
+      LinkNodeKey(navTargetId="nodeLink")
+      LinkVrfKey(navTargetId="vrfLink")
+      LinkVotingKey(navTargetId="votingLink")
       PersistentDelegationRequest(navTargetId="persistentDelegationRequest")
       AccountMetadata(navTargetId="accountMetadata")
       NamespaceMetadata(navTargetId="namespaceMetadata")
@@ -43,7 +46,10 @@ import AddressAlias from '~/components/tx/AddressAlias.vue'
 import AccountRestrictionAddress from '~/components/tx/AccountRestrictionAddress.vue'
 import AccountRestrictionMosaic from '~/components/tx/AccountRestrictionMosaic.vue'
 import AccountRestrictionOperation from '~/components/tx/AccountRestrictionOperation.vue'
-import AccountLink from '~/components/tx/AccountLink.vue'
+import LinkAccountKey from '~/components/tx/LinkAccountKey.vue'
+import LinkNodeKey from '~/components/tx/LinkNodeKey.vue'
+import LinkVrfKey from '~/components/tx/LinkVrfKey.vue'
+import LinkVotingKey from '~/components/tx/LinkVotingKey.vue'
 import PersistentDelegationRequest from '~/components/tx/PersistentDelegationRequest.vue'
 import AccountMetadata from '~/components/tx/AccountMetadata.vue'
 import NamespaceMetadata from '~/components/tx/NamespaceMetadata.vue'
@@ -71,23 +77,16 @@ export default {
     AccountRestrictionAddress,
     AccountRestrictionMosaic,
     AccountRestrictionOperation,
-    AccountLink,
+    LinkAccountKey,
+    LinkNodeKey,
+    LinkVrfKey,
+    LinkVotingKey,
     PersistentDelegationRequest,
     AccountMetadata,
     NamespaceMetadata,
     MosaicMetadata,
     MosaicGlobalRestriction,
     MosaicAddressRestriction
-  },
-  computed: {
-    existsAccount () {
-      return this.$store.getters['wallet/existsAccount']
-    },
-    breakPoint () {
-      return this.$vuetify.breakpoint.name
-    }
-  },
-  watch: {
   },
   asyncData () {
     return {
@@ -108,6 +107,9 @@ export default {
         { icon: 'person_add', title: 'Account Restriction Mosaic', target: '#accountRestrictionMosaic', offset: 20 },
         { icon: 'person_add', title: 'Account Restriction Operation', target: '#accountRestrictionOperation', offset: 20 },
         { icon: 'people', title: 'Account Link', target: '#accountLink', offset: 20 },
+        { icon: 'people', title: 'Node Link', target: '#nodeLink', offset: 20 },
+        { icon: 'people', title: 'VRF Link', target: '#vrfLink', offset: 20 },
+        { icon: 'people', title: 'Voting Link', target: '#votingLink', offset: 20 },
         { icon: 'people', title: 'Persistent Delegation Request', target: '#persistentDelegationRequest', offset: 20 },
         { icon: 'comment', title: 'Account Metadata', target: '#accountMetadata', offset: 20 },
         { icon: 'comment', title: 'Namespace Metadata', target: '#namespaceMetadata', offset: 20 },
@@ -117,6 +119,23 @@ export default {
       ],
       navActive: ''
     }
+  },
+  head () {
+    return {
+      meta: [
+        { hid: 'transaction', name: 'transaction', content: 'transaction' }
+      ]
+    }
+  },
+  computed: {
+    existsAccount () {
+      return this.$store.getters['wallet/existsAccount']
+    },
+    breakPoint () {
+      return this.$vuetify.breakpoint.name
+    }
+  },
+  watch: {
   },
   created () {
     this.addOnScroll()
@@ -128,7 +147,7 @@ export default {
     addOnScroll () {
       window.addEventListener('scroll', this.onScroll)
     },
-    onScroll (e) {
+    onScroll () {
       const elements = document.querySelectorAll('#content > div')
       elements.forEach((elm) => {
         const top = elm.getBoundingClientRect().top
@@ -137,13 +156,6 @@ export default {
           this.navActive = `#${elm.id}`
         }
       })
-    }
-  },
-  head () {
-    return {
-      meta: [
-        { hid: 'transaction', name: 'transaction', content: 'transaction' }
-      ]
     }
   }
 }
