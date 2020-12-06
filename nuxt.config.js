@@ -98,6 +98,7 @@ export default {
   srcDir: 'src/',
 
   env: {
+    walletVersionText: '0.10.0.x',
     currencyNamespaceName: 'symbol.xym',
     harvestNamespaceName: 'symbol.xym'
   }

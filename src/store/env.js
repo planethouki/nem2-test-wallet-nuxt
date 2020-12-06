@@ -1,7 +1,7 @@
 import { NetworkType } from 'symbol-sdk'
 
 const defaultPrivateKey = '25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E'
-const mileStone = 'Fushicho4'
+const mileStone = process.env.walletVersionText
 
 const endpointList = [
   { url: 'http://api-01.ap-northeast-1.0.10.0.x.symboldev.network:3000', label: 'ap-northeast-1' },
@@ -96,17 +96,5 @@ export const getters = {
   },
   feePlaceholder (state) {
     return state.feePlaceholder
-  }
-}
-
-export const mutations = {
-  setDefaultPrivateKey (state, { privateKey }) {
-    state.defaultPrivateKey = privateKey
-  }
-}
-
-export const actions = {
-  logout ({ commit }, { account }) {
-    commit('setDefaultPrivateKey', { privateKey: account.privateKey })
   }
 }
