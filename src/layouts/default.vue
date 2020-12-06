@@ -38,15 +38,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TransactionListener from '~/components/TheTransactionListener.vue'
 import TheWallet from '~/components/TheWallet.vue'
 
 export default {
-  middleware: 'checkLogin',
   components: {
-    TransactionListener,
     TheWallet
   },
+  middleware: 'checkLogin',
   data: () => ({
     restLinkMenu: false,
     settingMenu: false,
