@@ -28,7 +28,7 @@
     "eslint": "^7.14.0",
     "eslint-plugin-nuxt": ">=2.0.0",
     "gh-pages": "^3.1.0",
-    "pug": "^3.0.0",
+    "pug": "^3.0.1",
     "pug-plain-loader": "^1.0.0"
   }
 }
